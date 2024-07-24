@@ -7,6 +7,12 @@
         <mxCell id="qoLvdTIRZXSMtm_tBuzf-2" value="画面レイアウト" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="160" y="50" width="470" height="640" as="geometry" />
         </mxCell>
+        <mxCell id="qoLvdTIRZXSMtm_tBuzf-3" value="" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="160" y="990" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="qoLvdTIRZXSMtm_tBuzf-4" value="湯下&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="970" width="80" height="80" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
