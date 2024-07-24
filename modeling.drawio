@@ -4618,7 +4618,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="7kfTngwKKYRM2LEyhhZL-5" value="&lt;u&gt;お知らせ&lt;/u&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・サマリー&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・アクション主&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・カテゴリ&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;fillColor=#fff2cc;strokeColor=#d6b656;horizontal=1;verticalAlign=top;align=center;" vertex="1" parent="1">
+        <mxCell id="7kfTngwKKYRM2LEyhhZL-5" value="&lt;u&gt;お知らせ&lt;/u&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・この投稿にコメントがつきました&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・特に方程式難しかった&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・湯下&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・コメント&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;fillColor=#fff2cc;strokeColor=#d6b656;horizontal=1;verticalAlign=top;align=center;" vertex="1" parent="1">
           <mxGeometry x="1720" y="525" width="190" height="140" as="geometry" />
         </mxCell>
       </root>
