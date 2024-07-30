@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" version="24.7.5">
   <diagram name="画面設計" id="DUKsDsCgvE7qoUcOOErB">
-    <mxGraphModel dx="5603" dy="5266" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2817" dy="3558" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -3073,7 +3073,7 @@
         <mxCell id="G14BOhuRtSVrZwQ8QBZu-818" value="" style="html=1;verticalLabelPosition=bottom;align=center;labelBackgroundColor=#ffffff;verticalAlign=top;strokeWidth=2;strokeColor=#4D4D4D;shadow=0;dashed=0;shape=mxgraph.ios7.icons.page_navigation;pointerEvents=1;fontFamily=Helvetica;fontSize=11;fontColor=default;" vertex="1" parent="1">
           <mxGeometry x="2644.5" y="3451.6" width="30" height="4.8" as="geometry" />
         </mxCell>
-        <mxCell id="G14BOhuRtSVrZwQ8QBZu-819" value="オプション小画面、ブロック小画面、通報小画面" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#b85450;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontColor=default;labelBackgroundColor=none;fillColor=#f8cecc;" vertex="1" parent="1">
+        <mxCell id="G14BOhuRtSVrZwQ8QBZu-819" value="オプション小画面、ブロック小画面" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#b85450;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontColor=default;labelBackgroundColor=none;fillColor=#f8cecc;" vertex="1" parent="1">
           <mxGeometry x="2678.5" y="3424.5" width="151.5" height="85.5" as="geometry" />
         </mxCell>
         <mxCell id="G14BOhuRtSVrZwQ8QBZu-821" value="オプション小画面、通報小画面" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#b85450;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontColor=default;labelBackgroundColor=none;fillColor=#f8cecc;" vertex="1" parent="1">
