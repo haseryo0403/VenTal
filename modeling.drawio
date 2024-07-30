@@ -3612,7 +3612,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="_XzOO6pix8Ku9sajO2Qh" name="ドメインモデル">
-    <mxGraphModel dx="1493" dy="3115" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1592" dy="3176" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -3724,16 +3724,6 @@
             <mxPoint x="1" y="242" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="V9P_5HJXvrzJiVL3hU-F-35" value="0..n" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;" parent="V9P_5HJXvrzJiVL3hU-F-2" vertex="1" connectable="0">
-          <mxGeometry x="-0.6644" y="2" relative="1" as="geometry">
-            <mxPoint x="301" y="-4" as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="V9P_5HJXvrzJiVL3hU-F-36" value="0..n" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;" parent="V9P_5HJXvrzJiVL3hU-F-2" vertex="1" connectable="0">
-          <mxGeometry x="-0.6644" y="2" relative="1" as="geometry">
-            <mxPoint x="471" y="-5" as="offset" />
-          </mxGeometry>
-        </mxCell>
         <mxCell id="V9P_5HJXvrzJiVL3hU-F-56" value="0..n" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;" parent="V9P_5HJXvrzJiVL3hU-F-2" vertex="1" connectable="0">
           <mxGeometry x="-0.6644" y="2" relative="1" as="geometry">
             <mxPoint x="-333" y="82" as="offset" />
@@ -3799,11 +3789,6 @@
             <mxPoint x="3" y="-248" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="V9P_5HJXvrzJiVL3hU-F-80" value="0..n" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;" parent="V9P_5HJXvrzJiVL3hU-F-2" vertex="1" connectable="0">
-          <mxGeometry x="-0.6644" y="2" relative="1" as="geometry">
-            <mxPoint x="2" y="-318" as="offset" />
-          </mxGeometry>
-        </mxCell>
         <mxCell id="V9P_5HJXvrzJiVL3hU-F-81" value="0..1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;" parent="V9P_5HJXvrzJiVL3hU-F-2" vertex="1" connectable="0">
           <mxGeometry x="-0.6644" y="2" relative="1" as="geometry">
             <mxPoint x="1093" y="192" as="offset" />
@@ -3822,16 +3807,6 @@
         <mxCell id="V9P_5HJXvrzJiVL3hU-F-73" value="0..1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;" parent="V9P_5HJXvrzJiVL3hU-F-2" vertex="1" connectable="0">
           <mxGeometry x="-0.6644" y="2" relative="1" as="geometry">
             <mxPoint x="78" y="276" as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="V9P_5HJXvrzJiVL3hU-F-87" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;" parent="V9P_5HJXvrzJiVL3hU-F-2" vertex="1" connectable="0">
-          <mxGeometry x="-0.6644" y="2" relative="1" as="geometry">
-            <mxPoint x="601" y="82" as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="V9P_5HJXvrzJiVL3hU-F-89" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;" parent="V9P_5HJXvrzJiVL3hU-F-2" vertex="1" connectable="0">
-          <mxGeometry x="-0.6644" y="2" relative="1" as="geometry">
-            <mxPoint x="291" y="322" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="V9P_5HJXvrzJiVL3hU-F-13" style="edgeStyle=orthogonalEdgeStyle;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FFB570;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=0;endArrow=none;endFill=0;" parent="1" source="7Shvr79IuUyN21dPrfdI-1" target="EJw1xrGKHZffQtTfCaU9-1" edge="1">
@@ -3902,25 +3877,6 @@
         <mxCell id="Lor74fARFKa-f6vXLFBd-1" value="&lt;u&gt;タイムライン&lt;/u&gt;&lt;div&gt;&lt;div&gt;&lt;u&gt;&lt;br&gt;&lt;/u&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・投稿者&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・投稿&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・地域名&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・グループ&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;fillColor=#fff2cc;strokeColor=#d6b656;horizontal=1;verticalAlign=top;align=center;" parent="1" vertex="1">
           <mxGeometry x="2991.86" y="-1040" width="190" height="150" as="geometry" />
         </mxCell>
-        <mxCell id="V9P_5HJXvrzJiVL3hU-F-37" style="edgeStyle=orthogonalEdgeStyle;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FFB570;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=0;endArrow=none;endFill=0;" parent="1" source="Lor74fARFKa-f6vXLFBd-2" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="1890" y="-480" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="2195" y="-480" />
-              <mxPoint x="1890" y="-480" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="V9P_5HJXvrzJiVL3hU-F-79" style="edgeStyle=orthogonalEdgeStyle;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.25;entryDx=0;entryDy=0;strokeColor=#97D077;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=0;endArrow=none;endFill=0;" parent="1" source="Lor74fARFKa-f6vXLFBd-2" target="VxeOrtmbsANs6GC4XrOz-1" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="2195" y="-1095" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="Lor74fARFKa-f6vXLFBd-2" value="&lt;u&gt;グループ&lt;/u&gt;&lt;br&gt;&lt;div&gt;&lt;div&gt;&lt;u&gt;&lt;br&gt;&lt;/u&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・参加者&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・地域&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・カテゴリ&lt;/div&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;fillColor=#fff2cc;strokeColor=#d6b656;horizontal=1;verticalAlign=top;align=center;" parent="1" vertex="1">
-          <mxGeometry x="2100" y="-841" width="190" height="120" as="geometry" />
-        </mxCell>
         <mxCell id="V9P_5HJXvrzJiVL3hU-F-14" style="edgeStyle=orthogonalEdgeStyle;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FFB570;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=0;endArrow=none;endFill=0;" parent="1" source="WFP1Kusn6JLP4jjLsOzz-1" target="7Shvr79IuUyN21dPrfdI-1" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
@@ -3955,9 +3911,6 @@
         <mxCell id="V9P_5HJXvrzJiVL3hU-F-17" value="&lt;span style=&quot;font-size: 14px;&quot;&gt;「ステータス」は&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;font-size: 14px;&quot;&gt;状態遷移図に記載&lt;br&gt;&lt;/span&gt;&lt;div style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=center;verticalAlign=top;fontFamily=Helvetica;fontSize=12;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
           <mxGeometry x="980" y="-690" width="150" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="V9P_5HJXvrzJiVL3hU-F-34" style="edgeStyle=orthogonalEdgeStyle;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1.004;entryY=0.538;entryDx=0;entryDy=0;entryPerimeter=0;strokeColor=#FFB570;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=0;endArrow=none;endFill=0;" parent="1" source="Lor74fARFKa-f6vXLFBd-2" target="fZB1t3nm4_0v3YPhynJq-1" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
         <mxCell id="V9P_5HJXvrzJiVL3hU-F-40" style="edgeStyle=orthogonalEdgeStyle;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#FFB570;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=0;endArrow=none;endFill=0;" parent="1" source="V9P_5HJXvrzJiVL3hU-F-38" target="V9P_5HJXvrzJiVL3hU-F-39" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
@@ -3981,12 +3934,6 @@
         </mxCell>
         <mxCell id="V9P_5HJXvrzJiVL3hU-F-39" value="地域設定を手動で行う場合&lt;div&gt;必要だと思う&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
           <mxGeometry x="1520" y="-170" width="230" height="80" as="geometry" />
-        </mxCell>
-        <mxCell id="uFzEWGiZvTLyiPMkUHdM-6" style="shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#FFB570;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=0;endArrow=none;endFill=0;" parent="1" source="V9P_5HJXvrzJiVL3hU-F-47" target="Lor74fARFKa-f6vXLFBd-2" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="V9P_5HJXvrzJiVL3hU-F-47" value="グループを地域限定のものにするか&lt;div&gt;地域を超えてグループを作成可能にするか→許可&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
-          <mxGeometry x="2250" y="-705" width="230" height="80" as="geometry" />
         </mxCell>
         <mxCell id="V9P_5HJXvrzJiVL3hU-F-49" value="地域特有のお知らせをする&lt;div&gt;イベント通知等　&lt;/div&gt;&lt;div&gt;次回以降&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
           <mxGeometry x="1230" y="-260" width="170" height="80" as="geometry" />
