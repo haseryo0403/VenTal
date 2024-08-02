@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" version="24.7.6">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36" version="24.7.6">
   <diagram name="画面設計" id="DUKsDsCgvE7qoUcOOErB">
-    <mxGraphModel dx="2664" dy="3464" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2620" dy="3261" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -1112,7 +1112,7 @@
         <mxCell id="cl_7OGiUN790KZuQrU56-400" value="&lt;span style=&quot;font-size: 18px;&quot;&gt;（30）パスワード認証ページ&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontStyle=1;fontSize=18;" parent="1" vertex="1">
           <mxGeometry x="3923.75" y="1599.5" width="260" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="cl_7OGiUN790KZuQrU56-401" value="画面レイアウト&lt;div&gt;見本サイズ&lt;/div&gt;&lt;div&gt;9：16&lt;/div&gt;" style="whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
+        <mxCell id="cl_7OGiUN790KZuQrU56-401" value="" style="whiteSpace=wrap;html=1;fontSize=18;" parent="1" vertex="1">
           <mxGeometry x="3995.75" y="1720.5" width="360" height="640" as="geometry" />
         </mxCell>
         <mxCell id="cl_7OGiUN790KZuQrU56-402" value="" style="endArrow=none;html=1;rounded=0;exitX=1.002;exitY=0.919;exitDx=0;exitDy=0;exitPerimeter=0;entryX=-0.002;entryY=0.92;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" edge="1">
