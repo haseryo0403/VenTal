@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36" version="24.7.6">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36" version="24.7.6">
   <diagram name="画面設計" id="DUKsDsCgvE7qoUcOOErB">
-    <mxGraphModel dx="3215" dy="3802" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2336" dy="3115" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -3287,6 +3287,16 @@
         </mxCell>
         <mxCell id="obbkM4RJUZKWICOUnXqe-12" value="　　　　　　　　　　　　　　　　　　　　　　　　" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontStyle=4;fontSize=14;fontColor=#808080;" vertex="1" parent="1">
           <mxGeometry x="4602" y="1830.0000000000002" width="360" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="obbkM4RJUZKWICOUnXqe-14" style="shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#3399FF;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;exitX=0.517;exitY=0.149;exitDx=0;exitDy=0;exitPerimeter=0;edgeStyle=orthogonalEdgeStyle;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="4990" y="1837" />
+              <mxPoint x="4990" y="1622" />
+            </Array>
+            <mxPoint x="4792.75" y="1836.9900000000002" as="sourcePoint" />
+            <mxPoint x="5124.63" y="1622.52" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="eyTHZOURVQyMpVoh6xOE-13" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.diag_round_rect;dx=6;whiteSpace=wrap;strokeWidth=2;strokeColor=#4D4D4D;" vertex="1" parent="1">
           <mxGeometry x="4748.5" y="4427.5" width="30" height="20" as="geometry" />
