@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36" version="24.7.6">
   <diagram name="画面設計" id="DUKsDsCgvE7qoUcOOErB">
-    <mxGraphModel dx="3871" dy="3680" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="4547" dy="3978" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -3435,6 +3435,16 @@
         </mxCell>
         <mxCell id="obbkM4RJUZKWICOUnXqe-20" value="メール変更しますか確認画面" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#b85450;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontColor=default;labelBackgroundColor=none;fillColor=#f8cecc;" vertex="1" parent="1">
           <mxGeometry x="3250" y="928.5" width="151.5" height="155.25" as="geometry" />
+        </mxCell>
+        <mxCell id="obbkM4RJUZKWICOUnXqe-34" style="edgeStyle=orthogonalEdgeStyle;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;strokeColor=#EA6B66;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;entryX=0.705;entryY=0.013;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="obbkM4RJUZKWICOUnXqe-22" target="cl_7OGiUN790KZuQrU56-264">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="3030" y="730" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="3910" y="2615" />
+              <mxPoint x="3910" y="700" />
+              <mxPoint x="3031" y="700" />
+            </Array>
+          </mxGeometry>
         </mxCell>
         <mxCell id="obbkM4RJUZKWICOUnXqe-22" value="" style="html=1;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;verticalAlign=top;shadow=0;dashed=0;strokeWidth=3;shape=mxgraph.ios7.misc.left;strokeColor=#4D4D4D;fontFamily=Helvetica;fontSize=11;fontColor=default;aspect=fixed;" vertex="1" parent="1">
           <mxGeometry x="4019.75" y="2603" width="12" height="24" as="geometry" />
