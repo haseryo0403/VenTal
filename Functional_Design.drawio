@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36" version="24.7.6">
   <diagram name="画面設計" id="DUKsDsCgvE7qoUcOOErB">
-    <mxGraphModel dx="3341" dy="3234" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="5239" dy="4243" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -1901,7 +1901,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="G14BOhuRtSVrZwQ8QBZu-322" style="edgeStyle=orthogonalEdgeStyle;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.551;entryY=-0.019;entryDx=0;entryDy=0;entryPerimeter=0;strokeColor=#EA6B66;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="G14BOhuRtSVrZwQ8QBZu-41" target="cl_7OGiUN790KZuQrU56-7" edge="1">
+        <mxCell id="G14BOhuRtSVrZwQ8QBZu-322" style="edgeStyle=orthogonalEdgeStyle;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#97D077;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="G14BOhuRtSVrZwQ8QBZu-41" target="XjocWpZ-J-gPWvmJ1AQX-93" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="G14BOhuRtSVrZwQ8QBZu-323" style="edgeStyle=orthogonalEdgeStyle;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.564;entryDx=0;entryDy=0;entryPerimeter=0;strokeColor=#EA6B66;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;" parent="1" source="G14BOhuRtSVrZwQ8QBZu-31" target="cl_7OGiUN790KZuQrU56-9" edge="1">
@@ -3609,6 +3609,19 @@
         </mxCell>
         <mxCell id="XjocWpZ-J-gPWvmJ1AQX-86" value="キャンセル" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontStyle=1;fontSize=16;fontColor=#3399FF;" vertex="1" parent="1">
           <mxGeometry x="2063.05" y="3751.2" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="XjocWpZ-J-gPWvmJ1AQX-93" value="メールアドレスが認証されました。&lt;div&gt;ログインしてください&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=34;fontSize=18;align=left;" vertex="1" parent="1">
+          <mxGeometry x="-451.5" y="2423.25" width="333.5" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="XjocWpZ-J-gPWvmJ1AQX-95" style="edgeStyle=orthogonalEdgeStyle;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#EA6B66;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;entryX=0.008;entryY=0.654;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-118" y="2460.333333333333" as="sourcePoint" />
+            <mxPoint x="-23.480000000000018" y="2463.16" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="-25" y="2460" />
+              <mxPoint x="-25" y="2463" />
+            </Array>
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
