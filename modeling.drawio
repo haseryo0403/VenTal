@@ -396,7 +396,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="-EDqXev1ECyOezU7UuQX" name="状態遷移図">
-    <mxGraphModel dx="1434" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1194" dy="732" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -3989,7 +3989,7 @@
     </mxGraphModel>
   </diagram>
   <diagram name="アクティビティ図" id="qL54rMFDUnUFQA-ppC61">
-    <mxGraphModel dx="4435" dy="5205" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="2556" dy="4346" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="mWOxNuFuRk0G8sRyjHVG-0" />
         <mxCell id="mWOxNuFuRk0G8sRyjHVG-1" parent="mWOxNuFuRk0G8sRyjHVG-0" />
@@ -6223,7 +6223,7 @@
         <mxCell id="-ULckq8C_P7w43mWwqvW-8" value="" style="edgeStyle=orthogonalEdgeStyle;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FF0000;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;endArrow=classic;" edge="1" parent="mWOxNuFuRk0G8sRyjHVG-1" source="4STSQDnEtckA61JGaulg-21" target="-ULckq8C_P7w43mWwqvW-7">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="4STSQDnEtckA61JGaulg-21" value="反対コメントを入力" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#000000;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontStyle=1;autosize=0;resizable=1;fillColor=#dae8fc;" vertex="1" parent="mWOxNuFuRk0G8sRyjHVG-1">
+        <mxCell id="4STSQDnEtckA61JGaulg-21" value="スワイプ反論を入力" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#000000;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontStyle=1;autosize=0;resizable=1;fillColor=#dae8fc;" vertex="1" parent="mWOxNuFuRk0G8sRyjHVG-1">
           <mxGeometry x="1674" y="-2170" width="160" height="60" as="geometry" />
         </mxCell>
         <mxCell id="-ULckq8C_P7w43mWwqvW-5" style="edgeStyle=orthogonalEdgeStyle;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#FF0000;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;endArrow=classic;" edge="1" parent="mWOxNuFuRk0G8sRyjHVG-1" source="4STSQDnEtckA61JGaulg-27" target="4STSQDnEtckA61JGaulg-21">
@@ -6234,7 +6234,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="4STSQDnEtckA61JGaulg-27" value="反対コメント作成&lt;div&gt;画面を表示&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#000000;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontStyle=1;autosize=0;resizable=1;fillColor=#dae8fc;" vertex="1" parent="mWOxNuFuRk0G8sRyjHVG-1">
+        <mxCell id="4STSQDnEtckA61JGaulg-27" value="スワイプ反論作成&lt;div&gt;画面を表示&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#000000;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontStyle=1;autosize=0;resizable=1;fillColor=#dae8fc;" vertex="1" parent="mWOxNuFuRk0G8sRyjHVG-1">
           <mxGeometry x="1870" y="-2272" width="160" height="60" as="geometry" />
         </mxCell>
         <mxCell id="4STSQDnEtckA61JGaulg-28" value="" style="edgeStyle=orthogonalEdgeStyle;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FF0000;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;endArrow=classic;" edge="1" source="4STSQDnEtckA61JGaulg-29" target="4STSQDnEtckA61JGaulg-31" parent="mWOxNuFuRk0G8sRyjHVG-1">
@@ -6348,7 +6348,7 @@
         <mxCell id="-ULckq8C_P7w43mWwqvW-12" value="" style="edgeStyle=orthogonalEdgeStyle;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#3399FF;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;endArrow=classic;" edge="1" parent="mWOxNuFuRk0G8sRyjHVG-1" source="-ULckq8C_P7w43mWwqvW-7" target="-ULckq8C_P7w43mWwqvW-10">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="-ULckq8C_P7w43mWwqvW-7" value="反対コメントを登録" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#000000;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontStyle=1;autosize=0;resizable=1;fillColor=#dae8fc;" vertex="1" parent="mWOxNuFuRk0G8sRyjHVG-1">
+        <mxCell id="-ULckq8C_P7w43mWwqvW-7" value="反論を登録" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#000000;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontStyle=1;autosize=0;resizable=1;fillColor=#dae8fc;" vertex="1" parent="mWOxNuFuRk0G8sRyjHVG-1">
           <mxGeometry x="1870" y="-2170" width="160" height="60" as="geometry" />
         </mxCell>
         <mxCell id="-ULckq8C_P7w43mWwqvW-14" value="" style="edgeStyle=orthogonalEdgeStyle;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FF0000;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;endArrow=classic;" edge="1" parent="mWOxNuFuRk0G8sRyjHVG-1" source="-ULckq8C_P7w43mWwqvW-10" target="-ULckq8C_P7w43mWwqvW-13">
