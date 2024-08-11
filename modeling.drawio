@@ -4015,13 +4015,13 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="mWOxNuFuRk0G8sRyjHVG-7" value="■1：会員登録する" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;autosize=0;resizable=1;" parent="mWOxNuFuRk0G8sRyjHVG-1" vertex="1">
-          <mxGeometry x="-720" y="-2590" width="180" height="30" as="geometry" />
+          <mxGeometry x="-720" y="-2569" width="180" height="30" as="geometry" />
         </mxCell>
         <mxCell id="mWOxNuFuRk0G8sRyjHVG-8" value="■4：スワイプカードを確認する" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;autosize=0;resizable=1;" parent="mWOxNuFuRk0G8sRyjHVG-1" vertex="1">
-          <mxGeometry x="-470" y="-2560" width="250" height="30" as="geometry" />
+          <mxGeometry x="-5" y="-2569" width="250" height="30" as="geometry" />
         </mxCell>
         <mxCell id="mWOxNuFuRk0G8sRyjHVG-10" value="■2：ログインする" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;autosize=0;resizable=1;" parent="mWOxNuFuRk0G8sRyjHVG-1" vertex="1">
-          <mxGeometry x="-560" y="-2590" width="180" height="30" as="geometry" />
+          <mxGeometry x="-560" y="-2569" width="180" height="30" as="geometry" />
         </mxCell>
         <mxCell id="mWOxNuFuRk0G8sRyjHVG-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;autosize=0;resizable=1;strokeColor=#FF0000;" parent="mWOxNuFuRk0G8sRyjHVG-1" source="mWOxNuFuRk0G8sRyjHVG-12" target="mWOxNuFuRk0G8sRyjHVG-13" edge="1">
           <mxGeometry relative="1" as="geometry" />
@@ -4106,7 +4106,7 @@
         <mxCell id="d4D2Fyfv0k_Xc2GPWFv7-2" value="" style="edgeStyle=orthogonalEdgeStyle;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FF0000;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;endArrow=classic;" edge="1" parent="mWOxNuFuRk0G8sRyjHVG-1" source="mWOxNuFuRk0G8sRyjHVG-34" target="mWOxNuFuRk0G8sRyjHVG-30">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="mWOxNuFuRk0G8sRyjHVG-34" value="スワイプカード画面を表示" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#000000;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontStyle=1;autosize=0;resizable=1;fillColor=#dae8fc;" parent="mWOxNuFuRk0G8sRyjHVG-1" vertex="1">
+        <mxCell id="mWOxNuFuRk0G8sRyjHVG-34" value="タイムライン画面&lt;div&gt;を表示&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#000000;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontStyle=1;autosize=0;resizable=1;fillColor=#dae8fc;" parent="mWOxNuFuRk0G8sRyjHVG-1" vertex="1">
           <mxGeometry x="-500" y="-1280" width="160" height="60" as="geometry" />
         </mxCell>
         <mxCell id="mWOxNuFuRk0G8sRyjHVG-36" value="" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fontFamily=Helvetica;fontSize=18;fontStyle=1;labelBackgroundColor=default;autosize=0;resizable=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="mWOxNuFuRk0G8sRyjHVG-1" vertex="1">
@@ -4271,7 +4271,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="mWOxNuFuRk0G8sRyjHVG-191" value="■5：スワイプカードにいいねする" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;autosize=0;resizable=1;" parent="mWOxNuFuRk0G8sRyjHVG-1" vertex="1">
-          <mxGeometry y="-2570" width="280" height="30" as="geometry" />
+          <mxGeometry x="240" y="-2570" width="280" height="30" as="geometry" />
         </mxCell>
         <mxCell id="mWOxNuFuRk0G8sRyjHVG-192" value="" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=18;" parent="mWOxNuFuRk0G8sRyjHVG-1" vertex="1">
           <mxGeometry x="20" y="-2530" width="780" height="60" as="geometry" />
@@ -4364,7 +4364,7 @@
           <mxGeometry x="685" y="-2178.5" width="30" height="30" as="geometry" />
         </mxCell>
         <mxCell id="mWOxNuFuRk0G8sRyjHVG-215" value="■3：プロフィールを登録する" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;autosize=0;resizable=1;" parent="mWOxNuFuRk0G8sRyjHVG-1" vertex="1">
-          <mxGeometry x="-705" y="-2560" width="230" height="30" as="geometry" />
+          <mxGeometry x="-380" y="-2569" width="230" height="30" as="geometry" />
         </mxCell>
         <mxCell id="mWOxNuFuRk0G8sRyjHVG-216" value="" style="shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=18;" parent="mWOxNuFuRk0G8sRyjHVG-1" vertex="1">
           <mxGeometry x="6903.75" y="-2532" width="390" height="60" as="geometry" />
