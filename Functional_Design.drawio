@@ -3881,9 +3881,6 @@
         <mxCell id="fbS2D5yxTcb9l9NsIaV3-170" value="" style="html=1;verticalLabelPosition=bottom;align=center;labelBackgroundColor=#ffffff;verticalAlign=top;strokeWidth=2;strokeColor=#4D4D4D;shadow=0;dashed=0;shape=mxgraph.ios7.icons.user;aspect=fixed;" vertex="1" parent="-G96aYmMLIfbukAivywA-1">
           <mxGeometry x="2359.1200000000003" y="926.5" width="70" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="KqtcCA8fYovFPZk5-m9_-2" value="最初のスワイプ反論のみを&lt;div&gt;表示&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=15;fontColor=#EA6B66;" vertex="1" parent="-G96aYmMLIfbukAivywA-1">
-          <mxGeometry x="794.5" y="1335" width="187" height="60" as="geometry" />
-        </mxCell>
         <mxCell id="fbS2D5yxTcb9l9NsIaV3-171" value="ゆぴたん" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontStyle=1;fontSize=16;" vertex="1" parent="-G96aYmMLIfbukAivywA-1">
           <mxGeometry x="2360.5000000000005" y="996.05" width="90" height="30" as="geometry" />
         </mxCell>
@@ -7268,8 +7265,8 @@
         <mxCell id="fdXpFWT4TLHeMCJnne5k-31" value="パスワードを変更しました" style="rounded=1;whiteSpace=wrap;html=1;arcSize=34;fontSize=18;" vertex="1" parent="-G96aYmMLIfbukAivywA-1">
           <mxGeometry x="4647.55" y="3058.5" width="275" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="fdXpFWT4TLHeMCJnne5k-32" value="&lt;span style=&quot;font-size: 18px;&quot;&gt;トリミング画面&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontStyle=1;fontSize=18;" vertex="1" parent="-G96aYmMLIfbukAivywA-1">
-          <mxGeometry x="-943" y="3283" width="150" height="40" as="geometry" />
+        <mxCell id="fdXpFWT4TLHeMCJnne5k-32" value="&lt;span style=&quot;font-size: 18px;&quot;&gt;画像トリミング画面&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontStyle=1;fontSize=18;" vertex="1" parent="-G96aYmMLIfbukAivywA-1">
+          <mxGeometry x="-963" y="3283" width="190" height="40" as="geometry" />
         </mxCell>
         <mxCell id="fdXpFWT4TLHeMCJnne5k-34" style="edgeStyle=orthogonalEdgeStyle;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#EA6B66;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;startArrow=classic;startFill=1;" edge="1" parent="-G96aYmMLIfbukAivywA-1" source="fdXpFWT4TLHeMCJnne5k-33" target="-G96aYmMLIfbukAivywA-29">
           <mxGeometry relative="1" as="geometry" />
@@ -7279,6 +7276,9 @@
         </mxCell>
         <mxCell id="fdXpFWT4TLHeMCJnne5k-35" value="画像トリミング画面" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;fontStyle=1" vertex="1" parent="-G96aYmMLIfbukAivywA-1">
           <mxGeometry x="818" y="-1140" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="KqtcCA8fYovFPZk5-m9_-2" value="最初のスワイプ反論のみを&lt;div&gt;表示&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=15;fontColor=#EA6B66;" vertex="1" parent="-G96aYmMLIfbukAivywA-1">
+          <mxGeometry x="796.6" y="1324.5" width="187" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
