@@ -3639,7 +3639,7 @@
     </mxGraphModel>
   </diagram>
   <diagram name="Copy of 画面設計" id="CriQbU6xHBtzXw_I43vW">
-    <mxGraphModel dx="3825" dy="3669" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2791" dy="3035" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="-G96aYmMLIfbukAivywA-0" />
         <mxCell id="-G96aYmMLIfbukAivywA-1" parent="-G96aYmMLIfbukAivywA-0" />
@@ -7296,6 +7296,9 @@
         </mxCell>
         <mxCell id="fdXpFWT4TLHeMCJnne5k-39" value="時間は新着の定義に準拠" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;labelBackgroundColor=none;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="-G96aYmMLIfbukAivywA-1">
           <mxGeometry x="798" y="746" width="120" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="fdXpFWT4TLHeMCJnne5k-42" value="&lt;span style=&quot;font-weight: 400;&quot;&gt;この画像はフル画面表示不可&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=15;fontColor=#EA6B66;" vertex="1" parent="-G96aYmMLIfbukAivywA-1">
+          <mxGeometry x="1236.5" y="1345.5" width="187" height="55" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
