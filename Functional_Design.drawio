@@ -7280,6 +7280,9 @@
         <mxCell id="KqtcCA8fYovFPZk5-m9_-2" value="最初のスワイプ反論のみを&lt;div&gt;表示&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=15;fontColor=#EA6B66;" vertex="1" parent="-G96aYmMLIfbukAivywA-1">
           <mxGeometry x="796.6" y="1324.5" width="187" height="60" as="geometry" />
         </mxCell>
+        <mxCell id="fdXpFWT4TLHeMCJnne5k-38" value="このいいねいらないのでは&lt;div&gt;（7）のいいねだけでいいのでは&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;labelBackgroundColor=none;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="-G96aYmMLIfbukAivywA-1">
+          <mxGeometry x="908" y="870" width="120" height="150" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
