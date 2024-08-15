@@ -7198,7 +7198,7 @@
         <mxCell id="2ntUsuWeFaGxtLBzgb_O-31" value="リツイートする" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#000000;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontStyle=1;autosize=0;resizable=1;fillColor=#dae8fc;" vertex="1" parent="mWOxNuFuRk0G8sRyjHVG-1">
           <mxGeometry x="2755" y="-913" width="160" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="jm_7lyphZn-3oEO5DavY-0" value="■32：マイページオプションを確認する" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;autosize=0;resizable=1;" vertex="1" parent="mWOxNuFuRk0G8sRyjHVG-1">
+        <mxCell id="jm_7lyphZn-3oEO5DavY-0" value="■33：マイページオプションを確認する" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;autosize=0;resizable=1;" vertex="1" parent="mWOxNuFuRk0G8sRyjHVG-1">
           <mxGeometry x="3380" y="-2580" width="310" height="30" as="geometry" />
         </mxCell>
       </root>
