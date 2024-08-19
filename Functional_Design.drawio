@@ -3639,7 +3639,7 @@
     </mxGraphModel>
   </diagram>
   <diagram name="Copy of 画面設計" id="CriQbU6xHBtzXw_I43vW">
-    <mxGraphModel dx="3644" dy="3558" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="3246" dy="3314" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="-G96aYmMLIfbukAivywA-0" />
         <mxCell id="-G96aYmMLIfbukAivywA-1" parent="-G96aYmMLIfbukAivywA-0" />
@@ -6572,11 +6572,11 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="-G96aYmMLIfbukAivywA-873" value="パスワード&lt;div&gt;再設定ページ&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;fontStyle=1" parent="-G96aYmMLIfbukAivywA-1" vertex="1">
+        <mxCell id="-G96aYmMLIfbukAivywA-873" value="パスワード&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;再設定用メール入力&lt;/span&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;ページ&lt;/span&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;fontStyle=1" parent="-G96aYmMLIfbukAivywA-1" vertex="1">
           <mxGeometry x="1010" y="-1510" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="-G96aYmMLIfbukAivywA-874" value="&lt;span style=&quot;font-size: 18px;&quot;&gt;（31）パスワード再設定ページ&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontStyle=1;fontSize=18;" parent="-G96aYmMLIfbukAivywA-1" vertex="1">
-          <mxGeometry x="5101" y="1604.25" width="280" height="40" as="geometry" />
+        <mxCell id="-G96aYmMLIfbukAivywA-874" value="&lt;span style=&quot;font-size: 18px;&quot;&gt;（31）パスワード再設定用メール入力&lt;/span&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;ページ&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontStyle=1;fontSize=18;" parent="-G96aYmMLIfbukAivywA-1" vertex="1">
+          <mxGeometry x="5116" y="1604.25" width="380" height="40" as="geometry" />
         </mxCell>
         <mxCell id="-G96aYmMLIfbukAivywA-876" value="" style="endArrow=none;html=1;rounded=0;exitX=1.002;exitY=0.919;exitDx=0;exitDy=0;exitPerimeter=0;entryX=-0.002;entryY=0.92;entryDx=0;entryDy=0;entryPerimeter=0;" parent="-G96aYmMLIfbukAivywA-1" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
@@ -7300,10 +7300,10 @@
         <mxCell id="fdXpFWT4TLHeMCJnne5k-42" value="&lt;span style=&quot;font-weight: 400;&quot;&gt;この画像はフル画面表示不可&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=15;fontColor=#EA6B66;" parent="-G96aYmMLIfbukAivywA-1" vertex="1">
           <mxGeometry x="1236.5" y="1345.5" width="187" height="55" as="geometry" />
         </mxCell>
-        <mxCell id="Vd--yS6CmZlgrjs3jF9O-0" value="フォロー" style="rounded=1;whiteSpace=wrap;html=1;arcSize=50;fontSize=16;align=center;" vertex="1" parent="-G96aYmMLIfbukAivywA-1">
+        <mxCell id="Vd--yS6CmZlgrjs3jF9O-0" value="フォロー" style="rounded=1;whiteSpace=wrap;html=1;arcSize=50;fontSize=16;align=center;" parent="-G96aYmMLIfbukAivywA-1" vertex="1">
           <mxGeometry x="2577.62" y="3435" width="93.5" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="FsHbwq7f9DZhn-xoHXtl-0" value="&lt;span style=&quot;font-size: 18px;&quot;&gt;メール変更確認小画面&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontStyle=1;fontSize=18;" vertex="1" parent="-G96aYmMLIfbukAivywA-1">
+        <mxCell id="FsHbwq7f9DZhn-xoHXtl-0" value="&lt;span style=&quot;font-size: 18px;&quot;&gt;メール変更確認小画面&lt;/span&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontStyle=1;fontSize=18;" parent="-G96aYmMLIfbukAivywA-1" vertex="1">
           <mxGeometry x="3243" y="926.25" width="200" height="40" as="geometry" />
         </mxCell>
       </root>
