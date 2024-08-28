@@ -8062,6 +8062,13 @@
       <root>
         <mxCell id="MRdH8wbT38dz8hh6wa4H-0" />
         <mxCell id="MRdH8wbT38dz8hh6wa4H-1" parent="MRdH8wbT38dz8hh6wa4H-0" />
+        <mxCell id="MGnotr5gBWsxcVCsv1vg-19" style="edgeStyle=orthogonalEdgeStyle;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;strokeColor=#97D077;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;endArrow=none;endFill=0;" edge="1" parent="MRdH8wbT38dz8hh6wa4H-1" source="MRdH8wbT38dz8hh6wa4H-51" target="JTVznA8T-skJ_Bh2YjZj-22">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2090" y="-485" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
         <mxCell id="MRdH8wbT38dz8hh6wa4H-51" value="&lt;u&gt;お知らせ&lt;/u&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・アクション主&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・カテゴリ&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・既読フラグ&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;fillColor=#fff2cc;strokeColor=#d6b656;horizontal=1;verticalAlign=top;align=center;" parent="MRdH8wbT38dz8hh6wa4H-1" vertex="1">
           <mxGeometry x="1635" y="-590" width="190" height="140" as="geometry" />
         </mxCell>
@@ -8701,6 +8708,9 @@
               <mxPoint x="1080" y="-155" />
             </Array>
           </mxGeometry>
+        </mxCell>
+        <mxCell id="MGnotr5gBWsxcVCsv1vg-18" style="edgeStyle=orthogonalEdgeStyle;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#97D077;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;endArrow=none;endFill=0;" edge="1" parent="MRdH8wbT38dz8hh6wa4H-1" source="lN9xYZ6WEUKMmaWUx_NM-0" target="MRdH8wbT38dz8hh6wa4H-51">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="lN9xYZ6WEUKMmaWUx_NM-0" value="&lt;u&gt;リツイート管理&lt;/u&gt;&lt;br&gt;&lt;div&gt;&lt;u&gt;&lt;br&gt;&lt;/u&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・リツイートした日時&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・リツイートした人&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・リツイートした討論　&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;fillColor=#fff2cc;strokeColor=#d6b656;horizontal=1;verticalAlign=top;align=center;" parent="MRdH8wbT38dz8hh6wa4H-1" vertex="1">
           <mxGeometry x="970" y="-780" width="190" height="150" as="geometry" />
