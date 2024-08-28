@@ -3639,7 +3639,7 @@
     </mxGraphModel>
   </diagram>
   <diagram name="Copy of 画面設計" id="CriQbU6xHBtzXw_I43vW">
-    <mxGraphModel dx="2911" dy="3109" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="7624" dy="5998" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="-G96aYmMLIfbukAivywA-0" />
         <mxCell id="-G96aYmMLIfbukAivywA-1" parent="-G96aYmMLIfbukAivywA-0" />
@@ -7263,9 +7263,6 @@
         </mxCell>
         <mxCell id="O-kntoW2gWYBByJVDqd--8" value="ここ二行付近を下にスワイプで上のスワイプカードを含む画面にもどる" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontStyle=1;fontSize=15;fontColor=#EA6B66;" vertex="1" parent="-G96aYmMLIfbukAivywA-1">
           <mxGeometry x="4953.5" y="4312.13" width="187" height="60" as="geometry" />
-        </mxCell>
-        <mxCell id="O-kntoW2gWYBByJVDqd--9" value="削除依頼機能" style="rounded=1;whiteSpace=wrap;html=1;fontSize=19;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="-G96aYmMLIfbukAivywA-1">
-          <mxGeometry x="4102.75" y="3545" width="417.25" height="485" as="geometry" />
         </mxCell>
         <mxCell id="O-kntoW2gWYBByJVDqd--10" value="64 likes" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=13;" vertex="1" parent="-G96aYmMLIfbukAivywA-1">
           <mxGeometry x="4866.97" y="3527.5" width="70" height="30" as="geometry" />
