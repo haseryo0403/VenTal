@@ -369,13 +369,13 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="F8WBrfoskV9E4b_XWg04-3" value="・スワイプカード：討論＝1：3つまで&lt;div&gt;・討論できるのは各討論スワイプ作成者とアンチ1人のみ&lt;/div&gt;&lt;div&gt;・討論開始時&lt;span style=&quot;white-space:pre&quot;&gt;&#x9;&lt;/span&gt;スワイプ作成者に通知&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;fillColor=#f8cecc;strokeColor=#b85450;resizeHeight=1;resizeWidth=1;" parent="1" vertex="1">
-          <mxGeometry x="810" y="425" width="310" height="80" as="geometry" />
+          <mxGeometry x="810" y="390" width="310" height="80" as="geometry" />
         </mxCell>
         <mxCell id="F8WBrfoskV9E4b_XWg04-6" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#EA6B66;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=none;endFill=0;" parent="1" source="F8WBrfoskV9E4b_XWg04-5" target="af-ZASPt2ycTtDIBI6sd-30" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="F8WBrfoskV9E4b_XWg04-5" value="&lt;div&gt;・いいねできるのは各討論スワイプカード作成者かアンチ1人のどちらかのみ&lt;/div&gt;&lt;div&gt;・いいねされた人に通知&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;fillColor=#f8cecc;strokeColor=#b85450;resizeHeight=1;resizeWidth=1;" parent="1" vertex="1">
-          <mxGeometry x="810" y="550" width="310" height="70" as="geometry" />
+          <mxGeometry x="810" y="580" width="310" height="70" as="geometry" />
         </mxCell>
         <mxCell id="F8WBrfoskV9E4b_XWg04-10" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#EA6B66;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=none;endFill=0;" parent="1" source="F8WBrfoskV9E4b_XWg04-9" target="af-ZASPt2ycTtDIBI6sd-12" edge="1">
           <mxGeometry relative="1" as="geometry" />
@@ -397,6 +397,9 @@
         </mxCell>
         <mxCell id="46Upv7whNQfPpcfGrtIk-1" value="&lt;span style=&quot;background-color: initial;&quot;&gt;33：マイページオプションを確認する&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#d6b656;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontStyle=1;fillColor=#fff2cc;" parent="1" vertex="1">
           <mxGeometry x="375" y="2000" width="310" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="pa8e-nTE84ZFf7i1bHey-1" value="&lt;div style=&quot;text-align: start;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;・タイムラインの新着の基準は討論の最初の反論の送信時間&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;fillColor=#f8cecc;strokeColor=#b85450;resizeHeight=1;resizeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="810" y="490" width="310" height="70" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
