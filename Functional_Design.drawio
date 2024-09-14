@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36" version="24.7.7" pages="3">
   <diagram name="機能設計" id="CriQbU6xHBtzXw_I43vW">
-    <mxGraphModel dx="3246" dy="3314" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="3644" dy="3558" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="-G96aYmMLIfbukAivywA-0" />
         <mxCell id="-G96aYmMLIfbukAivywA-1" parent="-G96aYmMLIfbukAivywA-0" />
@@ -1821,23 +1821,8 @@
         <mxCell id="-G96aYmMLIfbukAivywA-340" value="&lt;span style=&quot;font-size: 18px;&quot;&gt;（25）完了ページ（仮退会）&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontStyle=1;fontSize=18;" parent="-G96aYmMLIfbukAivywA-1" vertex="1">
           <mxGeometry x="3988.75" y="734" width="260" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="-G96aYmMLIfbukAivywA-342" value="" style="endArrow=none;html=1;rounded=0;exitX=1.002;exitY=0.919;exitDx=0;exitDy=0;exitPerimeter=0;entryX=-0.002;entryY=0.92;entryDx=0;entryDy=0;entryPerimeter=0;" parent="-G96aYmMLIfbukAivywA-1" edge="1">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="4361.72" y="1453.6600000000008" as="sourcePoint" />
-            <mxPoint x="4000.2799999999997" y="1454.3000000000002" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
         <mxCell id="-G96aYmMLIfbukAivywA-344" value="" style="strokeWidth=1;html=1;shadow=0;dashed=0;shape=mxgraph.android.statusBar;align=center;fillColor=#000000;strokeColor=#ffffff;fontColor=#ffffff;fontSize=10;sketch=0;" parent="-G96aYmMLIfbukAivywA-1" vertex="1">
           <mxGeometry x="3998" y="856.5" width="364" height="29" as="geometry" />
-        </mxCell>
-        <mxCell id="-G96aYmMLIfbukAivywA-345" value="" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.concepts.home;" parent="-G96aYmMLIfbukAivywA-1" vertex="1">
-          <mxGeometry x="4014" y="1460.5" width="34" height="30" as="geometry" />
-        </mxCell>
-        <mxCell id="-G96aYmMLIfbukAivywA-347" value="" style="html=1;verticalLabelPosition=bottom;align=center;labelBackgroundColor=#ffffff;verticalAlign=top;strokeWidth=2;strokeColor=#4D4D4D;shadow=0;dashed=0;shape=mxgraph.ios7.icons.user;" parent="-G96aYmMLIfbukAivywA-1" vertex="1">
-          <mxGeometry x="4320" y="1460.5" width="30" height="30" as="geometry" />
-        </mxCell>
-        <mxCell id="-G96aYmMLIfbukAivywA-348" value="" style="html=1;verticalLabelPosition=bottom;align=center;labelBackgroundColor=#ffffff;verticalAlign=top;strokeWidth=2;strokeColor=#4D4D4D;shadow=0;dashed=0;shape=mxgraph.ios7.icons.bell;" parent="-G96aYmMLIfbukAivywA-1" vertex="1">
-          <mxGeometry x="4254" y="1461.5" width="24" height="23.099999999999998" as="geometry" />
         </mxCell>
         <mxCell id="-G96aYmMLIfbukAivywA-349" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shadow=0;dashed=0;strokeWidth=1;shape=mxgraph.android.phone2;strokeColor=#c0c0c0;" parent="-G96aYmMLIfbukAivywA-1" vertex="1">
           <mxGeometry x="3984" y="785.5" width="392" height="781" as="geometry" />
@@ -3403,12 +3388,6 @@
         <mxCell id="lt1vRVpZRb9WShcUsDdm-35" value="" style="html=1;verticalLabelPosition=bottom;align=center;labelBackgroundColor=#ffffff;verticalAlign=top;strokeWidth=2;strokeColor=#4D4D4D;shadow=0;dashed=0;shape=mxgraph.ios7.icons.messages;fontFamily=Helvetica;fontSize=11;fontColor=default;" parent="-G96aYmMLIfbukAivywA-1" vertex="1">
           <mxGeometry x="3539.17" y="1449.6499999999996" width="30" height="25.5" as="geometry" />
         </mxCell>
-        <mxCell id="lt1vRVpZRb9WShcUsDdm-36" value="" style="verticalLabelPosition=bottom;sketch=0;html=1;fillColor=#4D4D4D;strokeColor=none;verticalAlign=top;pointerEvents=1;align=center;shape=mxgraph.cisco_safe.people_places_things_icons.icon9;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;" parent="-G96aYmMLIfbukAivywA-1" vertex="1">
-          <mxGeometry x="4171" y="1460.5000000000002" width="33" height="31" as="geometry" />
-        </mxCell>
-        <mxCell id="lt1vRVpZRb9WShcUsDdm-37" value="" style="html=1;verticalLabelPosition=bottom;align=center;labelBackgroundColor=#ffffff;verticalAlign=top;strokeWidth=2;strokeColor=#4D4D4D;shadow=0;dashed=0;shape=mxgraph.ios7.icons.messages;fontFamily=Helvetica;fontSize=11;fontColor=default;" parent="-G96aYmMLIfbukAivywA-1" vertex="1">
-          <mxGeometry x="4091.25" y="1464.0999999999997" width="30" height="25.5" as="geometry" />
-        </mxCell>
         <mxCell id="lt1vRVpZRb9WShcUsDdm-38" value="" style="verticalLabelPosition=bottom;sketch=0;html=1;fillColor=#4D4D4D;strokeColor=none;verticalAlign=top;pointerEvents=1;align=center;shape=mxgraph.cisco_safe.people_places_things_icons.icon9;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;" parent="-G96aYmMLIfbukAivywA-1" vertex="1">
           <mxGeometry x="4765.62" y="1447.6000000000001" width="33" height="31" as="geometry" />
         </mxCell>
@@ -3482,7 +3461,7 @@
           <mxGeometry x="4014" y="982.5" width="340" height="50" as="geometry" />
         </mxCell>
         <mxCell id="BA3fq13_y0dMuEs_hXng-2" value="TOPに戻る" style="rounded=1;whiteSpace=wrap;html=1;arcSize=34;fontSize=18;fillColor=#fff2cc;strokeColor=#d6b656;" parent="-G96aYmMLIfbukAivywA-1" vertex="1">
-          <mxGeometry x="4043.5" y="1384.5" width="275" height="50" as="geometry" />
+          <mxGeometry x="4043.5" y="1402.6" width="275" height="50" as="geometry" />
         </mxCell>
         <mxCell id="BA3fq13_y0dMuEs_hXng-3" value="&lt;span style=&quot;font-size: 18px;&quot;&gt;BonCulをご利用いただき&lt;/span&gt;&lt;div&gt;&lt;span style=&quot;font-size: 18px;&quot;&gt;誠にありがとうございました。&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 18px;&quot;&gt;30日以内に再度ログインいただければ&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 18px;&quot;&gt;再入会の扱いとなります。&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-size: 18px;&quot;&gt;またのご利用をお待ちしております。&lt;/span&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontStyle=1;fontSize=30;" parent="-G96aYmMLIfbukAivywA-1" vertex="1">
           <mxGeometry x="4016" y="1065.5" width="330" height="190" as="geometry" />
