@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36" version="24.7.7" pages="7">
   <diagram name="ユースケース図" id="WGTsjL8ZVUWMKIDuKt0u">
-    <mxGraphModel dx="2848" dy="732" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="2336" math="0" shadow="0">
+    <mxGraphModel dx="3088" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="2336" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -369,13 +369,13 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="F8WBrfoskV9E4b_XWg04-3" value="・スワイプカード：討論＝1：3つまで&lt;div&gt;・討論できるのは各討論スワイプ作成者とアンチ1人のみ&lt;/div&gt;&lt;div&gt;・討論開始時&lt;span style=&quot;white-space:pre&quot;&gt;&#x9;&lt;/span&gt;スワイプ作成者に通知&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;fillColor=#f8cecc;strokeColor=#b85450;resizeHeight=1;resizeWidth=1;" parent="1" vertex="1">
-          <mxGeometry x="810" y="390" width="310" height="80" as="geometry" />
+          <mxGeometry x="805" y="350" width="310" height="80" as="geometry" />
         </mxCell>
         <mxCell id="F8WBrfoskV9E4b_XWg04-6" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#EA6B66;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=none;endFill=0;" parent="1" source="F8WBrfoskV9E4b_XWg04-5" target="af-ZASPt2ycTtDIBI6sd-30" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="F8WBrfoskV9E4b_XWg04-5" value="&lt;div&gt;・いいねできるのは各討論スワイプカード作成者かアンチ1人のどちらかのみ&lt;/div&gt;&lt;div&gt;・いいねされた人に通知&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;fillColor=#f8cecc;strokeColor=#b85450;resizeHeight=1;resizeWidth=1;" parent="1" vertex="1">
-          <mxGeometry x="810" y="580" width="310" height="70" as="geometry" />
+          <mxGeometry x="810" y="640" width="310" height="70" as="geometry" />
         </mxCell>
         <mxCell id="F8WBrfoskV9E4b_XWg04-10" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#EA6B66;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=none;endFill=0;" parent="1" source="F8WBrfoskV9E4b_XWg04-9" target="af-ZASPt2ycTtDIBI6sd-12" edge="1">
           <mxGeometry relative="1" as="geometry" />
@@ -398,11 +398,17 @@
         <mxCell id="46Upv7whNQfPpcfGrtIk-1" value="&lt;span style=&quot;background-color: initial;&quot;&gt;33：マイページオプションを確認する&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#d6b656;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontStyle=1;fillColor=#fff2cc;" parent="1" vertex="1">
           <mxGeometry x="375" y="2000" width="310" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="pa8e-nTE84ZFf7i1bHey-1" value="&lt;div style=&quot;text-align: start;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;・タイムラインの新着の基準は討論の最初の反論の送信時間&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;fillColor=#f8cecc;strokeColor=#b85450;resizeHeight=1;resizeWidth=1;" vertex="1" parent="1">
-          <mxGeometry x="810" y="490" width="310" height="70" as="geometry" />
+        <mxCell id="GmbASrOGDB3wqX5e8ofj-2" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#EA6B66;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=none;endFill=0;" edge="1" parent="1" source="pa8e-nTE84ZFf7i1bHey-1" target="af-ZASPt2ycTtDIBI6sd-21">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="pa8e-nTE84ZFf7i1bHey-1" value="&lt;div style=&quot;text-align: start;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;・タイムラインの新着の基準は討論の最初の反論の送信時間&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: start;&quot;&gt;・人気の基準は、48時間以内に討論メッセージの送信があった場合に絞って、参加者2人のいいねの合計数。&lt;/div&gt;&lt;div style=&quot;text-align: start;&quot;&gt;時間外のものは1週間以内のものが次に、それ以外を最後尾にくっつける&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;fillColor=#f8cecc;strokeColor=#b85450;resizeHeight=1;resizeWidth=1;" vertex="1" parent="1">
+          <mxGeometry x="810" y="440" width="310" height="160" as="geometry" />
         </mxCell>
         <mxCell id="pa8e-nTE84ZFf7i1bHey-2" value="&lt;span style=&quot;background-color: initial;&quot;&gt;34&lt;/span&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;：いいねしたスワイプカードを確認する&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#d6b656;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontStyle=1;fillColor=#fff2cc;" vertex="1" parent="1">
           <mxGeometry x="375" y="2060" width="310" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="GmbASrOGDB3wqX5e8ofj-3" value="&lt;p style=&quot;box-sizing: border-box; margin-bottom: var(--base-size-16); font-family: -apple-system, &amp;quot;system-ui&amp;quot;, &amp;quot;Segoe UI&amp;quot;, &amp;quot;Noto Sans&amp;quot;, Helvetica, Arial, sans-serif, &amp;quot;Apple Color Emoji&amp;quot;, &amp;quot;Segoe UI Emoji&amp;quot;; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; margin-top: 0px !important;&quot; dir=&quot;auto&quot;&gt;・〇〇時間以内にアクションがあった場合に絞って、参加者2人のいいねの合計数&lt;br style=&quot;box-sizing: border-box;&quot;&gt;　＝＞アクティブな投稿に絞りたい&lt;/p&gt;&lt;p style=&quot;box-sizing: border-box; margin-top: 0px; font-family: -apple-system, &amp;quot;system-ui&amp;quot;, &amp;quot;Segoe UI&amp;quot;, &amp;quot;Noto Sans&amp;quot;, Helvetica, Arial, sans-serif, &amp;quot;Apple Color Emoji&amp;quot;, &amp;quot;Segoe UI Emoji&amp;quot;; font-size: 14px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; margin-bottom: 0px !important;&quot; dir=&quot;auto&quot;&gt;時間外のものは同条件でソートかけて最後尾にくっつける。&lt;/p&gt;" style="text;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="510" width="560" height="70" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
