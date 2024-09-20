@@ -5198,7 +5198,7 @@
             <mxPoint x="270" y="1115" as="sourcePoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="MFBn02VHFsWAjNu9_0i--67" value="ユーザー&lt;div&gt;（認証完了小画面、ログイン）&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontColor=#333333;labelBackgroundColor=none;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1" vertex="1" parent="1">
+        <mxCell id="MFBn02VHFsWAjNu9_0i--67" value="ユーザー&lt;div&gt;（タイムライン）&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontColor=#333333;labelBackgroundColor=none;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1" vertex="1" parent="1">
           <mxGeometry x="40" y="1085" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="MFBn02VHFsWAjNu9_0i--68" value="アカウント情報" style="shape=partialRectangle;whiteSpace=wrap;html=1;left=0;right=0;fillColor=#fff2cc;fontFamily=Helvetica;fontSize=16;labelBackgroundColor=none;strokeColor=#d6b656;fontStyle=1" vertex="1" parent="1">
