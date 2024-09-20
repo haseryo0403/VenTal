@@ -5057,12 +5057,12 @@
             <mxPoint x="-31" y="148" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="MFBn02VHFsWAjNu9_0i--37" value="0" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Helvetica;fontSize=16;fontColor=default;labelBackgroundColor=none;fontStyle=1;" vertex="1" connectable="0" parent="MFBn02VHFsWAjNu9_0i--9">
+        <mxCell id="MFBn02VHFsWAjNu9_0i--37" value="なし" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Helvetica;fontSize=16;fontColor=default;labelBackgroundColor=none;fontStyle=1;" vertex="1" connectable="0" parent="MFBn02VHFsWAjNu9_0i--9">
           <mxGeometry x="0.0333" y="-2" relative="1" as="geometry">
             <mxPoint x="49" y="128" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="MFBn02VHFsWAjNu9_0i--38" value="1..n" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Helvetica;fontSize=16;fontColor=default;labelBackgroundColor=none;fontStyle=1;" vertex="1" connectable="0" parent="MFBn02VHFsWAjNu9_0i--9">
+        <mxCell id="MFBn02VHFsWAjNu9_0i--38" value="あり" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Helvetica;fontSize=16;fontColor=default;labelBackgroundColor=none;fontStyle=1;" vertex="1" connectable="0" parent="MFBn02VHFsWAjNu9_0i--9">
           <mxGeometry x="0.0333" y="-2" relative="1" as="geometry">
             <mxPoint x="48" y="168" as="offset" />
           </mxGeometry>
@@ -5073,7 +5073,7 @@
         <mxCell id="MFBn02VHFsWAjNu9_0i--36" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#EA6B66;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;endFill=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="MFBn02VHFsWAjNu9_0i--19" target="MFBn02VHFsWAjNu9_0i--34">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="MFBn02VHFsWAjNu9_0i--19" value="ログイン回数&lt;div&gt;チェック&lt;/div&gt;" style="strokeWidth=1;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=16;labelBackgroundColor=none;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1" vertex="1" parent="1">
+        <mxCell id="MFBn02VHFsWAjNu9_0i--19" value="プロフィール&lt;span style=&quot;background-color: initial;&quot;&gt;登録状況チェック&lt;/span&gt;" style="strokeWidth=1;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=16;labelBackgroundColor=none;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1" vertex="1" parent="1">
           <mxGeometry x="280" y="693" width="120" height="70" as="geometry" />
         </mxCell>
         <mxCell id="MFBn02VHFsWAjNu9_0i--20" value="アカウント検索" style="strokeWidth=1;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=16;labelBackgroundColor=none;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1" vertex="1" parent="1">
