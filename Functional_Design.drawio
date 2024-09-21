@@ -5828,7 +5828,7 @@
         <mxCell id="WntJUNb819ojHcLmzzcM-14" value="スワイプカード作成（保存）" style="strokeWidth=1;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=16;labelBackgroundColor=none;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1" vertex="1" parent="1">
           <mxGeometry x="280" y="2100" width="120" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="WntJUNb819ojHcLmzzcM-20" value="ユーザー&lt;div&gt;（認証完了小画面、ログイン）&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontColor=#333333;labelBackgroundColor=none;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1" vertex="1" parent="1">
+        <mxCell id="WntJUNb819ojHcLmzzcM-20" value="ユーザー&lt;div&gt;（スワイプカード）&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontColor=#333333;labelBackgroundColor=none;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1" vertex="1" parent="1">
           <mxGeometry x="40" y="2060" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="WntJUNb819ojHcLmzzcM-22" value="アカウント情報（Room）" style="shape=partialRectangle;whiteSpace=wrap;html=1;left=0;right=0;fillColor=#fff2cc;fontFamily=Helvetica;fontSize=16;labelBackgroundColor=none;strokeColor=#d6b656;fontStyle=1" vertex="1" parent="1">
@@ -5843,7 +5843,7 @@
         <mxCell id="7qoaxn0XrU3pWnRrUywk-1" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;strokeColor=#EA6B66;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;endFill=1;" edge="1" parent="1" source="WntJUNb819ojHcLmzzcM-1" target="WntJUNb819ojHcLmzzcM-14">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="7qoaxn0XrU3pWnRrUywk-2" value="ユーザー&lt;div&gt;（認証完了小画面、ログイン）&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontColor=#333333;labelBackgroundColor=none;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1" vertex="1" parent="1">
+        <mxCell id="7qoaxn0XrU3pWnRrUywk-2" value="ユーザー&lt;div&gt;（タイムライン）&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontColor=#333333;labelBackgroundColor=none;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1" vertex="1" parent="1">
           <mxGeometry x="40" y="2150" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="7qoaxn0XrU3pWnRrUywk-7" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.855;entryY=0.145;entryDx=0;entryDy=0;entryPerimeter=0;strokeColor=#EA6B66;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;endFill=1;" edge="1" parent="1" source="WntJUNb819ojHcLmzzcM-22" target="WntJUNb819ojHcLmzzcM-14">
