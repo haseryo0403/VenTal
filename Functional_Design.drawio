@@ -5929,9 +5929,6 @@
         <mxCell id="tLZckz_6JhGxrZ3Ml8OK-12" value="アプリ内通知" style="strokeWidth=1;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;fontFamily=Helvetica;fontSize=16;labelBackgroundColor=none;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1" vertex="1" parent="1">
           <mxGeometry x="280" y="2715" width="120" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="tLZckz_6JhGxrZ3Ml8OK-13" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;strokeColor=#EA6B66;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;endFill=1;" edge="1" parent="1" source="tLZckz_6JhGxrZ3Ml8OK-2" target="tLZckz_6JhGxrZ3Ml8OK-9">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
         <mxCell id="tLZckz_6JhGxrZ3Ml8OK-14" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;strokeColor=#EA6B66;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;endArrow=classic;endFill=1;" edge="1" parent="1" source="tLZckz_6JhGxrZ3Ml8OK-9" target="tLZckz_6JhGxrZ3Ml8OK-12">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
