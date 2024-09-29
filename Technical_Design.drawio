@@ -4340,15 +4340,15 @@
             <mxPoint x="540.25" y="7326.5" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="DMfJpd0fbfNhM_dHI5uG-19" value="getSwipecards(user_id)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Helvetica;fontSize=16;fontColor=#FF6666;fontStyle=1;labelBackgroundColor=default;" vertex="1" parent="1">
-          <mxGeometry x="359.25" y="7295.5" width="190" height="30" as="geometry" />
+        <mxCell id="DMfJpd0fbfNhM_dHI5uG-19" value="likeSwipeCard&lt;div&gt;(swipeCard_id)&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Helvetica;fontSize=16;fontColor=#FF6666;fontStyle=1;labelBackgroundColor=default;" vertex="1" parent="1">
+          <mxGeometry x="390" y="7270" width="130" height="50" as="geometry" />
         </mxCell>
         <mxCell id="DMfJpd0fbfNhM_dHI5uG-20" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=none;endFill=0;" edge="1" source="DMfJpd0fbfNhM_dHI5uG-23" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="801.75" y="7568.84" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="DMfJpd0fbfNhM_dHI5uG-21" value="&lt;div&gt;一覧取得&lt;/div&gt;&lt;div&gt;UseCase&lt;/div&gt;" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;fontSize=14;fontStyle=1;aspect=fixed;" vertex="1" parent="1">
+        <mxCell id="DMfJpd0fbfNhM_dHI5uG-21" value="&lt;div&gt;いいね登録&lt;/div&gt;&lt;div&gt;UseCase&lt;/div&gt;" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;fontSize=14;fontStyle=1;aspect=fixed;" vertex="1" parent="1">
           <mxGeometry x="760.75" y="7135.16" width="82" height="93.68" as="geometry" />
         </mxCell>
         <mxCell id="DMfJpd0fbfNhM_dHI5uG-22" value="" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=none;endFill=0;" edge="1" source="DMfJpd0fbfNhM_dHI5uG-21" parent="1">
@@ -4360,24 +4360,13 @@
         <mxCell id="DMfJpd0fbfNhM_dHI5uG-23" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;fillColor=default;" vertex="1" parent="1">
           <mxGeometry x="796.75" y="7330" width="10" height="280" as="geometry" />
         </mxCell>
-        <mxCell id="DMfJpd0fbfNhM_dHI5uG-24" value="&lt;div&gt;クエリサービス&lt;/div&gt;" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;fontSize=14;fontStyle=1;aspect=fixed;" vertex="1" parent="1">
+        <mxCell id="DMfJpd0fbfNhM_dHI5uG-24" value="&lt;div&gt;いいね重複チェックQS&lt;/div&gt;" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;fontSize=14;fontStyle=1;aspect=fixed;" vertex="1" parent="1">
           <mxGeometry x="1113.98" y="7135.16" width="82" height="93.68" as="geometry" />
         </mxCell>
         <mxCell id="DMfJpd0fbfNhM_dHI5uG-25" value="" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=none;endFill=0;" edge="1" source="DMfJpd0fbfNhM_dHI5uG-40" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1154.98" y="7710" as="targetPoint" />
             <mxPoint x="1154.98" y="7228.84" as="sourcePoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DMfJpd0fbfNhM_dHI5uG-26" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=none;endFill=0;" edge="1" source="DMfJpd0fbfNhM_dHI5uG-44" parent="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="1648.98" y="7560.84" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DMfJpd0fbfNhM_dHI5uG-27" value="" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=none;endFill=0;" edge="1" source="DMfJpd0fbfNhM_dHI5uG-44" parent="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="1648.98" y="7710" as="targetPoint" />
-            <mxPoint x="1648.98" y="7228.84" as="sourcePoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="DMfJpd0fbfNhM_dHI5uG-28" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=none;endFill=0;" edge="1" parent="1">
@@ -4392,9 +4381,6 @@
             <mxPoint x="1418.98" y="7286.32" as="sourcePoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="DMfJpd0fbfNhM_dHI5uG-30" value="討論Tbl" style="ellipse;shape=umlEntity;whiteSpace=wrap;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;fillColor=default;" vertex="1" parent="1">
-          <mxGeometry x="1378.98" y="7150" width="80" height="80" as="geometry" />
-        </mxCell>
         <mxCell id="DMfJpd0fbfNhM_dHI5uG-31" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=none;endFill=0;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1537.98" y="7361" as="targetPoint" />
@@ -4407,20 +4393,11 @@
             <mxPoint x="1537.98" y="7286.32" as="sourcePoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="DMfJpd0fbfNhM_dHI5uG-33" value="スワイプカードいいね管理Tbl" style="ellipse;shape=umlEntity;whiteSpace=wrap;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=none;fillColor=default;" vertex="1" parent="1">
-          <mxGeometry x="1497.98" y="7150" width="80" height="80" as="geometry" />
-        </mxCell>
-        <mxCell id="DMfJpd0fbfNhM_dHI5uG-34" value="スワイプカード" style="ellipse;shape=umlEntity;whiteSpace=wrap;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;fillColor=default;" vertex="1" parent="1">
-          <mxGeometry x="1608.98" y="7148.84" width="80" height="80" as="geometry" />
-        </mxCell>
         <mxCell id="DMfJpd0fbfNhM_dHI5uG-35" style="edgeStyle=none;shape=connector;curved=0;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.062;entryY=0.06;entryDx=0;entryDy=0;entryPerimeter=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=classic;endFill=1;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="556.5" y="7346.6104" as="sourcePoint" />
             <mxPoint x="796.1299999999997" y="7346.6104" as="targetPoint" />
           </mxGeometry>
-        </mxCell>
-        <mxCell id="DMfJpd0fbfNhM_dHI5uG-36" value="getSwipeCardsList(user_id)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Helvetica;fontSize=16;fontColor=#FF6666;fontStyle=1;labelBackgroundColor=default;" vertex="1" parent="1">
-          <mxGeometry x="559.25" y="7315.32" width="220" height="30" as="geometry" />
         </mxCell>
         <mxCell id="DMfJpd0fbfNhM_dHI5uG-37" value="&amp;lt;&amp;lt;create&amp;gt;&amp;gt;&lt;br&gt;&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;swipeCards&lt;/span&gt;&amp;nbsp;=&amp;nbsp;&lt;span style=&quot;background-color: initial;&quot;&gt;new SwipeCards()&lt;/span&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Helvetica;fontSize=16;fontColor=#FF6666;fontStyle=1;labelBackgroundColor=none;" vertex="1" parent="1">
           <mxGeometry x="1176.98" y="7490" width="260" height="50" as="geometry" />
@@ -4431,8 +4408,8 @@
             <mxPoint x="1143.98" y="7376.8099999999995" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="DMfJpd0fbfNhM_dHI5uG-39" value="fetchExcludedSwipeCardIds(user_id)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Helvetica;fontSize=16;fontColor=#FF6666;fontStyle=1;labelBackgroundColor=none;" vertex="1" parent="1">
-          <mxGeometry x="815.25" y="7345.319999999999" width="290" height="30" as="geometry" />
+        <mxCell id="DMfJpd0fbfNhM_dHI5uG-39" value="insertSwipeCardLike&lt;div&gt;(user_id, swipeCard_id)&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Helvetica;fontSize=16;fontColor=#FF6666;fontStyle=1;labelBackgroundColor=none;" vertex="1" parent="1">
+          <mxGeometry x="868" y="7589.999999999999" width="190" height="50" as="geometry" />
         </mxCell>
         <mxCell id="DMfJpd0fbfNhM_dHI5uG-40" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;fillColor=default;" vertex="1" parent="1">
           <mxGeometry x="1149.98" y="7502" width="10" height="78" as="geometry" />
@@ -4444,15 +4421,6 @@
         </mxCell>
         <mxCell id="DMfJpd0fbfNhM_dHI5uG-42" value="fetchSwipeCards(excludedSwipeCardIds)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Helvetica;fontSize=16;fontColor=#FF6666;fontStyle=1;labelBackgroundColor=none;" vertex="1" parent="1">
           <mxGeometry x="811.25" y="7481.999999999999" width="320" height="30" as="geometry" />
-        </mxCell>
-        <mxCell id="DMfJpd0fbfNhM_dHI5uG-43" value="" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=none;endFill=0;" edge="1" target="DMfJpd0fbfNhM_dHI5uG-44" parent="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="1648.98" y="7743.16" as="targetPoint" />
-            <mxPoint x="1648.98" y="7228.839999999999" as="sourcePoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="DMfJpd0fbfNhM_dHI5uG-44" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;fillColor=default;" vertex="1" parent="1">
-          <mxGeometry x="1643.98" y="7512" width="10" height="58" as="geometry" />
         </mxCell>
         <mxCell id="DMfJpd0fbfNhM_dHI5uG-45" style="edgeStyle=none;shape=connector;curved=0;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.159;entryY=0.065;entryDx=0;entryDy=0;entryPerimeter=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=classic;endFill=1;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
@@ -4478,14 +4446,14 @@
             <mxPoint x="360.84000000000015" y="7608.321999999999" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="DMfJpd0fbfNhM_dHI5uG-49" value="" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=none;endFill=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" source="DMfJpd0fbfNhM_dHI5uG-30" target="DMfJpd0fbfNhM_dHI5uG-50" parent="1">
+        <mxCell id="DMfJpd0fbfNhM_dHI5uG-49" value="" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=none;endFill=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" target="DMfJpd0fbfNhM_dHI5uG-50" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1418.73" y="7480" as="targetPoint" />
-            <mxPoint x="1418.98" y="7286.32" as="sourcePoint" />
+            <mxPoint x="1418.98" y="7240" as="sourcePoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="DMfJpd0fbfNhM_dHI5uG-50" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;fillColor=default;" vertex="1" parent="1">
-          <mxGeometry x="1413.98" y="7375.32" width="10" height="50" as="geometry" />
+          <mxGeometry x="1416" y="7446" width="10" height="50" as="geometry" />
         </mxCell>
         <mxCell id="DMfJpd0fbfNhM_dHI5uG-51" value="" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=none;endFill=0;" edge="1" source="DMfJpd0fbfNhM_dHI5uG-24" target="DMfJpd0fbfNhM_dHI5uG-52" parent="1">
           <mxGeometry relative="1" as="geometry">
@@ -4495,27 +4463,19 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="DMfJpd0fbfNhM_dHI5uG-52" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;fillColor=default;" vertex="1" parent="1">
-          <mxGeometry x="1149.98" y="7360" width="10" height="130" as="geometry" />
+          <mxGeometry x="1149.98" y="7360" width="10" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="DMfJpd0fbfNhM_dHI5uG-53" style="edgeStyle=none;shape=connector;curved=0;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.457;entryY=0.516;entryDx=0;entryDy=0;entryPerimeter=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=classic;endFill=1;" edge="1" source="DMfJpd0fbfNhM_dHI5uG-52" target="DMfJpd0fbfNhM_dHI5uG-50" parent="1">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="DMfJpd0fbfNhM_dHI5uG-54" value="いいね重複チェック" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Helvetica;fontSize=16;fontColor=#FF6666;fontStyle=1;labelBackgroundColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1202.98" y="7369.999999999999" width="170" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="DMfJpd0fbfNhM_dHI5uG-54" value="参加中討論のスワイプID取得" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Helvetica;fontSize=16;fontColor=#FF6666;fontStyle=1;labelBackgroundColor=none;" vertex="1" parent="1">
-          <mxGeometry x="1172.98" y="7369.999999999999" width="230" height="30" as="geometry" />
-        </mxCell>
-        <mxCell id="DMfJpd0fbfNhM_dHI5uG-55" value="" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=none;endFill=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" source="DMfJpd0fbfNhM_dHI5uG-33" target="DMfJpd0fbfNhM_dHI5uG-56" parent="1">
+        <mxCell id="DMfJpd0fbfNhM_dHI5uG-55" value="" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;dashPattern=8 8;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=none;endFill=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" target="DMfJpd0fbfNhM_dHI5uG-56" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1537.98" y="7920" as="targetPoint" />
-            <mxPoint x="1537.98" y="7286.32" as="sourcePoint" />
+            <mxPoint x="1537.98" y="7230" as="sourcePoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="DMfJpd0fbfNhM_dHI5uG-56" value="" style="html=1;points=[[0,0,0,0,5],[0,1,0,0,-5],[1,0,0,0,5],[1,1,0,0,-5]];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={&quot;curved&quot;:0,&quot;rounded&quot;:0};strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;fillColor=default;" vertex="1" parent="1">
-          <mxGeometry x="1532.98" y="7413" width="10" height="50" as="geometry" />
-        </mxCell>
-        <mxCell id="DMfJpd0fbfNhM_dHI5uG-57" style="edgeStyle=none;shape=connector;curved=0;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.214;entryY=0.537;entryDx=0;entryDy=0;entryPerimeter=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=classic;endFill=1;" edge="1" target="DMfJpd0fbfNhM_dHI5uG-56" parent="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="1159.98" y="7439.85" as="sourcePoint" />
-          </mxGeometry>
+          <mxGeometry x="1535" y="7375.32" width="10" height="50" as="geometry" />
         </mxCell>
         <mxCell id="DMfJpd0fbfNhM_dHI5uG-58" value="いいねしたスワイプID取得" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Helvetica;fontSize=16;fontColor=#FF6666;fontStyle=1;labelBackgroundColor=none;" vertex="1" parent="1">
           <mxGeometry x="1176.98" y="7409.999999999999" width="210" height="30" as="geometry" />
@@ -4528,6 +4488,24 @@
         </mxCell>
         <mxCell id="DMfJpd0fbfNhM_dHI5uG-60" value="excludedSwipeCardIds" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Helvetica;fontSize=16;fontColor=#FF6666;fontStyle=1;labelBackgroundColor=none;" vertex="1" parent="1">
           <mxGeometry x="816.25" y="7439.999999999999" width="190" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="tX8LWv8xFvtrhPL7HhaX-1" value="&lt;div&gt;いいね登録&lt;/div&gt;&lt;div&gt;リポジトリ&lt;/div&gt;" style="ellipse;shape=umlControl;whiteSpace=wrap;html=1;fontSize=14;fontStyle=1;aspect=fixed;" vertex="1" parent="1">
+          <mxGeometry x="1380" y="7135.16" width="82" height="93.68" as="geometry" />
+        </mxCell>
+        <mxCell id="tX8LWv8xFvtrhPL7HhaX-2" value="&lt;span style=&quot;background-color: rgb(251, 251, 251);&quot;&gt;スワイプカードいいね管理Tbl&lt;/span&gt;" style="ellipse;shape=umlEntity;whiteSpace=wrap;html=1;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;fillColor=default;" vertex="1" parent="1">
+          <mxGeometry x="1497.98" y="7148.84" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="tX8LWv8xFvtrhPL7HhaX-3" value="excuteLikeSwipeCard&lt;div&gt;(swipeCard_id, user_id)&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Helvetica;fontSize=16;fontColor=#FF6666;fontStyle=1;labelBackgroundColor=default;" vertex="1" parent="1">
+          <mxGeometry x="580" y="7295.32" width="190" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="tX8LWv8xFvtrhPL7HhaX-5" style="edgeStyle=none;shape=connector;curved=0;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.262;entryY=0.435;entryDx=0;entryDy=0;entryPerimeter=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=classic;endFill=1;" edge="1" parent="1" source="DMfJpd0fbfNhM_dHI5uG-52" target="DMfJpd0fbfNhM_dHI5uG-56">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tX8LWv8xFvtrhPL7HhaX-6" style="edgeStyle=none;shape=connector;curved=0;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1.317;entryY=0.284;entryDx=0;entryDy=0;entryPerimeter=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=classic;endFill=1;dashed=1;" edge="1" parent="1" source="DMfJpd0fbfNhM_dHI5uG-52" target="DMfJpd0fbfNhM_dHI5uG-23">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="tX8LWv8xFvtrhPL7HhaX-8" value="insertSwipeCardLike&lt;div&gt;(user_id, swipeCard_id)&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontFamily=Helvetica;fontSize=16;fontColor=#FF6666;fontStyle=1;labelBackgroundColor=none;" vertex="1" parent="1">
+          <mxGeometry x="876.25" y="7319.999999999999" width="190" height="50" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
