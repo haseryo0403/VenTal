@@ -2815,6 +2815,9 @@
         <mxCell id="K6DqKLtooDoupFR5LMdO-68" style="edgeStyle=none;shape=connector;curved=0;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.022;entryY=0.492;entryDx=0;entryDy=0;entryPerimeter=0;strokeColor=default;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=14;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=classic;endFill=1;" edge="1" parent="1" source="m_1d9A3iISFuPf0XZIeL-175" target="K6DqKLtooDoupFR5LMdO-37">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="K6DqKLtooDoupFR5LMdO-69" value="ユーザー&lt;div&gt;（参加者）&lt;/div&gt;" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1109.9999999999998" y="7551.5199999999995" width="30" height="60" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
