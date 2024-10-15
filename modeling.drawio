@@ -8273,6 +8273,16 @@
             <mxPoint x="256" y="432" as="offset" />
           </mxGeometry>
         </mxCell>
+        <mxCell id="DgXB-lgy74GLpvACr9bj-6" value="1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;" vertex="1" connectable="0" parent="MRdH8wbT38dz8hh6wa4H-5">
+          <mxGeometry x="-0.6644" y="2" relative="1" as="geometry">
+            <mxPoint x="417" y="-108" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="DgXB-lgy74GLpvACr9bj-7" value="0..1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;" vertex="1" connectable="0" parent="MRdH8wbT38dz8hh6wa4H-5">
+          <mxGeometry x="-0.6644" y="2" relative="1" as="geometry">
+            <mxPoint x="457" y="-238" as="offset" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="JTVznA8T-skJ_Bh2YjZj-10" value="" style="edgeStyle=orthogonalEdgeStyle;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#FFB570;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=0;endArrow=none;endFill=0;" parent="MRdH8wbT38dz8hh6wa4H-1" source="MRdH8wbT38dz8hh6wa4H-40" target="Z7g_N633EDfnBxpFQXL8-1" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
@@ -8730,8 +8740,11 @@
         <mxCell id="MGnotr5gBWsxcVCsv1vg-8" value="&lt;u&gt;通知管理&lt;/u&gt;&lt;br&gt;&lt;div&gt;&lt;u&gt;&lt;br&gt;&lt;/u&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・１&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・０&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・１&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・１&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・１&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;fillColor=#fff2cc;strokeColor=#d6b656;horizontal=1;verticalAlign=top;align=center;" parent="MRdH8wbT38dz8hh6wa4H-1" vertex="1">
           <mxGeometry x="1250" y="10" width="190" height="160" as="geometry" />
         </mxCell>
+        <mxCell id="DgXB-lgy74GLpvACr9bj-5" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0;entryDx=0;entryDy=0;strokeColor=#FF0000;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=12;fontColor=default;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;endArrow=none;endFill=0;" edge="1" parent="MRdH8wbT38dz8hh6wa4H-1" source="DgXB-lgy74GLpvACr9bj-0" target="MRdH8wbT38dz8hh6wa4H-44">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="DgXB-lgy74GLpvACr9bj-0" value="&lt;u&gt;退会分析&lt;/u&gt;&lt;br&gt;&lt;div&gt;&lt;u&gt;&lt;br&gt;&lt;/u&gt;&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・ユーザーID&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・登録日&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・仮退会日&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・再ログイン日&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;・退会理由&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=16;fontStyle=1;labelBackgroundColor=none;autosize=0;resizable=1;fillColor=#fff2cc;strokeColor=#d6b656;horizontal=1;verticalAlign=top;align=center;" vertex="1" parent="MRdH8wbT38dz8hh6wa4H-1">
-          <mxGeometry x="1850" y="-1260" width="190" height="220" as="geometry" />
+          <mxGeometry x="2000" y="-1270" width="190" height="220" as="geometry" />
         </mxCell>
         <mxCell id="DgXB-lgy74GLpvACr9bj-2" style="edgeStyle=none;shape=connector;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.25;entryDx=0;entryDy=0;strokeColor=#82b366;strokeWidth=2;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=16;fontColor=default;fontStyle=1;labelBackgroundColor=default;endArrow=none;endFill=0;exitX=0;exitY=0.25;exitDx=0;exitDy=0;fillColor=#d5e8d4;" edge="1" parent="MRdH8wbT38dz8hh6wa4H-1" source="DgXB-lgy74GLpvACr9bj-1" target="MRdH8wbT38dz8hh6wa4H-174">
           <mxGeometry relative="1" as="geometry" />
