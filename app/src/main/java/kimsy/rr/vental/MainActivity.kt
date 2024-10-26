@@ -8,16 +8,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import kimsy.rr.vental.ui.theme.VentalTheme
 import kimsy.rr.vental.ViewModel.AuthViewModel
 import kimsy.rr.vental.data.UserRepository
+import kimsy.rr.vental.ui.MainView
 import kimsy.rr.vental.ui.ProfileRegisterScreen
 import kimsy.rr.vental.ui.SignInScreen
-import kimsy.rr.vental.ui.TimeLineScreen
-import kimsy.rr.vental.ui.theme.VenTalTheme
+import kimsy.rr.vental.ui.VentCardsView
 
 class MainActivity : ComponentActivity() {
     private lateinit var authViewModel: AuthViewModel
@@ -35,14 +38,15 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val navController = rememberNavController()
-            VenTalTheme {
+            VentalTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-//                    NavigationGraph(navController = navController, authViewModel = authViewModel)
-                    ProfileRegisterScreen()
+                    NavigationGraph(navController = navController, authViewModel = authViewModel)
+//                    ProfileRegisterScreen()
+//                    MainView()
                 }
             }
         }
@@ -60,9 +64,19 @@ fun NavigationGraph(
             SignInScreen(authViewModel = authViewModel,onNavigateToTimeLine = { navController.navigate(Screen.TimeLineScreen.route) })
         }
         composable(Screen.TimeLineScreen.route){
-            TimeLineScreen()
+            MainView()
         }
     }
+}
+
+@Preview(
+    device = Devices.PIXEL_7,
+    showSystemUi = true,
+    showBackground = true,
+)
+@Composable
+fun ProfilePrev(){
+    ProfileRegisterScreen()
 }
 
 
