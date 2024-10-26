@@ -52,12 +52,17 @@ android {
 
 dependencies {
 
-    val nav_version = "2.8.2"
+    val nav_version = "2.8.3"
     val compose_version = "1.7.4"
     implementation("androidx.navigation:navigation-compose:$nav_version")
     implementation("androidx.compose.ui:ui:$compose_version")
     implementation("androidx.compose.material:material:$compose_version")
     implementation("androidx.compose.ui:ui-tooling-preview:$compose_version")
+
+    implementation ("androidx.compose.foundation:foundation:$compose_version")
+    implementation ("androidx.compose.animation:animation:$compose_version")
+
+
 
     implementation("androidx.compose.material3:material3:1.3.0")
     implementation("androidx.compose.material3:material3-window-size-class:1.3.0")

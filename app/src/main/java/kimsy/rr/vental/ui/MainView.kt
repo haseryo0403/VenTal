@@ -87,7 +87,7 @@ fun MainView(){
     Scaffold(
         bottomBar = bottomBar,
         topBar = {
-            TopAppBar(title = { Text(text = "VenTal")},
+            TopAppBar(title = { Text(title.value)},
                 navigationIcon = { IconButton(onClick = {
                 /*TODO Back*/
                 }) {
@@ -113,16 +113,16 @@ fun Navigation(navController: NavController, viewModel: MainViewModel, pd:Paddin
             VentCardsView()
         }
         composable(Screen.BottomScreen.TimeLine.bottomRoute) {
-            //TODO
+            TimeLineView()
         }
         composable(Screen.BottomScreen.Follows.bottomRoute) {
-            //TODO
+            FollowsView()
         }
         composable(Screen.BottomScreen.Notifications.bottomRoute) {
-            //TODO
+            NotificationsView()
         }
         composable(Screen.BottomScreen.MyPage.bottomRoute) {
-            //TODO
+            MyPageView()
         }
 
     }
