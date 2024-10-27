@@ -26,7 +26,7 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     private val auth: FirebaseAuth = Firebase.auth
 
-        // 状態管理用の変数
+    // 状態管理用の変数
     var isLoading by mutableStateOf(false)
         private set
 
@@ -96,4 +96,3 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
         }
     }
 }
-

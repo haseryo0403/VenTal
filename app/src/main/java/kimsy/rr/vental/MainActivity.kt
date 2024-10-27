@@ -59,9 +59,10 @@ fun NavigationGraph(
     navController: NavHostController,
     authViewModel: AuthViewModel
 ){
+
     NavHost(navController = navController, startDestination = Screen.SignupScreen.route){
         composable(Screen.SignupScreen.route){
-            SignInScreen(authViewModel = authViewModel,onNavigateToTimeLine = { navController.navigate(Screen.TimeLineScreen.route) })
+            SignInScreen(authViewModel = authViewModel,onNavigateToMainView = { navController.navigate(Screen.TimeLineScreen.route) })
         }
         composable(Screen.TimeLineScreen.route){
             MainView()

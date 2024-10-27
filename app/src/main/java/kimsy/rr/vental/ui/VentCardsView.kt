@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -127,14 +128,6 @@ fun VentCardsView(
         content()
     }
 
-//    ElevatedButton(
-//    onClick = { /*TODO*/ },
-//    modifier = Modifier
-//        .padding(16.dp)
-//        .size(width = 200.dp, height = 60.dp)
-//    ) {
-//    Text(text = "スキップ")
-//    }
 
 }
 
@@ -224,47 +217,70 @@ fun MySwipeCardDemo() {
         onSwipeLeft = { /* 左にスワイプしたときの処理 */ },
         onSwipeRight = { /* 右にスワイプしたときの処理 */ },
         content = {
-            Box(modifier = Modifier.fillMaxSize()){
-                Column(
-                    modifier = Modifier.padding(8.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth()
-                    ){
-                        Icon(painter = painterResource(id = R.drawable.baseline_account_circle_24),
-                            contentDescription = "AccountIcon",
-                            modifier = Modifier
-                                .weight(1f)
-                                .size(48.dp)
-                        )
-
-                        Column(
-                            modifier = Modifier.weight(5f)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                ElevatedCard(
+                    onClick = {},
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.8f)
+                        .padding(top = 32.dp)
+                ){
+                    Box(modifier = Modifier.fillMaxSize()){
+                        LazyColumn(
+                            modifier = Modifier.padding(8.dp)
                         ) {
-                            Row(modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween) {
-                                Text(text = "User Name")
-                                Text(text = "23時間")
-                            }
-                            Text(text = "古文ってあんまり勉強したら人生に役に立つって感じがしないんだよね")
-                            Text(text = "#学校", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            //TODO color choose
-                            Image(painter = painterResource(id = R.drawable.aston_martin),
-                                contentDescription = "Image",
-                                modifier = Modifier.clip(RoundedCornerShape(16.dp)))
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(4.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.End
-                            ) {
-                                Icon(painter = painterResource(id = R.drawable.baseline_heart_broken_24),
-                                    contentDescription = "haert")
-                                Text(text = "64")
+                            item {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                ){
+                                    Icon(painter = painterResource(id = R.drawable.baseline_account_circle_24),
+                                        contentDescription = "AccountIcon",
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .size(48.dp)
+                                    )
+
+                                    Column(
+                                        modifier = Modifier.weight(5f)
+                                    ) {
+                                        Row(modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween) {
+                                            Text(text = "User Name")
+                                            Text(text = "23時間")
+                                        }
+                                        Text(text = "アストンマーチンは、英国発の高級スポーツカーメーカーで、美しいデザインと圧倒的なパフォーマンスが特徴です。映画『007』シリーズでのボンドカーとしても有名で、エレガンスと力強さを融合させた独自のスタイルが世界中の愛車家に支持されています。文字数を最大の140文字に設定してあります")
+                                        Text(text = "#学校", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        //TODO color choose
+                                        Image(painter = painterResource(id = R.drawable.aston_martin),
+                                            contentDescription = "Image",
+                                            modifier = Modifier.clip(RoundedCornerShape(16.dp)))
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(4.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.End
+                                        ) {
+                                            Icon(painter = painterResource(id = R.drawable.baseline_heart_broken_24),
+                                                contentDescription = "haert")
+                                            Text(text = "64")
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
+                }
+                ElevatedButton(
+                onClick = { /*TODO*/ },
+                modifier = Modifier
+                    .padding(16.dp)
+                    .size(width = 200.dp, height = 60.dp)
+                ) {
+                Text(text = "スキップ")
                 }
             }
         }

@@ -44,7 +44,7 @@ import kimsy.rr.vental.R
 import kimsy.rr.vental.ViewModel.AuthViewModel
 
 @Composable
-fun SignInScreen(authViewModel: AuthViewModel,onNavigateToTimeLine:()->Unit) {
+fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
     var showDialog by remember { mutableStateOf(false)}
 
     // Googleサインインの結果を受け取るランチャー
@@ -75,9 +75,11 @@ fun SignInScreen(authViewModel: AuthViewModel,onNavigateToTimeLine:()->Unit) {
     LaunchedEffect(authResult) {
         if (authResult == true) {
             Log.d("TAG", "Navigate to timeline")
-            onNavigateToTimeLine()  // 遷移先の処理を呼び出す
+            onNavigateToMainView()  // 遷移先の処理を呼び出す
         } else if (authResult == false) {
-            Log.e("TAG", "Sign-in failed")
+            onNavigateToMainView()  // 遷移先の処理を呼び出す
+            Log.e("TAG", "New Sign-in")
+            //TODO 初期ログインのガイダンス的なの考慮
         }
     }
 

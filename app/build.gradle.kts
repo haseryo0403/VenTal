@@ -62,7 +62,8 @@ dependencies {
     implementation ("androidx.compose.foundation:foundation:$compose_version")
     implementation ("androidx.compose.animation:animation:$compose_version")
 
-
+    implementation("io.coil-kt.coil3:coil-compose:3.0.0-rc01")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-rc01")
 
     implementation("androidx.compose.material3:material3:1.3.0")
     implementation("androidx.compose.material3:material3-window-size-class:1.3.0")

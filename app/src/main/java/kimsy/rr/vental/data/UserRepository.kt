@@ -17,6 +17,7 @@ import com.google.firebase.ktx.Firebase
 import kimsy.rr.vental.R
 import kotlinx.coroutines.tasks.await
 
+
 class UserRepository(private val googleSignInClient: GoogleSignInClient) {
 
     private val auth: FirebaseAuth = Firebase.auth
@@ -59,6 +60,7 @@ class UserRepository(private val googleSignInClient: GoogleSignInClient) {
         }
     }
 
+
     suspend fun saveUserToFirestore() {
         val user = auth.currentUser
         user?.let {
@@ -66,7 +68,8 @@ class UserRepository(private val googleSignInClient: GoogleSignInClient) {
             val newUser = User(
                 uid = it.uid,
                 name = it.displayName ?: "",
-                email = it.email ?: ""
+                email = it.email ?: "",
+                photeURL = it.photoUrl
             )
             db.collection("users").document(newUser.uid).set(newUser).await()
         }

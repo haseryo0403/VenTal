@@ -106,11 +106,11 @@ fun MainView(){
 fun Navigation(navController: NavController, viewModel: MainViewModel, pd:PaddingValues){
 
     NavHost(navController = navController as NavHostController,
-        startDestination = Screen.BottomScreen.VentCards.bottomRoute,
+        startDestination = Screen.BottomScreen.TimeLine.bottomRoute,
         modifier = Modifier.padding(pd)){
 
         composable(Screen.BottomScreen.VentCards.bottomRoute) {
-            VentCardsView()
+            MySwipeCardDemo()
         }
         composable(Screen.BottomScreen.TimeLine.bottomRoute) {
             TimeLineView()
