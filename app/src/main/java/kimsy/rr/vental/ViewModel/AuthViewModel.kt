@@ -109,8 +109,9 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
                     if (result == null) {
                         // データを取得できなかった場合(初回ログイン)
                         // 新規ユーザー登録
-                        Log.d("TAG", "New User")
+                        Log.d("TAG", "No data found in firestore")
                         userRepository.saveUserToFirestore()
+                        //TODO ユーザー情報登録に失敗した場合
                         _authResult.value = false
 
                     } else {

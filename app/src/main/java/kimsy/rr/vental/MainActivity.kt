@@ -16,6 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kimsy.rr.vental.ui.theme.VentalTheme
 import kimsy.rr.vental.ViewModel.AuthViewModel
+import kimsy.rr.vental.ViewModel.MainViewModel
 import kimsy.rr.vental.data.UserRepository
 import kimsy.rr.vental.ui.MainView
 import kimsy.rr.vental.ui.ProfileRegisterScreen
@@ -24,6 +25,7 @@ import kimsy.rr.vental.ui.VentCardsView
 
 class MainActivity : ComponentActivity() {
     private lateinit var authViewModel: AuthViewModel
+    private lateinit var mainViewModel: MainViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -36,6 +38,8 @@ class MainActivity : ComponentActivity() {
         // AuthViewModelの初期化
         val authViewModel = AuthViewModel(authRepository)
 
+        val mainViewModel = MainViewModel(authRepository)
+
         setContent {
             val navController = rememberNavController()
             VentalTheme {
@@ -44,7 +48,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    NavigationGraph(navController = navController, authViewModel = authViewModel)
+                    NavigationGraph(navController = navController, authViewModel = authViewModel, mainViewModel = mainViewModel)
 //                    ProfileRegisterScreen()
 //                    MainView()
                 }
@@ -57,7 +61,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    mainViewModel: MainViewModel
 ){
 
     NavHost(navController = navController, startDestination = Screen.SignupScreen.route){
@@ -65,7 +70,7 @@ fun NavigationGraph(
             SignInScreen(authViewModel = authViewModel,onNavigateToMainView = { navController.navigate(Screen.TimeLineScreen.route) })
         }
         composable(Screen.TimeLineScreen.route){
-            MainView()
+            MainView(mainViewModel = mainViewModel)
         }
     }
 }

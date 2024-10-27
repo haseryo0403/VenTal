@@ -40,17 +40,17 @@ import kotlinx.coroutines.CoroutineScope
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainView(){
+fun MainView(mainViewModel: MainViewModel){
 
     val scaffoldState: ScaffoldState = rememberScaffoldState()
     val scope: CoroutineScope = rememberCoroutineScope()
-    val viewModel: MainViewModel = viewModel()
+//    val viewModel: MainViewModel = viewModel()
 
     val controller: NavController = rememberNavController()
     val nevBackStackEntry by controller.currentBackStackEntryAsState()
     val currentRoute = nevBackStackEntry?.destination?.route
     val currentScreen = remember {
-        viewModel.currentScreen.value
+        mainViewModel.currentScreen.value
     }
 
     val title = remember{
@@ -97,7 +97,7 @@ fun MainView(){
             )
         },scaffoldState = scaffoldState,
     ) {
-        Navigation(navController = controller, viewModel = viewModel, pd = it)
+        Navigation(navController = controller, viewModel = mainViewModel, pd = it)
 //        Text(text = "aaa", modifier = Modifier.padding(it))
     }
 }
@@ -135,5 +135,5 @@ fun Navigation(navController: NavController, viewModel: MainViewModel, pd:Paddin
 )
 @Composable
 fun MainViewPre(){
-    MainView()
+//    MainView()
 }

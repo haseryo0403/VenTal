@@ -68,7 +68,7 @@ class UserRepository(private val googleSignInClient: GoogleSignInClient) {
                 .whereEqualTo("uid", uid)
                 .get()
                 .await()
-            Log.d("TAG","getUser success")
+            Log.d("TAG","getUser")
             Log.d("TAG",result.toString())
 
             // 取得結果が空でない場合は最初の要素を返し、空の場合は null を返す
@@ -92,7 +92,7 @@ class UserRepository(private val googleSignInClient: GoogleSignInClient) {
                 uid = it.uid,
                 name = it.displayName ?: "",
                 email = it.email ?: "",
-                photeURL = it.photoUrl
+                photoURL = it.photoUrl.toString()
             )
             db.collection("users").document(newUser.uid).set(newUser).await()
         }
