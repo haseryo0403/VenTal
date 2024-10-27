@@ -42,6 +42,7 @@ class UserRepository(private val googleSignInClient: GoogleSignInClient) {
         }
     }
 
+    //TODO DELETE
     suspend fun getUser(): List<User> {
         return try {
             val uid = auth.currentUser!!.uid
@@ -59,6 +60,28 @@ class UserRepository(private val googleSignInClient: GoogleSignInClient) {
             emptyList()
         }
     }
+
+    suspend fun getCurrentUser(): User? {
+        return try {
+            val uid = auth.currentUser!!.uid
+            val result = db.collection("users")
+                .whereEqualTo("uid", uid)
+                .get()
+                .await()
+            Log.d("TAG","getUser success")
+            Log.d("TAG",result.toString())
+
+            // 取得結果が空でない場合は最初の要素を返し、空の場合は null を返す
+            result.toObjects(User::class.java).firstOrNull()
+        } catch (e: FirebaseFirestoreException) {
+            Log.e("FirestoreError", "Firestore error: ${e.message}", e)
+            null
+        } catch (e: Exception) {
+            Log.e("GeneralError", "An error occurred: ${e.message}", e)
+            null
+        }
+    }
+
 
 
     suspend fun saveUserToFirestore() {

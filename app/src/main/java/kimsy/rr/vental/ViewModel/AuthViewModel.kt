@@ -61,7 +61,40 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
             Log.e("TAG", "Google sign-in failed: ${e.statusCode}")
         }
     }
-
+//TODO Delete
+//    fun firebaseAuthWithGoogle(idToken: String) {
+//        Log.d("TAG","firebase signIn executed")
+//        viewModelScope.launch {
+//            //FirebaseAuth
+//            val firebaseResult = userRepository.firebaseAuthWithGoogle(idToken)
+//            if (firebaseResult.isSuccess) {
+//                Log.d("TAG", "FireBaseAuth Success")
+//                var result: List<User>
+//                viewModelScope.launch {
+//                    //FireStoreからユーザー取得
+//                    result = userRepository.getUser()
+//                    Log.d("TAG", result.toString())
+//                    if (result.isEmpty()) {
+//                        // データを取得できなかった場合(初回ログイン)
+//                        // 新規ユーザー登録
+//                        Log.d("TAG", "New User")
+//                        userRepository.saveUserToFirestore()
+//                        _authResult.value = false
+//
+//                    } else {
+//                        // データを取得できた場合(２回目以降ログイン)
+//                        // ログインした後一番最初に表示したい画面に移動
+//                        Log.d("TAG", "Old User")
+//                        _authResult.value = true
+//                    }
+//                }
+//            } else {
+//                isLoading = false
+//                // Firebaseサインイン失敗
+//                Log.d("TAG", "firebase fail")
+//            }
+//        }
+//    }
     fun firebaseAuthWithGoogle(idToken: String) {
         Log.d("TAG","firebase signIn executed")
         viewModelScope.launch {
@@ -69,12 +102,11 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
             val firebaseResult = userRepository.firebaseAuthWithGoogle(idToken)
             if (firebaseResult.isSuccess) {
                 Log.d("TAG", "FireBaseAuth Success")
-                var result: List<User>
                 viewModelScope.launch {
                     //FireStoreからユーザー取得
-                    result = userRepository.getUser()
+                    val result = userRepository.getCurrentUser()
                     Log.d("TAG", result.toString())
-                    if (result.isEmpty()) {
+                    if (result == null) {
                         // データを取得できなかった場合(初回ログイン)
                         // 新規ユーザー登録
                         Log.d("TAG", "New User")
