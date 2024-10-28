@@ -1,5 +1,6 @@
 package kimsy.rr.vental.ViewModel
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -32,13 +33,14 @@ class MainViewModel(private val userRepository: UserRepository):ViewModel() {
         _currentScreen.value = screen
     }
 
+    @SuppressLint("SuspiciousIndentation")
     private fun loadCurentUser(){
         viewModelScope.launch {
             //FireStoreからユーザー取得
         val result = userRepository.getCurrentUser()
             Log.d("TAG", result.toString())
             if (result != null) {
-                Log.d("TAG", "New User")
+                Log.d("TAG", "load Current User")
                 _currentUser.value = result
 
             } else {
@@ -47,6 +49,4 @@ class MainViewModel(private val userRepository: UserRepository):ViewModel() {
             }
         }
     }
-
-
 }

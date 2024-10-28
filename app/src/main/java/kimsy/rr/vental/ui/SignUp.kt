@@ -77,8 +77,8 @@ fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
             Log.d("TAG", "Navigate to timeline")
             onNavigateToMainView()  // 遷移先の処理を呼び出す
         } else if (authResult == false) {
-            onNavigateToMainView()  // 遷移先の処理を呼び出す
             Log.e("TAG", "New Sign-in")
+            onNavigateToMainView()  // 遷移先の処理を呼び出す
             //TODO 初期ログインのガイダンス的なの考慮
         }
     }

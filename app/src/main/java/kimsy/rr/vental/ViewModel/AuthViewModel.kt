@@ -55,6 +55,8 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
             val idToken = account?.idToken
             if (idToken != null) {
                 firebaseAuthWithGoogle(idToken)
+            } else {
+                Log.e("TAG","idToken is null")
             }
         } catch (e: ApiException) {
             isLoading = false
@@ -104,13 +106,14 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
                 Log.d("TAG", "FireBaseAuth Success")
                 viewModelScope.launch {
                     //FireStoreからユーザー取得
-                    val result = userRepository.getCurrentUser()
+                    var result = userRepository.getCurrentUser()
                     Log.d("TAG", result.toString())
                     if (result == null) {
                         // データを取得できなかった場合(初回ログイン)
                         // 新規ユーザー登録
                         Log.d("TAG", "No data found in firestore")
                         userRepository.saveUserToFirestore()
+//TODO これいるかも                        result = userRepository.getCurrentUser()
                         //TODO ユーザー情報登録に失敗した場合
                         _authResult.value = false
 

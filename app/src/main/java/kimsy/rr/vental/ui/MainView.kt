@@ -122,7 +122,7 @@ fun Navigation(navController: NavController, viewModel: MainViewModel, pd:Paddin
             NotificationsView()
         }
         composable(Screen.BottomScreen.MyPage.bottomRoute) {
-            MyPageView()
+            MyPageView(viewModel)
         }
 
     }
