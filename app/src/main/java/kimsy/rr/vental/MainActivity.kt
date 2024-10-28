@@ -14,6 +14,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import dagger.hilt.android.AndroidEntryPoint
 import kimsy.rr.vental.ui.theme.VentalTheme
 import kimsy.rr.vental.ViewModel.AuthViewModel
 import kimsy.rr.vental.ViewModel.MainViewModel
@@ -22,41 +23,71 @@ import kimsy.rr.vental.ui.MainView
 import kimsy.rr.vental.ui.ProfileRegisterScreen
 import kimsy.rr.vental.ui.SignInScreen
 import kimsy.rr.vental.ui.VentCardsView
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private lateinit var authViewModel: AuthViewModel
-    private lateinit var mainViewModel: MainViewModel
+
+    @Inject
+    lateinit var authViewModel: AuthViewModel
+
+    @Inject
+    lateinit var mainViewModel: MainViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // GoogleSignInClientの作成
-        val googleSignInClient = UserRepository.createGoogleSignInClient(this)
-
-        // AuthRepositoryの初期化
-        val authRepository = UserRepository(googleSignInClient)
-
-        // AuthViewModelの初期化
-        val authViewModel = AuthViewModel(authRepository)
-
-        val mainViewModel = MainViewModel(authRepository)
 
         setContent {
             val navController = rememberNavController()
             VentalTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    NavigationGraph(navController = navController, authViewModel = authViewModel, mainViewModel = mainViewModel)
-//                    ProfileRegisterScreen()
-//                    MainView()
+                    NavigationGraph(
+                        navController = navController,
+                        authViewModel = authViewModel,
+                        mainViewModel = mainViewModel
+                    )
                 }
             }
         }
     }
-
 }
+//class MainActivity : ComponentActivity() {
+//    private lateinit var authViewModel: AuthViewModel
+//    private lateinit var mainViewModel: MainViewModel
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//
+//        // GoogleSignInClientの作成
+//        val googleSignInClient = UserRepository.createGoogleSignInClient(this)
+//
+//        // AuthRepositoryの初期化
+//        val userRepository = UserRepository(googleSignInClient)
+//
+//        // AuthViewModelの初期化
+//        val authViewModel = AuthViewModel(userRepository)
+//
+//        val mainViewModel = MainViewModel(userRepository)
+//
+//        setContent {
+//            val navController = rememberNavController()
+//            VentalTheme {
+//                // A surface container using the 'background' color from the theme
+//                Surface(
+//                    modifier = Modifier.fillMaxSize(),
+//                    color = MaterialTheme.colorScheme.background
+//                ) {
+//                    NavigationGraph(navController = navController, authViewModel = authViewModel, mainViewModel = mainViewModel)
+////                    ProfileRegisterScreen()
+////                    MainView()
+//                }
+//            }
+//        }
+//    }
+//
+//}
 
 @Composable
 fun NavigationGraph(

@@ -16,13 +16,13 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.ktx.Firebase
 import kimsy.rr.vental.R
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
 
-class UserRepository(private val googleSignInClient: GoogleSignInClient) {
-
-    private val auth: FirebaseAuth = Firebase.auth
-    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
-
+class UserRepository @Inject constructor(private val googleSignInClient: GoogleSignInClient,
+                                         private val auth: FirebaseAuth,
+                                         private val db: FirebaseFirestore) {
+    
     // Googleサインインを開始するメソッド
     fun signInWithGoogle(activityResultLauncher: ActivityResultLauncher<Intent>) {
         val signInIntent = googleSignInClient.signInIntent

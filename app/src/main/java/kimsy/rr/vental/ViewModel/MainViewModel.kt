@@ -15,7 +15,7 @@ import kimsy.rr.vental.data.UserRepository
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class MainViewModel(private val userRepository: UserRepository):ViewModel() {
+class MainViewModel @Inject constructor(private val userRepository: UserRepository):ViewModel() {
 
     init {
         loadCurentUser()

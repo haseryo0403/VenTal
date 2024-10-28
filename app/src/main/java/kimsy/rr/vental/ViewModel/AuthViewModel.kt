@@ -21,8 +21,9 @@ import kimsy.rr.vental.data.UserRepository
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
+class AuthViewModel @Inject constructor(private val userRepository: UserRepository) : ViewModel() {
 
     private val auth: FirebaseAuth = Firebase.auth
 

@@ -2,6 +2,10 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+
+    //hilt
+    id ("kotlin-kapt")
+    id ("com.google.dagger.hilt.android") 
 }
 
 android {
@@ -52,6 +56,10 @@ android {
 
 dependencies {
 
+    //hilt
+    implementation ("com.google.dagger:hilt-android:2.49") // 追加
+    kapt ("com.google.dagger:hilt-compiler:2.46.1") // 追加
+
     val nav_version = "2.8.3"
     val compose_version = "1.7.4"
     implementation("androidx.navigation:navigation-compose:$nav_version")
@@ -92,4 +100,8 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+}
+
+kapt {
+    correctErrorTypes = true
 }
