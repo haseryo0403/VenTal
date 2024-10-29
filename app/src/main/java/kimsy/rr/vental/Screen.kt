@@ -16,7 +16,7 @@ sealed class Screen(val title: String, val route: String) {
 
     object SignupScreen:Screen("signup","signupscreen")
     object TimeLineScreen:Screen("timeline","timelinescreen")
-    object VentCardCreation:Screen("", "ventcardcreationscreen")
+    object VentCardCreation:Screen("VCC", "ventcardcreationscreen")
 
 }
 

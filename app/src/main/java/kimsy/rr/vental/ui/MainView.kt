@@ -3,7 +3,9 @@ package kimsy.rr.vental.ui
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
@@ -18,8 +20,16 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarState
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Devices
@@ -45,15 +56,18 @@ import kimsy.rr.vental.ViewModel.MainViewModel
 import kimsy.rr.vental.otherScreen
 import kimsy.rr.vental.screensInBottom
 import kotlinx.coroutines.CoroutineScope
+import kimsy.rr.vental.R
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainView(mainViewModel: MainViewModel){
 
+
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+
     val scaffoldState: ScaffoldState = rememberScaffoldState()
     val scope: CoroutineScope = rememberCoroutineScope()
-//    val viewModel: MainViewModel = viewModel()
-
     val controller: NavController = rememberNavController()
     val nevBackStackEntry by controller.currentBackStackEntryAsState()
     val currentRoute = nevBackStackEntry?.destination?.route
@@ -61,36 +75,26 @@ fun MainView(mainViewModel: MainViewModel){
         mainViewModel.currentScreen.value
     }
 
-//    val title = remember{
-//        mutableStateOf(currentScreen.title)
-//    }
-
-
     // 現在のルートに応じたタイトルを設定
     val title = remember { mutableStateOf("タイムライン") } // デフォルト値をセット
-
-//    // currentBackStackEntryが変わるたびにtitleを更新
-//    LaunchedEffect(nevBackStackEntry) {
-//        title.value = screensInBottom.find {
-//            it.bottomRoute == nevBackStackEntry?.destination?.route
-//        }?.bottomTitle ?: "タイムライン"
-//    }
 
     // ルートとタイトルを一致させる
     LaunchedEffect(nevBackStackEntry) {
         val route = nevBackStackEntry?.destination?.route
         title.value = screensInBottom.find { it.bottomRoute == route }?.bottomTitle
             ?: otherScreen.find { it.route == route }?.title ?:"タイムライン"
+
+        // スクロールの状態をリセット
+        scrollBehavior.state.heightOffset = 0f
     }
 
 
-    val context = LocalContext.current
-
     val bottomBar: @Composable () -> Unit = {
-//        if(currentScreen is Screen.BottomScreen.VentCards){
+
+        if (title.value != "VCC"){
             BottomNavigation(Modifier.wrapContentSize()) {
                 screensInBottom.forEach {
-                    item ->
+                        item ->
                     val isSelected = currentRoute == item.bottomRoute
                     Log.d("Navigation", "Item: ${item.bottomTitle}, Current Route: $currentRoute")
                     val tint = if(isSelected)Color.White else Color.Black
@@ -98,51 +102,47 @@ fun MainView(mainViewModel: MainViewModel){
                     Log.d("TAG","${item.bottomRoute}, ${item.bottomRoute}, ${item.icon}")
                     BottomNavigationItem(
                         selected = currentRoute == item.bottomRoute,
-                        onClick = { controller.navigate(item.bottomRoute)
-//                                  title.value = item.bottomTitle
-                                  },
+                        onClick = { controller.navigate(item.bottomRoute) },
                         icon = { Icon(painter = painterResource(id = item.icon),
                             contentDescription = item.bottomTitle,
                             tint = tint) },
                         selectedContentColor = Color.White,
                         unselectedContentColor = Color.Black
-                        )
+                    )
 
                 }
             }
-//        }
+        } else {
+            BottomAppBar(
+                actions = {
+                    IconButton(onClick = { /* do something */ }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_image_24),
+                            modifier = Modifier.size(40.dp),
+                            contentDescription = "add Image")
+                    }
+                },
+                modifier = Modifier.height(48.dp)
+            )
+        }
     }
+
 
     Scaffold(
         bottomBar = bottomBar,
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-                 //TODO delete 直接指定
-//            TopAppBar(title = { Text(title.value)},
-//                elevation = 3.dp,
-//                navigationIcon = {
-//                    if(!title.value.contains("タイムライン")){
-//                        IconButton(onClick = {
-//                            Toast.makeText(context, "Button Clicked", Toast.LENGTH_LONG).show()
-//                            controller.navigateUp()
-//
-//                        }) {
-//                            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-//                        }
-//                    } else {
-//                        null
-//                    }
-//                }
-//            )
-
                  //別ファイル
                  AppBarView(
                      title = title.value,
-                     {controller.navigateUp()})
+                     {controller.navigateUp()},
+                     scrollBehavior)
 
-        },scaffoldState = scaffoldState,
+        },
+        scaffoldState = scaffoldState,
         floatingActionButton = {
             if(
-                title.value.contains("タイムライン")
+                title.value.contains("タイムライン") || title.value.contains("VentCards")
             ) {
                 FloatingActionButton(
                     onClick = {
@@ -156,8 +156,12 @@ fun MainView(mainViewModel: MainViewModel){
         }
     ) {
         Navigation(navController = controller, viewModel = mainViewModel, pd = it)
-//        Text(text = "aaa", modifier = Modifier.padding(it))
     }
+}
+
+@Composable
+fun BottomAppBar(actions: () -> Unit, floatingActionButton: () -> Unit) {
+
 }
 
 @Composable
