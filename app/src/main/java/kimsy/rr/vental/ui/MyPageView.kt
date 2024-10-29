@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material3.Button
@@ -26,12 +27,14 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
+import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
 import kimsy.rr.vental.ViewModel.MainViewModel
 
@@ -63,18 +66,15 @@ fun MyPageView(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Log.d("TAG", "Image URL: ${user?.photoURL}")
-                        AsyncImage(
-                            model = user?.photoURL,
-                            contentDescription = "profile picture"
-                        )
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_account_circle_24),
-                            contentDescription = "AccountIcon",
+                        Image(
+                            painter = rememberAsyncImagePainter(user?.photoURL),
+                            contentDescription = null,
                             modifier = Modifier
-                                .size(80.dp)
-//                                .weight(1f)
+                                .size(56.dp)
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop
                         )
-                        Text(text = "ハセぽんHase")
+                        user?.name?.let { Text(text = it) }
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
 //                            modifier = Modifier.weight(5f)

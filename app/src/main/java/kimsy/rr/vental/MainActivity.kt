@@ -54,40 +54,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-//class MainActivity : ComponentActivity() {
-//    private lateinit var authViewModel: AuthViewModel
-//    private lateinit var mainViewModel: MainViewModel
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//
-//        // GoogleSignInClientの作成
-//        val googleSignInClient = UserRepository.createGoogleSignInClient(this)
-//
-//        // AuthRepositoryの初期化
-//        val userRepository = UserRepository(googleSignInClient)
-//
-//        // AuthViewModelの初期化
-//        val authViewModel = AuthViewModel(userRepository)
-//
-//        val mainViewModel = MainViewModel(userRepository)
-//
-//        setContent {
-//            val navController = rememberNavController()
-//            VentalTheme {
-//                // A surface container using the 'background' color from the theme
-//                Surface(
-//                    modifier = Modifier.fillMaxSize(),
-//                    color = MaterialTheme.colorScheme.background
-//                ) {
-//                    NavigationGraph(navController = navController, authViewModel = authViewModel, mainViewModel = mainViewModel)
-////                    ProfileRegisterScreen()
-////                    MainView()
-//                }
-//            }
-//        }
-//    }
-//
-//}
 
 @Composable
 fun NavigationGraph(
@@ -98,7 +64,11 @@ fun NavigationGraph(
 
     NavHost(navController = navController, startDestination = Screen.SignupScreen.route){
         composable(Screen.SignupScreen.route){
-            SignInScreen(authViewModel = authViewModel,onNavigateToMainView = { navController.navigate(Screen.TimeLineScreen.route) })
+            SignInScreen(authViewModel = authViewModel,
+                onNavigateToMainView = {
+                    mainViewModel.loadCurrentUser()  // ユーザー情報をロード
+                    navController.navigate(Screen.TimeLineScreen.route)
+                })
         }
         composable(Screen.TimeLineScreen.route){
             MainView(mainViewModel = mainViewModel)

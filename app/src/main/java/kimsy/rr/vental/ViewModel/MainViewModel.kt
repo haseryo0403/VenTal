@@ -8,7 +8,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.FirebaseAuth
 import kimsy.rr.vental.Screen
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.data.UserRepository
@@ -17,12 +16,12 @@ import javax.inject.Inject
 
 class MainViewModel @Inject constructor(private val userRepository: UserRepository):ViewModel() {
 
-    init {
-        loadCurentUser()
-    }
-
-    private val _currentScreen:MutableState<Screen> = mutableStateOf(Screen.BottomScreen.VentCards)
+    private val _currentScreen:MutableState<Screen> = mutableStateOf(Screen.BottomScreen.TimeLine)
     private val _currentUser = MutableLiveData<User>()
+
+    init {
+        loadCurrentUser()
+    }
     val currentUser: LiveData<User> get() = _currentUser
 
 
@@ -34,13 +33,13 @@ class MainViewModel @Inject constructor(private val userRepository: UserReposito
     }
 
     @SuppressLint("SuspiciousIndentation")
-    private fun loadCurentUser(){
+    fun loadCurrentUser(){
+        Log.d("TAG　MainViewModel", "load Current User")
         viewModelScope.launch {
             //FireStoreからユーザー取得
         val result = userRepository.getCurrentUser()
             Log.d("TAG", result.toString())
             if (result != null) {
-                Log.d("TAG", "load Current User")
                 _currentUser.value = result
 
             } else {

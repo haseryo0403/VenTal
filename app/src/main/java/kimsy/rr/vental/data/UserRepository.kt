@@ -22,7 +22,7 @@ import javax.inject.Inject
 class UserRepository @Inject constructor(private val googleSignInClient: GoogleSignInClient,
                                          private val auth: FirebaseAuth,
                                          private val db: FirebaseFirestore) {
-    
+
     // Googleサインインを開始するメソッド
     fun signInWithGoogle(activityResultLauncher: ActivityResultLauncher<Intent>) {
         val signInIntent = googleSignInClient.signInIntent
@@ -64,6 +64,7 @@ class UserRepository @Inject constructor(private val googleSignInClient: GoogleS
     suspend fun getCurrentUser(): User? {
         return try {
             val uid = auth.currentUser!!.uid
+            Log.d("TAG", "uid: $uid")
             val result = db.collection("users")
                 .whereEqualTo("uid", uid)
                 .get()
