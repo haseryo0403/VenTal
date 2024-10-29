@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +42,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kimsy.rr.vental.Screen
 import kimsy.rr.vental.ViewModel.MainViewModel
+import kimsy.rr.vental.otherScreen
 import kimsy.rr.vental.screensInBottom
 import kotlinx.coroutines.CoroutineScope
 
@@ -59,9 +61,28 @@ fun MainView(mainViewModel: MainViewModel){
         mainViewModel.currentScreen.value
     }
 
-    val title = remember{
-        mutableStateOf(currentScreen.title)
+//    val title = remember{
+//        mutableStateOf(currentScreen.title)
+//    }
+
+
+    // 現在のルートに応じたタイトルを設定
+    val title = remember { mutableStateOf("タイムライン") } // デフォルト値をセット
+
+//    // currentBackStackEntryが変わるたびにtitleを更新
+//    LaunchedEffect(nevBackStackEntry) {
+//        title.value = screensInBottom.find {
+//            it.bottomRoute == nevBackStackEntry?.destination?.route
+//        }?.bottomTitle ?: "タイムライン"
+//    }
+
+    // ルートとタイトルを一致させる
+    LaunchedEffect(nevBackStackEntry) {
+        val route = nevBackStackEntry?.destination?.route
+        title.value = screensInBottom.find { it.bottomRoute == route }?.bottomTitle
+            ?: otherScreen.find { it.route == route }?.title ?:"タイムライン"
     }
+
 
     val context = LocalContext.current
 
@@ -78,7 +99,7 @@ fun MainView(mainViewModel: MainViewModel){
                     BottomNavigationItem(
                         selected = currentRoute == item.bottomRoute,
                         onClick = { controller.navigate(item.bottomRoute)
-                                  title.value = item.bottomTitle
+//                                  title.value = item.bottomTitle
                                   },
                         icon = { Icon(painter = painterResource(id = item.icon),
                             contentDescription = item.bottomTitle,
@@ -95,27 +116,38 @@ fun MainView(mainViewModel: MainViewModel){
     Scaffold(
         bottomBar = bottomBar,
         topBar = {
-            TopAppBar(title = { Text(title.value)},
-                elevation = 3.dp,
-                navigationIcon = {
-                    if(!title.value.contains("タイムライン")){
-                        IconButton(onClick = {
-                            Toast.makeText(context, "Button Clicked", Toast.LENGTH_LONG).show()
-                        }) {
-                            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                        }
-                    } else {
-                        null
-                    }
-                }
-            )
+                 //TODO delete 直接指定
+//            TopAppBar(title = { Text(title.value)},
+//                elevation = 3.dp,
+//                navigationIcon = {
+//                    if(!title.value.contains("タイムライン")){
+//                        IconButton(onClick = {
+//                            Toast.makeText(context, "Button Clicked", Toast.LENGTH_LONG).show()
+//                            controller.navigateUp()
+//
+//                        }) {
+//                            Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+//                        }
+//                    } else {
+//                        null
+//                    }
+//                }
+//            )
+
+                 //別ファイル
+                 AppBarView(
+                     title = title.value,
+                     {controller.navigateUp()})
+
         },scaffoldState = scaffoldState,
         floatingActionButton = {
             if(
                 title.value.contains("タイムライン")
             ) {
                 FloatingActionButton(
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                              controller.navigate(Screen.VentCardCreation.route)
+                    },
                     modifier = Modifier.padding(all = 8.dp),
                 ) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = null)
@@ -149,6 +181,9 @@ fun Navigation(navController: NavController, viewModel: MainViewModel, pd:Paddin
         }
         composable(Screen.BottomScreen.MyPage.bottomRoute) {
             MyPageView(viewModel)
+        }
+        composable(Screen.VentCardCreation.route) {
+            VentCardCreationView()
         }
 
     }

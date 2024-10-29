@@ -16,6 +16,7 @@ sealed class Screen(val title: String, val route: String) {
 
     object SignupScreen:Screen("signup","signupscreen")
     object TimeLineScreen:Screen("timeline","timelinescreen")
+    object VentCardCreation:Screen("", "ventcardcreationscreen")
 
 }
 
@@ -25,4 +26,10 @@ val screensInBottom = listOf(
     Screen.BottomScreen.Follows,
     Screen.BottomScreen.Notifications,
     Screen.BottomScreen.MyPage
+)
+
+val otherScreen = listOf(
+    Screen.SignupScreen,
+    Screen.TimeLineScreen,
+    Screen.VentCardCreation
 )
