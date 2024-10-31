@@ -20,11 +20,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kimsy.rr.vental.ui.theme.VentalTheme
 import kimsy.rr.vental.ViewModel.AuthViewModel
 import kimsy.rr.vental.ViewModel.MainViewModel
-import kimsy.rr.vental.data.UserRepository
-import kimsy.rr.vental.ui.MainView
+import kimsy.rr.vental.ui.commonUi.MainView
 import kimsy.rr.vental.ui.ProfileRegisterScreen
 import kimsy.rr.vental.ui.SignInScreen
-import kimsy.rr.vental.ui.VentCardsView
 import javax.inject.Inject
 
 @AndroidEntryPoint

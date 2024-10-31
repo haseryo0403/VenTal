@@ -1,7 +1,6 @@
-package kimsy.rr.vental.ui
+package kimsy.rr.vental.ui.commonUi
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -11,24 +10,15 @@ import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material.Scaffold
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,7 +34,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -57,12 +46,21 @@ import kimsy.rr.vental.otherScreen
 import kimsy.rr.vental.screensInBottom
 import kotlinx.coroutines.CoroutineScope
 import kimsy.rr.vental.R
+import kimsy.rr.vental.data.ImageUtils
+import kimsy.rr.vental.ui.FollowsView
+import kimsy.rr.vental.ui.MyPageView
+import kimsy.rr.vental.ui.MySwipeCardDemo
+import kimsy.rr.vental.ui.NotificationsView
+import kimsy.rr.vental.ui.TimeLineView
+import kimsy.rr.vental.ui.VentCardCreationView
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainView(mainViewModel: MainViewModel){
 
+    val context = LocalContext.current
+    val imageUtils = ImageUtils(context)
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
@@ -88,52 +86,60 @@ fun MainView(mainViewModel: MainViewModel){
         scrollBehavior.state.heightOffset = 0f
     }
 
-
-    val bottomBar: @Composable () -> Unit = {
-
-        if (title.value != "VCC"){
-            BottomNavigation(Modifier.wrapContentSize()) {
-                screensInBottom.forEach {
-                        item ->
-                    val isSelected = currentRoute == item.bottomRoute
-                    Log.d("Navigation", "Item: ${item.bottomTitle}, Current Route: $currentRoute")
-                    val tint = if(isSelected)Color.White else Color.Black
-
-                    Log.d("TAG","${item.bottomRoute}, ${item.bottomRoute}, ${item.icon}")
-                    BottomNavigationItem(
-                        selected = currentRoute == item.bottomRoute,
-                        onClick = { controller.navigate(item.bottomRoute) },
-                        icon = { Icon(painter = painterResource(id = item.icon),
-                            contentDescription = item.bottomTitle,
-                            tint = tint) },
-                        selectedContentColor = Color.White,
-                        unselectedContentColor = Color.Black
-                    )
-
-                }
-            }
-        } else {
-            BottomAppBar(
-                actions = {
-                    IconButton(onClick = { /* do something */ }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_image_24),
-                            modifier = Modifier.size(40.dp),
-                            contentDescription = "add Image")
-                    }
-                },
-                modifier = Modifier.height(48.dp)
-            )
-        }
-    }
+//TODO delete
+//    val bottomBar: @Composable () -> Unit = {
+//
+//        if (title.value != "VCC"){
+//            BottomNavigation(Modifier.wrapContentSize()) {
+//                screensInBottom.forEach {
+//                        item ->
+//                    val isSelected = currentRoute == item.bottomRoute
+//                    Log.d("Navigation", "Item: ${item.bottomTitle}, Current Route: $currentRoute")
+//                    val tint = if(isSelected)Color.White else Color.Black
+//
+//                    Log.d("TAG","${item.bottomRoute}, ${item.bottomRoute}, ${item.icon}")
+//                    BottomNavigationItem(
+//                        selected = currentRoute == item.bottomRoute,
+//                        onClick = { controller.navigate(item.bottomRoute) },
+//                        icon = { Icon(painter = painterResource(id = item.icon),
+//                            contentDescription = item.bottomTitle,
+//                            tint = tint) },
+//                        selectedContentColor = Color.White,
+//                        unselectedContentColor = Color.Black
+//                    )
+//
+//                }
+//            }
+//        } else {
+//            BottomAppBar(
+//                actions = {
+//                    IconButton(onClick = { /* do something */ }) {
+//                        Icon(
+//                            painter = painterResource(id = R.drawable.baseline_image_24),
+//                            modifier = Modifier.size(40.dp),
+//                            contentDescription = "add Image")
+//                    }
+//                },
+//                modifier = Modifier.height(48.dp)
+//            )
+//        }
+//    }
 
 
     Scaffold(
-        bottomBar = bottomBar,
+        bottomBar = {
+                    AppBottomBarView(
+                        title = title.value,
+                        navController = controller,
+                        currentRoute = currentRoute?:"null",
+                        imageUtils = imageUtils,
+                        context = context
+                    )
+        },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
                  //別ファイル
-                 AppBarView(
+                 AppTopBarView(
                      title = title.value,
                      {controller.navigateUp()},
                      scrollBehavior)
