@@ -1,6 +1,8 @@
 package kimsy.rr.vental.ui.commonUi
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -34,18 +36,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import dagger.hilt.android.AndroidEntryPoint
 import kimsy.rr.vental.Screen
 import kimsy.rr.vental.ViewModel.MainViewModel
 import kimsy.rr.vental.otherScreen
 import kimsy.rr.vental.screensInBottom
 import kotlinx.coroutines.CoroutineScope
 import kimsy.rr.vental.R
+import kimsy.rr.vental.ViewModel.MyPageViewModel
+import kimsy.rr.vental.ViewModel.VentCardCreationViewModel
 import kimsy.rr.vental.data.ImageUtils
 import kimsy.rr.vental.ui.FollowsView
 import kimsy.rr.vental.ui.MyPageView
@@ -53,25 +59,29 @@ import kimsy.rr.vental.ui.MySwipeCardDemo
 import kimsy.rr.vental.ui.NotificationsView
 import kimsy.rr.vental.ui.TimeLineView
 import kimsy.rr.vental.ui.VentCardCreationView
+import javax.inject.Inject
 
 
+
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainView(mainViewModel: MainViewModel){
+fun MainView(
+    mainViewModel: MainViewModel,
+    ventCardCreationViewModel: VentCardCreationViewModel
+){
 
     val context = LocalContext.current
     val imageUtils = ImageUtils(context)
-
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
-
     val scaffoldState: ScaffoldState = rememberScaffoldState()
-    val scope: CoroutineScope = rememberCoroutineScope()
     val controller: NavController = rememberNavController()
     val nevBackStackEntry by controller.currentBackStackEntryAsState()
     val currentRoute = nevBackStackEntry?.destination?.route
     val currentScreen = remember {
         mainViewModel.currentScreen.value
     }
+
 
     // 現在のルートに応じたタイトルを設定
     val title = remember { mutableStateOf("タイムライン") } // デフォルト値をセット
@@ -86,54 +96,14 @@ fun MainView(mainViewModel: MainViewModel){
         scrollBehavior.state.heightOffset = 0f
     }
 
-//TODO delete
-//    val bottomBar: @Composable () -> Unit = {
-//
-//        if (title.value != "VCC"){
-//            BottomNavigation(Modifier.wrapContentSize()) {
-//                screensInBottom.forEach {
-//                        item ->
-//                    val isSelected = currentRoute == item.bottomRoute
-//                    Log.d("Navigation", "Item: ${item.bottomTitle}, Current Route: $currentRoute")
-//                    val tint = if(isSelected)Color.White else Color.Black
-//
-//                    Log.d("TAG","${item.bottomRoute}, ${item.bottomRoute}, ${item.icon}")
-//                    BottomNavigationItem(
-//                        selected = currentRoute == item.bottomRoute,
-//                        onClick = { controller.navigate(item.bottomRoute) },
-//                        icon = { Icon(painter = painterResource(id = item.icon),
-//                            contentDescription = item.bottomTitle,
-//                            tint = tint) },
-//                        selectedContentColor = Color.White,
-//                        unselectedContentColor = Color.Black
-//                    )
-//
-//                }
-//            }
-//        } else {
-//            BottomAppBar(
-//                actions = {
-//                    IconButton(onClick = { /* do something */ }) {
-//                        Icon(
-//                            painter = painterResource(id = R.drawable.baseline_image_24),
-//                            modifier = Modifier.size(40.dp),
-//                            contentDescription = "add Image")
-//                    }
-//                },
-//                modifier = Modifier.height(48.dp)
-//            )
-//        }
-//    }
-
-
     Scaffold(
         bottomBar = {
                     AppBottomBarView(
                         title = title.value,
                         navController = controller,
                         currentRoute = currentRoute?:"null",
-                        imageUtils = imageUtils,
-                        context = context
+                        context = context,
+                        viewModel = ventCardCreationViewModel
                     )
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -141,8 +111,10 @@ fun MainView(mainViewModel: MainViewModel){
                  //別ファイル
                  AppTopBarView(
                      title = title.value,
+                     context = context,
                      {controller.navigateUp()},
-                     scrollBehavior)
+                     scrollBehavior,
+                     viewModel = ventCardCreationViewModel)
 
         },
         scaffoldState = scaffoldState,
@@ -161,17 +133,24 @@ fun MainView(mainViewModel: MainViewModel){
             }
         }
     ) {
-        Navigation(navController = controller, viewModel = mainViewModel, pd = it)
+        Navigation(
+            navController = controller,
+            mainViewModel = mainViewModel,
+            ventCardCreationViewModel = ventCardCreationViewModel,
+            pd = it)
     }
 }
 
 @Composable
-fun BottomAppBar(actions: () -> Unit, floatingActionButton: () -> Unit) {
+fun Navigation(
+    navController: NavController,
+    mainViewModel: MainViewModel,
+    ventCardCreationViewModel: VentCardCreationViewModel,
+    pd:PaddingValues){
 
-}
 
-@Composable
-fun Navigation(navController: NavController, viewModel: MainViewModel, pd:PaddingValues){
+    val context = LocalContext.current
+    val imageUtils = ImageUtils(context)
 
     NavHost(navController = navController as NavHostController,
         startDestination = Screen.BottomScreen.TimeLine.bottomRoute,
@@ -190,10 +169,11 @@ fun Navigation(navController: NavController, viewModel: MainViewModel, pd:Paddin
             NotificationsView()
         }
         composable(Screen.BottomScreen.MyPage.bottomRoute) {
+            val viewModel = MyPageViewModel(mainViewModel)
             MyPageView(viewModel)
         }
         composable(Screen.VentCardCreation.route) {
-            VentCardCreationView()
+            VentCardCreationView(ventCardCreationViewModel)
         }
 
     }

@@ -1,6 +1,8 @@
 package kimsy.rr.vental.ui.commonUi
 
 
+import android.content.Context
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -13,14 +15,20 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import kimsy.rr.vental.ViewModel.VentCardCreationViewModel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppTopBarView(
     title: String,
+    context: Context,
     onBackNavClicked: () -> Unit = {},
-    scrollBehavior: TopAppBarScrollBehavior
+    scrollBehavior: TopAppBarScrollBehavior,
+    viewModel: VentCardCreationViewModel
 ){
     val titleToDisableScroll = listOf("VCC", "VentCards")
 
@@ -45,7 +53,14 @@ fun AppTopBarView(
     val action: (@Composable () -> Unit)? =
         {
             if(title.contains("VCC")){
-                OutlinedButton(onClick = { /*TODO*/ }) {
+                val coroutineScope = rememberCoroutineScope() // コルーチンのスコープを取得
+                OutlinedButton(onClick = {
+                    //スワイプカード登録
+                    Log.d("AppTopBar","送信ボタン押下")
+                    coroutineScope.launch {
+                        viewModel.saveImage(context)
+                    }
+                     }) {
                     // テキストを追加
                     Text(
                         text = "送信",

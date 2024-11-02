@@ -1,15 +1,21 @@
 package kimsy.rr.vental
 
 import android.app.Application
+import android.content.Context
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kimsy.rr.vental.data.ImageRepository
+import kimsy.rr.vental.data.ImageUtils
 import kimsy.rr.vental.data.UserRepository
 import javax.inject.Singleton
 
@@ -24,6 +30,18 @@ object AppModule {
     @Provides
     fun provideFireStore(): FirebaseFirestore {
         return FirebaseFirestore.getInstance()
+    }
+
+    @Provides
+    fun provideFirebaseStorage(): FirebaseStorage {
+        return FirebaseStorage.getInstance("gs://vental-4eb3c.firebasestorage.app")
+    }
+
+    @Provides
+    fun provideStorageReference(
+        storage: FirebaseStorage
+    ) : StorageReference {
+        return storage.reference
     }
 
     @Provides
@@ -44,5 +62,21 @@ object AppModule {
         firebaseFirestore: FirebaseFirestore
     ): UserRepository {
         return UserRepository(googleSignInClient,firebaseAuth, firebaseFirestore)
+    }
+
+    @Provides
+    @Singleton
+    fun provideImageRepository(
+        firebaseFirestore: FirebaseFirestore,
+        firebaseStorage: FirebaseStorage,
+        storageReference: StorageReference
+    ): ImageRepository{
+        return ImageRepository(firebaseFirestore,firebaseStorage,storageReference)
+    }
+
+    @Provides
+    @Singleton
+    fun provideImageUtils(@ApplicationContext context: Context): ImageUtils {
+        return ImageUtils(context) // ImageUtilsのインスタンスを提供
     }
 }

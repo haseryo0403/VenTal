@@ -56,12 +56,22 @@ android {
 
 dependencies {
 
+    //glide
+    implementation ("com.github.bumptech.glide:glide:4.11.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.11.0")
+
+
     implementation ("com.google.accompanist:accompanist-permissions:0.23.1")
 
 
     //hilt
     implementation ("com.google.dagger:hilt-android:2.49") // 追加
     kapt ("com.google.dagger:hilt-compiler:2.46.1") // 追加
+
+    //Firebase Storage
+    implementation ("com.google.firebase:firebase-storage-ktx")
+    implementation("com.google.firebase:firebase-appcheck-debug")
+
 
     val nav_version = "2.8.3"
     val compose_version = "1.7.4"
@@ -83,10 +93,13 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
     implementation("androidx.compose.runtime:runtime-livedata:1.7.4")
 
+    //firebase
     implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
+//    implementation("com.google.android.gms:play-services-base:21.2.0")
+    implementation ("com.google.firebase:firebase-analytics")
 
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")

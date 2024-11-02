@@ -37,14 +37,15 @@ import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
 import kimsy.rr.vental.ViewModel.MainViewModel
+import kimsy.rr.vental.ViewModel.MyPageViewModel
 
 @Composable
 fun MyPageView(
-    mainViewModel: MainViewModel
+    viewModel: MyPageViewModel
 ){
 
     // currentUserをobserveしてStateとして取得
-    val user by mainViewModel.currentUser.observeAsState()
+    val user by viewModel.currentUser.observeAsState()
 
     LazyColumn(
         modifier = Modifier.fillMaxWidth()
@@ -65,6 +66,11 @@ fun MyPageView(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
+
+
+
+
+
                         Log.d("TAG", "Image URL: ${user?.photoURL}")
                         Image(
                             painter = rememberAsyncImagePainter(user?.photoURL),
@@ -75,6 +81,11 @@ fun MyPageView(
                             contentScale = ContentScale.Crop
                         )
                         user?.name?.let { Text(text = it) }
+
+
+
+
+
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
 //                            modifier = Modifier.weight(5f)

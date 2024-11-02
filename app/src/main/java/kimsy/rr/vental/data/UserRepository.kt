@@ -19,9 +19,11 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 
-class UserRepository @Inject constructor(private val googleSignInClient: GoogleSignInClient,
-                                         private val auth: FirebaseAuth,
-                                         private val db: FirebaseFirestore) {
+class UserRepository @Inject constructor(
+    private val googleSignInClient: GoogleSignInClient,
+    private val auth: FirebaseAuth,
+    private val db: FirebaseFirestore
+) {
 
     // Googleサインインを開始するメソッド
     fun signInWithGoogle(activityResultLauncher: ActivityResultLauncher<Intent>) {
@@ -43,23 +45,23 @@ class UserRepository @Inject constructor(private val googleSignInClient: GoogleS
     }
 
     //TODO DELETE
-    suspend fun getUser(): List<User> {
-        return try {
-            val uid = auth.currentUser!!.uid
-            val result = db.collection("users")
-                .whereEqualTo("uid", uid)
-                .get()
-                .await()
-            Log.d("TAG","getUser success")
-            result.toObjects(User::class.java)
-        } catch (e: FirebaseFirestoreException) {
-            Log.e("FirestoreError", "Firestore error: ${e.message}", e)
-            emptyList()
-        } catch (e: Exception) {
-            Log.e("GeneralError", "An error occurred: ${e.message}", e)
-            emptyList()
-        }
-    }
+//    suspend fun getUser(): List<User> {
+//        return try {
+//            val uid = auth.currentUser!!.uid
+//            val result = db.collection("users")
+//                .whereEqualTo("uid", uid)
+//                .get()
+//                .await()
+//            Log.d("TAG","getUser success")
+//            result.toObjects(User::class.java)
+//        } catch (e: FirebaseFirestoreException) {
+//            Log.e("FirestoreError", "Firestore error: ${e.message}", e)
+//            emptyList()
+//        } catch (e: Exception) {
+//            Log.e("GeneralError", "An error occurred: ${e.message}", e)
+//            emptyList()
+//        }
+//    }
 
     suspend fun getCurrentUser(): User? {
         return try {
@@ -83,8 +85,6 @@ class UserRepository @Inject constructor(private val googleSignInClient: GoogleS
         }
     }
 
-
-
     suspend fun saveUserToFirestore() {
         val user = auth.currentUser
         user?.let {
@@ -99,8 +99,6 @@ class UserRepository @Inject constructor(private val googleSignInClient: GoogleS
         }
     }
 
-
-
     companion object {
         fun createGoogleSignInClient(activity: ComponentActivity): GoogleSignInClient {
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -110,5 +108,4 @@ class UserRepository @Inject constructor(private val googleSignInClient: GoogleS
             return GoogleSignIn.getClient(activity, gso)
         }
     }
-
 }
