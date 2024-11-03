@@ -1,0 +1,190 @@
+version: 2
+
+# Firestore Database Structure
+
+users:
+  # collection
+  - user_id: "user123"
+    user_name: "山田太郎"
+    user_imageURL: "https://example.com/image123.jpg"
+    self_introduction: "はじめまして！スポーツが好きです。"
+    following:
+      # collection
+      - followingUserId: "user456"
+    follower_count: 120
+    user_created_datetime: "2024-01-10T10:00:00Z"
+    age_group: "20-29"
+    gender: "male"
+    liked_SwipeCards:
+      # collection
+      - swipeCard_id: "card789"
+    liked_discussions:
+      # collection
+      - discussion_id: "discussion456"
+        user_type: "poster"  # いいねしたユーザーがposterかdebaterか
+    notifications_settings:
+      message_enabled: true
+      comment_enabled: true
+    notifications:
+      # collection
+      - notification_id: "notification123"
+        link_id: "discussion456"
+        action_user_name: "佐藤花子"  # お知らせの内容
+        action_user_imageURL: "https://example.com/image789.jpg"  # お知らせの内容
+        timestamp: "2024-11-03T12:00:00Z"  # ISO 8601形式での日時
+        type: "comment"  # お知らせの種類
+        read_flag: false  # 既読フラグ
+    swipeCards:
+      # collection
+      - swipeCard_id: "card123"
+        poster_id: "user123"
+        # TODO: 冗長。以下2行はCloudFunctionsを使用してユーザー情報更新時に更新する予定。なしなら削除
+        poster_name: "山田太郎"
+        poster_imageURL: "https://example.com/image123.jpg"
+        swipeCard_content: "これは私の投稿です！"
+        swipeCard_created_datetime: "2024-11-01T10:00:00Z"
+        swipeCard_report_flag: false
+        swipeCard_deletion_request_flag: false
+        swipeCard_imageURL: "https://example.com/card123.jpg"
+        likeCount: 45
+        tags:
+          # array
+          - tag_id: "tag001"
+          - tag_id: "tag002"
+        discussions:
+          # collection
+          - discussion_id: "discussion456"
+            swipeCard_imageURL: "https://example.com/card123.jpg"
+            poster_likeCount: 10
+            # TODO: 冗長。以下3行はCloudFunctionsを使用してユーザー情報更新時に更新する予定。なしなら削除
+            poster_id: "user123"
+            poster_name: "山田太郎"
+            poster_imageURL: "https://example.com/image123.jpg"
+            debater_id: "user789"
+            # TODO: 冗長。以下2行はCloudFunctionsを使用してユーザー情報更新時に更新する予定。なしならIDのみ保持
+            debater_name: "佐藤花子"
+            debater_imageURL: "https://example.com/image789.jpg"
+            debater_likeCount: 5
+            discussion_report_flag: false
+            discussion_deletion_request_flag: false
+            discussion_created_datetime: "2024-11-02T15:00:00Z"
+            messages:
+              # collection
+              - message_id: "message123"
+                userType: "debater"  # posterかdebaterか
+                message_content: "それは面白いですね！"
+                sent_datetime: "2024-11-02T16:00:00Z"
+            comments:
+              # collection
+              - comment_id: "comment123"
+                commenter_id: "user789"
+                # TODO: 冗長。以下2行はCloudFunctionsを使用してユーザー情報更新時に更新する予定。なしならIDのみ保持
+                commenter_name: "佐藤花子"
+                commenter_imageURL: "https://example.com/image789.jpg"
+                comment_content: "そうですね！"
+                commented_datetime: "2024-11-02T16:05:00Z"
+
+withdrawals:
+  # collection
+  - withdrawalDate_userId: "2024-10-01_user123"
+    reason: "個人的な理由"
+    reLoginDate: "2024-10-20"
+
+tags:
+  # collection
+  - tagId: "tag001"
+    tagContent: "スポーツ"
+    usedCount: 100
+  - tagId: "tag002"
+    tagContent: "音楽"
+    usedCount: 5
+
+
+#ネストなし
+#users:
+##collection
+#  -userId:
+#    username:
+#    imageURL:
+#    selfIntroduction:
+#    following:
+#      -followedUserId:
+#    followerCount:
+#    created_at:
+#    ageGroup:
+#    gender:
+## TODO delete   createdSwipeCards:
+##      -swipeCardId:
+#    activeDiscussionIds:
+#      -discussionId:
+#    likedSwipeCards:
+#    #collection
+#      -swipeCardId:
+#    likedDiscussions:
+#    #collection
+#      -discussionId:
+#        userType: #いいねしたユーザーがposterかdebaterか
+#    notifications:
+#    #collection
+#      - notificationId:
+#          linkId:
+#          actionUserName: "お知らせの内容"
+#          actionUserImageURL: "お知らせの内容"
+#          timestamp: "2024-11-03T12:00:00Z"  # ISO 8601形式での日時
+#          type: "info"                       # お知らせの種類
+#          readFlag: false                       # 既読フラグ
+##    ここにいいね情報
+#
+#
+#withdrawls:
+#  -withdrawlDate_userId:
+#    reason:
+#    reLoginDate:
+#
+#swipeCards:
+#  -swipeCardId:
+#    posterId:
+#    posterName:
+#    posterImageURL:
+#    swipeCardContent:
+#    createdDateTime:
+#    reportFlag:
+#    deletionRequestFlag:
+#    imageURL:
+#    likeCount:
+#    relatedDiscussions:
+#      -discussionId:
+#  　tags:
+#      -tagId:
+#
+#tags:
+#  -tagId:
+#    tagContent:
+#    usedCount:
+#
+#discussions:
+#  -discussionId:
+#    swipeCardId:
+#    swipeCardImageURL:
+#    #posterのIDとNameLはスワイプカードから取得
+#    posterImageURL:    #冗長。これがボトルネックになってスワイプカードの情報を取得するクエリの時間はある気がする。表示はべつにすれば
+#    posterLikeCount:
+#    debaterId:  # userは変更頻度高いのでIDのみ保持
+#    debaterName:
+#    debaterImageURL:
+#    debaterLikeCount:
+#    reportFlag:
+#    deletionRequestFlag:
+#    createdDateTime:
+#    messages:
+#    #collection
+#      -messageId:
+#        userType:  #posterかdebaterか
+#        messageContent:
+#        sentDateTime:
+#    comments:
+#    #collectioon
+#      -commenterId:
+#        commentContent:
+#        commentedDateTime:
+# Firestore Database Structure
