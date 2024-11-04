@@ -17,6 +17,7 @@ import dagger.hilt.components.SingletonComponent
 import kimsy.rr.vental.data.ImageRepository
 import kimsy.rr.vental.data.ImageUtils
 import kimsy.rr.vental.data.UserRepository
+import kimsy.rr.vental.data.VentCardRepository
 import javax.inject.Singleton
 
 @Module
@@ -73,6 +74,17 @@ object AppModule {
     ): ImageRepository{
         return ImageRepository(firebaseFirestore,firebaseStorage,storageReference)
     }
+    @Provides
+    @Singleton
+    fun provideVentCardRepository(
+        firebaseFirestore: FirebaseFirestore,
+        firebaseStorage: FirebaseStorage,
+        storageReference: StorageReference
+    ): VentCardRepository{
+        return VentCardRepository(firebaseFirestore,firebaseStorage,storageReference)
+    }
+
+
 
     @Provides
     @Singleton

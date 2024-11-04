@@ -61,6 +61,8 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var ventCardCreationViewModel: VentCardCreationViewModel
 
+
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

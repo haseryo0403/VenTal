@@ -34,6 +34,7 @@ users:
         timestamp: "2024-11-03T12:00:00Z"  # ISO 8601形式での日時
         type: "comment"  # お知らせの種類
         read_flag: false  # 既読フラグ
+
     swipeCards:
       # collection
       - swipeCard_id: "card123"
@@ -42,15 +43,16 @@ users:
         poster_name: "山田太郎"
         poster_imageURL: "https://example.com/image123.jpg"
         swipeCard_content: "これは私の投稿です！"
-        swipeCard_created_datetime: "2024-11-01T10:00:00Z"
         swipeCard_report_flag: false
         swipeCard_deletion_request_flag: false
         swipeCard_imageURL: "https://example.com/card123.jpg"
         likeCount: 45
         tags:
           # array
-          - tag_id: "tag001"
-          - tag_id: "tag002"
+          - tag: "school"
+          - tag: "game"
+        swipeCard_created_datetime: "2024-11-01T10:00:00Z"
+
         discussions:
           # collection
           - discussion_id: "discussion456"
@@ -68,12 +70,14 @@ users:
             discussion_report_flag: false
             discussion_deletion_request_flag: false
             discussion_created_datetime: "2024-11-02T15:00:00Z"
+
             messages:
               # collection
               - message_id: "message123"
                 userType: "debater"  # posterかdebaterか
                 message_content: "それは面白いですね！"
                 sent_datetime: "2024-11-02T16:00:00Z"
+
             comments:
               # collection
               - comment_id: "comment123"
@@ -92,6 +96,7 @@ withdrawals:
 
 tags:
   # collection
+  #IDはいらないかも
   - tagId: "tag001"
     tagContent: "スポーツ"
     usedCount: 100

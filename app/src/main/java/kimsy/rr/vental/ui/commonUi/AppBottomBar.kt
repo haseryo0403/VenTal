@@ -10,6 +10,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
@@ -74,51 +75,12 @@ fun AppBottomBarView(
             }
         }
     } else {
-        //TODO 削除予定
-//        val pickMediaLauncher = rememberLauncherForActivityResult(
-//            contract = ActivityResultContracts.PickVisualMedia(),
-//            onResult = {
-//                uri->
-//                if(uri != null){
-//                    Log.d("PhotoPicker", "Selected URI: $uri")
-//                    viewModel.updateSelectedImage(uri)
-//
-//                } else {
-//                    Log.d("PhotoPicker", "No media selected")
-//                }
-//            })
-//
-//        val requestPermissionLauncher = rememberLauncherForActivityResult(
-//            contract = ActivityResultContracts.RequestPermission(),
-//            onResult = {permission ->
-//                if (!permission){
-//                    // ask for permission
-//                    val rationalRequired = ActivityCompat.shouldShowRequestPermissionRationale(
-//                        context as MainActivity,
-//                        Manifest.permission.READ_MEDIA_IMAGES
-//                    )
-//                    if (rationalRequired){
-//                        Toast.makeText(
-//                            context,
-//                            "この機能を使用するには画像アクセス権が必要です",
-//                            Toast.LENGTH_LONG
-//                        ).show()
-//                    } else {
-//                        Toast.makeText(
-//                            context,
-//                            "この機能を使用するには画像アクセス権が必要です。端末の設定で許可をしてください。",
-//                            Toast.LENGTH_LONG
-//                        ).show()
-//                    }
-//                }
-//            }
-//        )
-
         androidx.compose.material3.BottomAppBar(
             actions = {
+// 右寄               Spacer(modifier = Modifier.weight(1f))
                 viewModel.handleImagePermissionAndSelection(context)
             },
-            modifier = Modifier.height(48.dp)
+            modifier = Modifier.height(48.dp),
         )
     }
 }

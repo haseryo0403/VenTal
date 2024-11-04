@@ -2,6 +2,7 @@ package kimsy.rr.vental.ui.commonUi
 
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
@@ -138,6 +139,12 @@ fun MainView(
             mainViewModel = mainViewModel,
             ventCardCreationViewModel = ventCardCreationViewModel,
             pd = it)
+    }
+    LaunchedEffect(ventCardCreationViewModel.isSent){
+        if (ventCardCreationViewModel.isSent){
+            Toast.makeText(context,"送信完了",Toast.LENGTH_SHORT).show()
+            ventCardCreationViewModel.isSent = false
+        }
     }
 }
 
