@@ -4,6 +4,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.time.withTimeout
+import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
 class VentCardRepository @Inject constructor(
@@ -16,13 +18,15 @@ class VentCardRepository @Inject constructor(
         ventCard: VentCard
     ): Result<Unit>{
         return try {
-            db
-                .collection("users")
-                .document(ventCard.userId)
-                .collection("swipeCards")
-                .add(ventCard)
-                .await()
-            Result.success(Unit)
+            withTimeout(10000L){
+                db
+                    .collection("users")
+                    .document(ventCard.userId)
+                    .collection("swipeCards")
+                    .add(ventCard)
+                    .await()
+                Result.success(Unit)
+            }
         } catch (e : Exception) {
             Result.failure(e)
         }

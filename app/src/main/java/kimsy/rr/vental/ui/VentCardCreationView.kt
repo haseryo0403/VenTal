@@ -1,7 +1,9 @@
 package kimsy.rr.vental.ui
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -55,7 +58,8 @@ import kimsy.rr.vental.ui.CommonComposable.MaxLengthTextField
 @SuppressLint("SuspiciousIndentation")
 @Composable
 fun VentCardCreationView(
-    viewModel: VentCardCreationViewModel
+    viewModel: VentCardCreationViewModel,
+    context: Context
 ){
     val selectedUri = viewModel.selectedImageUri
     val dialogOpen = remember { mutableStateOf(false)}
@@ -132,7 +136,11 @@ fun VentCardCreationView(
                 }
 
                 IconButton(onClick = {
-                    dialogOpen.value = true
+                    if(viewModel.tags.size < 5) {
+                        dialogOpen.value = true
+                    } else {
+                        Toast.makeText(context, "タグは5つまでしか追加できません。", Toast.LENGTH_LONG).show()
+                    }
                 }) {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_control_point_24),
@@ -187,13 +195,14 @@ fun VentCardCreationView(
             }
         }
     }
-    tagDialog(dialogOpen = dialogOpen, viewModel = viewModel )
+    tagDialog(dialogOpen = dialogOpen, viewModel = viewModel, context )
 }
 
 @Composable
 fun tagDialog(
     dialogOpen: MutableState<Boolean>,
-    viewModel: VentCardCreationViewModel
+    viewModel: VentCardCreationViewModel,
+    context: Context
 ){
     var text by remember { mutableStateOf("")}
 
@@ -239,9 +248,13 @@ fun tagDialog(
                         }
                         TextButton(
                             onClick = {
-                                dialogOpen.value = false
-                                viewModel.tags.add(text)
-                                text = ""
+                                if(viewModel.tags.contains(text)){
+                                    Toast.makeText(context, "同じタグは追加できません", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    dialogOpen.value = false
+                                    viewModel.tags.add(text)
+                                    text = ""
+                                }
                             },
                             modifier = Modifier.padding(16.dp),
                         ) {

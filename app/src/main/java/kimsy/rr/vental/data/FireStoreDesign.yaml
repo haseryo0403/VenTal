@@ -43,14 +43,14 @@ users:
         poster_name: "山田太郎"
         poster_imageURL: "https://example.com/image123.jpg"
         swipeCard_content: "これは私の投稿です！"
-        swipeCard_report_flag: false
-        swipeCard_deletion_request_flag: false
         swipeCard_imageURL: "https://example.com/card123.jpg"
         likeCount: 45
         tags:
           # array
           - tag: "school"
           - tag: "game"
+        swipeCard_report_flag: false
+        swipeCard_deletion_request_flag: false
         swipeCard_created_datetime: "2024-11-01T10:00:00Z"
 
         discussions:

@@ -116,66 +116,126 @@ class VentCardCreationViewModel @Inject constructor(
 
     fun startSavingVentCard(
         context: Context,
-        onComplete: () -> Unit
+        onComplete: () -> Unit,
+        onError: () -> Unit
     ){
         viewModelScope.launch(Dispatchers.IO) {
-            saveVentCard(context)
-
-            onComplete()
+            val result = saveVentCard(context)
+            result
+                .onSuccess { onComplete() }
+                .onFailure{
+                    Log.d("VCCVM", "onFailure executed")
+                    onError()
+                }
         }
     }
 
-    suspend fun saveVentCard(
-        context: Context
-    ){
-        Log.d("VCCVM", "call repository")
+    suspend fun saveVentCard(context: Context):Result<Unit> {
+        return if (selectedImageUri == null){
+            Log.d("VCCVM", "saveVentCardWithoutImage executed")
 
-        if(selectedImageUri == null){
-                // 成功時の処理
-                // ダウンロードURLをUIに渡したり、DBに保存するなど
-                Log.d("saveImage","Success")
-                val ventCard = VentCard(
-                    userId = mainViewModel.currentUser.value?.uid.toString(),
-                    swipeCardContent = content,
-                    swipeCardImageURL = "",
-                    tags = tags
-                )
-                val saveVentCardResult = ventCardRepository.saveVentCardToFireStore(ventCard)
-                saveVentCardResult.onSuccess {
-                    isSent = true
-                    content = ""
-                    selectedImageUri = null
-                    tags.clear()
-                }.onFailure { e ->
-                    //TODO スワイプカード保存失敗時の処理
-
-                }
+            saveVentCardWithoutImage()
         } else {
-            val saveImageResult = imageRepository.saveImageToStorage(selectedImageUri!!,context)
-            saveImageResult.onSuccess {downloadUrl ->
-                // 成功時の処理
-                // ダウンロードURLをUIに渡したり、DBに保存するなど
-                Log.d("saveImage","Success")
+            Log.d("VCCVM", " saveVentCardWithImage executed")
+
+            saveVentCardWithImage(context)
+        }
+    }
+    private suspend fun saveVentCardWithoutImage(): Result<Unit> {
+        val ventCard = VentCard(
+            userId = mainViewModel.currentUser.value?.uid.toString(),
+            swipeCardContent = content,
+            swipeCardImageURL = "",
+            tags = tags
+        )
+        return ventCardRepository.saveVentCardToFireStore(ventCard)
+            .onSuccess {
+                Log.d("VCCVM", " saveVentCardToFireStore success")
+                // 成功時の後処理
+                isSent = true
+                content = ""
+                selectedImageUri = null
+                tags.clear()
+            }
+    }
+    private suspend fun saveVentCardWithImage(context: Context): Result<Unit> {
+        // 画像を保存してからVentCardを保存する
+        return imageRepository.saveImageToStorage(selectedImageUri!!, context)
+            .mapCatching { downloadUrl ->
+                Log.d("VCCVM", " saveImageToStorage success")
+                // 画像保存が成功したので、次にVentCardを保存する
                 val ventCard = VentCard(
                     userId = mainViewModel.currentUser.value?.uid.toString(),
                     swipeCardContent = content,
                     swipeCardImageURL = downloadUrl,
                     tags = tags
                 )
-                val saveVentCardResult = ventCardRepository.saveVentCardToFireStore(ventCard)
-                saveVentCardResult.onSuccess {
-                    isSent = true
-                    content = ""
-                    selectedImageUri = null
-                    tags.clear()
-                }.onFailure { e ->
-                    //TODO スワイプカード保存失敗時の処理
+                // VentCardの保存処理
+                ventCardRepository.saveVentCardToFireStore(ventCard).getOrThrow() // エラーがあれば例外を投げる
+            }.onSuccess {
+                Log.d("VCCVM", " saveVentCardToFireStore success")
 
-                }
-            }.onFailure { e ->
-                //TODO 画像保存失敗時の処理
-
+                // 全て成功した場合、リセットなどの処理を行う
+                isSent = true
+                content = ""
+                selectedImageUri = null
+                tags.clear()
             }
-        }
     }
+
+
+
+//    suspend fun saveVentCard(context: Context): Result<Unit>{
+//        Log.d("VCCVM", "call repository")
+//
+//        if(selectedImageUri == null){
+//                // 成功時の処理
+//                // ダウンロードURLをUIに渡したり、DBに保存するなど
+//                Log.d("saveImage","Success")
+//                val ventCard = VentCard(
+//                    userId = mainViewModel.currentUser.value?.uid.toString(),
+//                    swipeCardContent = content,
+//                    swipeCardImageURL = "",
+//                    tags = tags
+//                )
+//                val saveVentCardResult = ventCardRepository.saveVentCardToFireStore(ventCard)
+//                saveVentCardResult.onSuccess {
+//                    isSent = true
+//                    content = ""
+//                    selectedImageUri = null
+//                    tags.clear()
+//                }.onFailure { e ->
+//                    //TODO スワイプカード保存失敗時の処理
+//                    //toastか画面を戻るか
+//                    //toastで戻るボタンとかでもありかも
+//
+//                }
+//        } else {
+//            val saveImageResult = imageRepository.saveImageToStorage(selectedImageUri!!,context)
+//            saveImageResult.onSuccess {downloadUrl ->
+//                // 成功時の処理
+//                // ダウンロードURLをUIに渡したり、DBに保存するなど
+//                Log.d("saveImage","Success")
+//                val ventCard = VentCard(
+//                    userId = mainViewModel.currentUser.value?.uid.toString(),
+//                    swipeCardContent = content,
+//                    swipeCardImageURL = downloadUrl,
+//                    tags = tags
+//                )
+//                val saveVentCardResult = ventCardRepository.saveVentCardToFireStore(ventCard)
+//                saveVentCardResult.onSuccess {
+//                    isSent = true
+//                    content = ""
+//                    selectedImageUri = null
+//                    tags.clear()
+//                }.onFailure { e ->
+//                    //TODO スワイプカード保存失敗時の処理
+//
+//                }
+//            }.onFailure { e ->
+//                //TODO 画像保存失敗時の処理
+//
+//            }
+//        }
+//    }
 }

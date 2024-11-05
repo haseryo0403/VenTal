@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewModelScope
 import kimsy.rr.vental.ViewModel.VentCardCreationViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -38,6 +39,7 @@ fun AppTopBarView(
     title: String,
     context: Context,
     onBackNavClicked: () -> Unit = {},
+    onSavingFailure: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior,
     viewModel: VentCardCreationViewModel
 ){
@@ -73,9 +75,20 @@ fun AppTopBarView(
                     } else {
                         onBackNavClicked()
                         isLoading =true
-                        viewModel.startSavingVentCard(context){
-                            isLoading = false
-                        }
+                        viewModel.startSavingVentCard(
+                            context,
+                            onError = {
+                                isLoading = false
+
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    onSavingFailure() // メインスレッドでバックスタックを操作
+                                    Toast.makeText(context, "送信に失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
+                                }
+                            },
+                            onComplete = {
+                                isLoading = false
+                            }
+                        )
                     }
                      }) {
                     // テキストを追加
@@ -106,11 +119,7 @@ fun AppTopBarView(
                                 TopAppBarDefaults.pinnedScrollBehavior()
                             } else {
                                 scrollBehavior
-                            },
-    //        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-    //            containerColor = MaterialTheme.colorScheme.tertiary //TODO TextField の背景色と同じにする
-    //            )
-
+                            }
         )
         if(isLoading){
             LinearProgressIndicator(

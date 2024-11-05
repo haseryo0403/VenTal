@@ -13,10 +13,12 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kimsy.rr.vental.MainActivity
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withTimeout
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.InputStream
 import java.util.UUID
+import java.util.concurrent.TimeoutException
 import javax.inject.Inject
 
 class ImageRepository @Inject constructor(
@@ -38,16 +40,21 @@ class ImageRepository @Inject constructor(
             Log.d("TAG", "${storageRef.child("images/$uniqueFileName")}")
             Log.d("TAG","uri is: $uri")
 
-            storageRef.child("images/$uniqueFileName").putFile(uri).await()
+            withTimeout(10000L){
+                storageRef.child("images/$uniqueFileName").putFile(uri).await()
 
-            val downloadUrl = storageRef.child("images/$uniqueFileName").downloadUrl.await().toString()
-            Log.d("IRepo", "URL get success: $downloadUrl")
+                val downloadUrl = storageRef.child("images/$uniqueFileName").downloadUrl.await().toString()
+                Log.d("IRepo", "URL get success: $downloadUrl")
 
-            Result.success(downloadUrl)
+                Result.success(downloadUrl)
+            }
 
+
+        } catch (e: TimeoutException) {
+            Log.e("ImageRepository", "Failed to save image: ${e.message}", e)
+            Result.failure(e)
         } catch (e: Exception) {
             Log.e("ImageRepository", "Failed to save image: ${e.message}", e)
-
             Result.failure(e)
         }
 

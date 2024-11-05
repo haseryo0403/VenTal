@@ -21,6 +21,8 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -114,6 +116,7 @@ fun MainView(
                      title = title.value,
                      context = context,
                      {controller.navigateUp()},
+                     {controller.navigate(Screen.VentCardCreation.route)},
                      scrollBehavior,
                      viewModel = ventCardCreationViewModel)
 
@@ -180,7 +183,7 @@ fun Navigation(
             MyPageView(viewModel)
         }
         composable(Screen.VentCardCreation.route) {
-            VentCardCreationView(ventCardCreationViewModel)
+            VentCardCreationView(ventCardCreationViewModel, context)
         }
 
     }
