@@ -68,7 +68,7 @@ fun VentCardCreationView(
     LazyColumn(
     modifier = Modifier
         .fillMaxSize()
-        .padding(start = 40.dp, end = 16.dp)
+        .padding(start = 16.dp, end = 16.dp)
     ) {
         item {
             //TODO このTextfieldを背景と同じ色にすればあたかも大きなTextfieldに見えるはず

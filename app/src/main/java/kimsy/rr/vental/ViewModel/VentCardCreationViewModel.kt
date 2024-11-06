@@ -10,6 +10,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -104,7 +105,8 @@ class VentCardCreationViewModel @Inject constructor(
                         requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
                     }
                 }
-            }
+            },
+            modifier = Modifier.padding(start = 8.dp)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.baseline_image_24),

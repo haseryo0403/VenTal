@@ -44,24 +44,6 @@ class UserRepository @Inject constructor(
         }
     }
 
-    //TODO DELETE
-//    suspend fun getUser(): List<User> {
-//        return try {
-//            val uid = auth.currentUser!!.uid
-//            val result = db.collection("users")
-//                .whereEqualTo("uid", uid)
-//                .get()
-//                .await()
-//            Log.d("TAG","getUser success")
-//            result.toObjects(User::class.java)
-//        } catch (e: FirebaseFirestoreException) {
-//            Log.e("FirestoreError", "Firestore error: ${e.message}", e)
-//            emptyList()
-//        } catch (e: Exception) {
-//            Log.e("GeneralError", "An error occurred: ${e.message}", e)
-//            emptyList()
-//        }
-//    }
 
     suspend fun getCurrentUser(): User? {
         return try {

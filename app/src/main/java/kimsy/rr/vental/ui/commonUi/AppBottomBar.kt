@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.BottomNavigation
@@ -80,7 +81,7 @@ fun AppBottomBarView(
 // 右寄               Spacer(modifier = Modifier.weight(1f))
                 viewModel.handleImagePermissionAndSelection(context)
             },
-            modifier = Modifier.height(48.dp),
+            modifier = Modifier.height(48.dp)
         )
     }
 }
