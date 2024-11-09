@@ -18,6 +18,9 @@ users:
     liked_SwipeCards:
       # collection
       - swipeCard_id: "card789"
+    skipped_SwipeCards:
+      # collection
+      - swipeCard_id: "card678"
     liked_discussions:
       # collection
       - discussion_id: "discussion456"

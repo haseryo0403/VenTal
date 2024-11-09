@@ -13,7 +13,7 @@ import javax.inject.Inject
 class MyPageViewModel @Inject constructor(
     private val mainViewModel: MainViewModel
 ): ViewModel() {
-    val currentUser: LiveData<User> = mainViewModel.currentUser
+//    val currentUser: LiveData<User> = mainViewModel.currentUser
 
 
 }

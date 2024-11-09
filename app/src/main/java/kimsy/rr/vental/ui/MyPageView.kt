@@ -1,5 +1,6 @@
 package kimsy.rr.vental.ui
 
+import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -22,12 +23,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,17 +38,39 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
+import kimsy.rr.vental.MainActivity
 import kimsy.rr.vental.R
+import kimsy.rr.vental.ViewModel.AuthViewModel
 import kimsy.rr.vental.ViewModel.MainViewModel
 import kimsy.rr.vental.ViewModel.MyPageViewModel
 
 @Composable
 fun MyPageView(
-    viewModel: MyPageViewModel
+    viewModel: MyPageViewModel,
+    authViewModel: AuthViewModel,
+    mainViewModel: MainViewModel,
+    onSignOutSuccess:() -> Unit
 ){
 
+    val context = LocalContext.current
+
     // currentUserをobserveしてStateとして取得
-    val user by viewModel.currentUser.observeAsState()
+    val user by mainViewModel.currentUser.observeAsState()
+
+    val signOutResult by authViewModel.signOutResult.observeAsState()
+
+
+    // サインアウト結果に基づいて遷移処理を行う
+    LaunchedEffect(signOutResult) {
+        if (signOutResult == true) {
+            // サインアウト成功時にメイン画面などに遷移
+            onSignOutSuccess()
+        } else if (signOutResult == false) {
+            // サインアウト失敗時の処理（エラーメッセージなど）
+            Log.e("SignOut", "Sign out failed")
+        }
+    }
+
 
     LazyColumn(
         modifier = Modifier.fillMaxWidth()
@@ -103,6 +128,17 @@ fun MyPageView(
                     }
                     Button(onClick = { /*TODO*/ }) {
                         Text(text = "プロフィールを編集")
+                    }
+                    Button(onClick = {
+                        mainViewModel.signOut(){
+                            val intent = Intent(context, MainActivity::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                            context.startActivity(intent)
+                        }
+
+
+                    }) {
+                        Text(text = "ログアウト")
                     }
                 }
             }

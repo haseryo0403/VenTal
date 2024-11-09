@@ -61,6 +61,7 @@ fun VentCardCreationView(
     viewModel: VentCardCreationViewModel,
     context: Context
 ){
+
     val selectedUri = viewModel.selectedImageUri
     val dialogOpen = remember { mutableStateOf(false)}
 
@@ -98,7 +99,7 @@ fun VentCardCreationView(
                         .align(Alignment.CenterVertically)
                         .padding(6.dp)
                         .background(
-                            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f ),
+                            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f),
                             shape = RoundedCornerShape(2.dp)
                         )
                 )
@@ -165,7 +166,7 @@ fun VentCardCreationView(
                         modifier = Modifier
                             .fillMaxSize()
                             .clip(RoundedCornerShape(16.dp)),
-                        contentScale = ContentScale.Fit,
+                        contentScale = ContentScale.FillWidth,
                     )
                     IconButton(
                         onClick = { viewModel.selectedImageUri = null },

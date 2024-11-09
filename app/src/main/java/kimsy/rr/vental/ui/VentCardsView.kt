@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.Arrangement.Absolute.Center
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -34,6 +35,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -42,6 +45,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Surface
@@ -49,6 +53,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -59,6 +64,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalGraphicsContext
 import androidx.compose.ui.res.painterResource
@@ -66,7 +72,9 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
+import kimsy.rr.vental.ViewModel.VentCardsViewModel
 import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
@@ -100,35 +108,83 @@ fun VentCardsView(
         }
     }
 
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(modifier = Modifier
+            .offset { IntOffset(offset.roundToInt(), 0) }
+            .padding(top = 16.dp)
+            .pointerInput(Unit) {
+                detectHorizontalDragGestures(onDragEnd = {
+                    offset = 0f
+                }) { change, dragAmount ->
 
-    Box(modifier = Modifier
-        .offset { IntOffset(offset.roundToInt(), 0) }
-        .pointerInput(Unit) {
-            detectHorizontalDragGestures(onDragEnd = {
-                offset = 0f
-            }) { change, dragAmount ->
+                    offset += (dragAmount / density) * sensitivityFactor
+                    when {
+                        offset > swipeThreshold -> {
+                            dismissRight = true
+                        }
 
-                offset += (dragAmount / density) * sensitivityFactor
-                when {
-                    offset > swipeThreshold -> {
-                        dismissRight = true
+                        offset < -swipeThreshold -> {
+                            dismissLeft = true
+                        }
                     }
-
-                    offset < -swipeThreshold -> {
-                        dismissLeft = true
-                    }
+                    if (change.positionChange() != Offset.Zero) change.consume()
                 }
-                if (change.positionChange() != Offset.Zero) change.consume()
+            }
+            .graphicsLayer(
+                alpha = 10f - animateFloatAsState(if (dismissRight) 1f else 0f).value,
+                rotationZ = animateFloatAsState(offset / 50).value
+            )) {
+                content()
+
+            }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            ElevatedButton(
+                onClick = { /*TODO*/ },
+                modifier = Modifier
+                    .size(60.dp),
+                shape = CircleShape,
+                contentPadding = PaddingValues(0.dp) // アイコンをボタンのサイズに収める
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_back_hand_24),
+                    contentDescription = null,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+
+            ElevatedButton(
+                onClick = { /*TODO*/ },
+                modifier = Modifier
+                    .size(width = 140.dp, height = 60.dp)
+            ) {
+                Text(text = "スキップ")
+            }
+
+            ElevatedButton(
+                onClick = { /*TODO*/ },
+                modifier = Modifier
+                    .size(60.dp),
+                shape = CircleShape,
+                contentPadding = PaddingValues(0.dp) // アイコンをボタンのサイズに収める
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_favorite_24),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(28.dp)
+                )
             }
         }
-        .graphicsLayer(
-            alpha = 10f - animateFloatAsState(if (dismissRight) 1f else 0f).value,
-            rotationZ = animateFloatAsState(offset / 50).value
-        )) {
-        content()
     }
-
-
 }
 
 
@@ -211,50 +267,59 @@ private fun SwipeableRow(
     }
 }
 
+
+
 @Composable
-fun MySwipeCardDemo() {
+fun MySwipeCardDemo(viewModel: VentCardsViewModel) {
+    // currentUserをobserveしてStateとして取得
+    val user by viewModel.currentUser.observeAsState()
+    viewModel.loadVentCards()
+    val ventCards by viewModel.ventCards.observeAsState(emptyList())
+
     VentCardsView(
         onSwipeLeft = { /* 左にスワイプしたときの処理 */ },
         onSwipeRight = { /* 右にスワイプしたときの処理 */ },
         content = {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                ElevatedCard(
-                    onClick = {},
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.8f)
-                        .padding(top = 32.dp)
-                ){
-                    Box(modifier = Modifier.fillMaxSize()){
-                        LazyColumn(
-                            modifier = Modifier.padding(8.dp)
-                        ) {
-                            item {
+            ElevatedCard(
+                onClick = {},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.8f)
+//                    .padding(top = 32.dp)
+            ){
+                Box(modifier = Modifier.fillMaxSize()){
+                    LazyColumn(
+                        modifier = Modifier.padding(12.dp)
+                    ) {
+                        items(ventCards){ventCard ->
+
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                 ){
-                                    Icon(painter = painterResource(id = R.drawable.baseline_account_circle_24),
-                                        contentDescription = "AccountIcon",
+                                    //TODO　DBから自分が投稿したもの意外を取得
+                                    Image(
+                                        painter = rememberAsyncImagePainter(ventCard.posterImageURL),
+                                        contentDescription = null,
                                         modifier = Modifier
-                                            .weight(1f)
-                                            .size(48.dp)
+                                            .size(56.dp)
+                                            .clip(CircleShape),
+                                        contentScale = ContentScale.Crop
                                     )
-
                                     Column(
                                         modifier = Modifier.weight(5f)
                                     ) {
                                         Row(modifier = Modifier.fillMaxWidth(),
                                             horizontalArrangement = Arrangement.SpaceBetween) {
-                                            Text(text = "User Name")
-                                            Text(text = "23時間")
+                                            Text(text = ventCard.posterName)
+                                            Text(text = ventCard.swipeCardCreatedDateTime.toString())
                                         }
-                                        Text(text = "アストンマーチンは、英国発の高級スポーツカーメーカーで、美しいデザインと圧倒的なパフォーマンスが特徴です。映画『007』シリーズでのボンドカーとしても有名で、エレガンスと力強さを融合させた独自のスタイルが世界中の愛車家に支持されています。文字数を最大の140文字に設定してあります")
-                                        Text(text = "#学校", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        Text(text = ventCard.swipeCardContent)
+                                        ventCard.tags.forEach {tag ->
+                                            Text(text = tag, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        }
                                         //TODO color choose
-                                        Image(painter = painterResource(id = R.drawable.aston_martin),
+                                        Image(painter = rememberAsyncImagePainter(ventCard.swipeCardImageURL),
                                             contentDescription = "Image",
                                             modifier = Modifier.clip(RoundedCornerShape(16.dp)))
                                         Row(
@@ -266,33 +331,67 @@ fun MySwipeCardDemo() {
                                         ) {
                                             Icon(painter = painterResource(id = R.drawable.baseline_heart_broken_24),
                                                 contentDescription = "haert")
-                                            Text(text = "64")
+                                            Text(text = ventCard.likeCount.toString())
                                         }
+                                    }
+                                }
+
+                        }
+                        item {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            ){
+                                //TODO　DBから自分が投稿したもの意外を取得
+                                Image(
+                                    painter = rememberAsyncImagePainter(user?.photoURL),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(56.dp)
+                                        .clip(CircleShape),
+                                    contentScale = ContentScale.Crop
+                                )
+                                Column(
+                                    modifier = Modifier.weight(5f)
+                                ) {
+                                    Row(modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween) {
+                                        user?.name?.let { Text(text = it) }
+                                        Text(text = "23時間")
+                                    }
+                                    Text(text = "アストンマーチンは、英国発の高級スポーツカーメーカーで、美しいデザインと圧倒的なパフォーマンスが特徴です。映画『007』シリーズでのボンドカーとしても有名で、エレガンスと力強さを融合させた独自のスタイルが世界中の愛車家に支持されています。文字数を最大の140文字に設定してあります")
+                                    Text(text = "#学校", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    //TODO color choose
+                                    Image(painter = painterResource(id = R.drawable.aston_martin),
+                                        contentDescription = "Image",
+                                        modifier = Modifier.clip(RoundedCornerShape(16.dp)))
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(4.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.End
+                                    ) {
+                                        Icon(painter = painterResource(id = R.drawable.baseline_heart_broken_24),
+                                            contentDescription = "haert")
+                                        Text(text = "64")
                                     }
                                 }
                             }
                         }
                     }
                 }
-                ElevatedButton(
-                onClick = { /*TODO*/ },
-                modifier = Modifier
-                    .padding(16.dp)
-                    .size(width = 200.dp, height = 60.dp)
-                ) {
-                Text(text = "スキップ")
-                }
             }
         }
     )
 }
 
-@Preview(
-    device = Devices.PIXEL_7,
-    showSystemUi = true,
-    showBackground = true,
-)
-@Composable
-fun VentCardsPrev(){
-    MySwipeCardDemo()
-}
+//@Preview(
+//    device = Devices.PIXEL_7,
+//    showSystemUi = true,
+//    showBackground = true,
+//)
+//@Composable
+//fun VentCardsPrev(){
+//    MySwipeCardDemo()
+//}

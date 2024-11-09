@@ -1,5 +1,6 @@
 package kimsy.rr.vental.ViewModel
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
@@ -23,9 +24,14 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class AuthViewModel @Inject constructor(private val userRepository: UserRepository) : ViewModel() {
+class AuthViewModel @Inject constructor(
+    private val userRepository: UserRepository,
+    private val auth: FirebaseAuth,
 
-    private val auth: FirebaseAuth = Firebase.auth
+
+    ) : ViewModel() {
+    private val _currentUser = MutableLiveData<User>()
+    val currentUser: LiveData<User> get() = _currentUser
 
     // 状態管理用の変数
     var isLoading by mutableStateOf(false)
@@ -40,6 +46,9 @@ class AuthViewModel @Inject constructor(private val userRepository: UserReposito
 
     private val _authResult = MutableLiveData<Boolean>()
     val authResult: LiveData<Boolean> = _authResult
+
+    private val _signOutResult = MutableLiveData<Boolean>()
+    val signOutResult: LiveData<Boolean> get() = _signOutResult
 
 
     // Googleサインインを開始するメソッド
@@ -114,7 +123,6 @@ class AuthViewModel @Inject constructor(private val userRepository: UserReposito
                         // 新規ユーザー登録
                         Log.d("TAG", "No data found in firestore")
                         userRepository.saveUserToFirestore()
-//TODO これいるかも                        result = userRepository.getCurrentUser()
                         //TODO ユーザー情報登録に失敗した場合
                         _authResult.value = false
 
@@ -132,4 +140,34 @@ class AuthViewModel @Inject constructor(private val userRepository: UserReposito
             }
         }
     }
+
+    @SuppressLint("SuspiciousIndentation")
+    fun loadCurrentUser(){
+        Log.d("TAG　MainViewModel", "load Current User")
+        viewModelScope.launch {
+            //FireStoreからユーザー取得
+            val result = userRepository.getCurrentUser()
+            Log.d("TAG", result.toString())
+            if (result != null) {
+                _currentUser.value = result
+
+            } else {
+                // データを取得できなかった場合
+                _currentUser.value = null  // 必要に応じてnullをセット
+            }
+        }
+    }
+
+    fun signOut(
+        onSignOutComplete: () -> Unit
+    ) {
+        auth.signOut()
+        val result = userRepository.signOutFromGoogle()
+        if (result.isSuccess){
+            onSignOutComplete()
+        } else{
+            Log.e("SignOut", "Sign Out failed")
+        }
+    }
+
 }

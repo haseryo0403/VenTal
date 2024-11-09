@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kimsy.rr.vental.Screen
 import kimsy.rr.vental.data.User
@@ -16,13 +17,16 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 //@HiltViewModel
-class MainViewModel @Inject constructor(private val userRepository: UserRepository):ViewModel() {
+class MainViewModel @Inject constructor(
+    private val userRepository: UserRepository,
+    private val auth: FirebaseAuth):ViewModel() {
 
     private val _currentScreen:MutableState<Screen> = mutableStateOf(Screen.BottomScreen.TimeLine)
     private val _currentUser = MutableLiveData<User>()
 
     init {
         loadCurrentUser()
+        Log.e("VM initialization", "MVM initialized")
     }
     val currentUser: LiveData<User> get() = _currentUser
 
@@ -50,4 +54,20 @@ class MainViewModel @Inject constructor(private val userRepository: UserReposito
             }
         }
     }
+
+    fun signOut(
+        onSignOutComplete: () -> Unit
+    ) {
+        auth.signOut()
+        val result = userRepository.signOutFromGoogle()
+        if (result.isSuccess){
+            onSignOutComplete()
+        } else{
+            Log.e("SignOut", "Sign Out failed")
+        }
+    }
+
+
+
+
 }

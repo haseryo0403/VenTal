@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -13,6 +14,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -26,7 +28,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import kimsy.rr.vental.R
+import kimsy.rr.vental.Screen
 import kimsy.rr.vental.ViewModel.VentCardCreationViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,6 +45,7 @@ import kotlinx.coroutines.launch
 fun AppTopBarView(
     title: String,
     context: Context,
+    navController: NavController,
     onBackNavClicked: () -> Unit = {},
     onSavingFailure: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior,
@@ -97,6 +105,14 @@ fun AppTopBarView(
                         modifier = Modifier // 右側のパディング
                     )
                 }
+            } else if(!title.contains("通知")){
+
+                IconButton(onClick = {
+                    navController.navigate(Screen.Notifications.route)
+                }) {
+                    Icon(painter = painterResource(id = R.drawable.baseline_notifications_24), contentDescription = "notifications")
+                }
+
             } else {
                 null
             }
@@ -106,9 +122,13 @@ fun AppTopBarView(
         modifier = Modifier.fillMaxWidth()
     ){
         CenterAlignedTopAppBar(
+//            modifier = Modifier.height(48.dp),
             title = {
                 if(title != "VCC"){
-                    Text(title)
+                    Text(
+                        title,
+//                        style = MaterialTheme.typography.titleLarge
+                    )
                 } else {
                     null
                 }
@@ -123,7 +143,9 @@ fun AppTopBarView(
         )
         if(isLoading){
             LinearProgressIndicator(
-                modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth()
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
             )
         }
 

@@ -46,8 +46,9 @@ class UserRepository @Inject constructor(
 
 
     suspend fun getCurrentUser(): User? {
+        val currentUser = auth.currentUser ?: return null
         return try {
-            val uid = auth.currentUser!!.uid
+            val uid = currentUser.uid
             Log.d("TAG", "uid: $uid")
             val result = db.collection("users")
                 .whereEqualTo("uid", uid)
@@ -67,6 +68,13 @@ class UserRepository @Inject constructor(
         }
     }
 
+//    suspend fun getCurentUser(): User? {
+//        val user = auth.currentUser
+//        user?.let {
+//
+//        }
+//    }
+
     suspend fun saveUserToFirestore() {
         val user = auth.currentUser
         user?.let {
@@ -75,19 +83,19 @@ class UserRepository @Inject constructor(
                 uid = it.uid,
                 name = it.displayName ?: "",
                 email = it.email ?: "",
-                photoURL = it.photoUrl.toString()
+                photoURL = it.photoUrl?.toString() ?:""
             )
             db.collection("users").document(newUser.uid).set(newUser).await()
         }
     }
 
-    companion object {
-        fun createGoogleSignInClient(activity: ComponentActivity): GoogleSignInClient {
-            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(activity.getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build()
-            return GoogleSignIn.getClient(activity, gso)
+    //TODO delete
+    fun signOutFromGoogle(): Result<Boolean> =
+        try {
+            googleSignInClient.signOut()
+            Result.success(true)
+        } catch (e: Exception) {
+            Log.e("SignOut", "google Sign out failed", e)
+            Result.failure(e)
         }
-    }
 }

@@ -1,8 +1,10 @@
 package kimsy.rr.vental
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -70,8 +72,13 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var ventCardCreationViewModel: VentCardCreationViewModel
 
+
     @Inject
     lateinit var ventCardsViewModel: VentCardsViewModel
+
+//    lateinit var auth: FirebaseAuth
+//
+//    lateinit var authStateListener: FirebaseAuth.AuthStateListener
 
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -84,6 +91,20 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
 
+//        auth = FirebaseAuth.getInstance()
+//        // AuthStateListenerの初期化
+//        authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+//            val user = firebaseAuth.currentUser
+//            if (user == null) {
+//                Log.e("authState Listener","Sign out detected")
+//                // サインアウトが検知されたらMainActivityに戻す
+////                startActivity(Intent(this, MainActivity::class.java))
+////                finish()
+//            } else {
+//                Log.d("AuthStateListener", "User signed in: ${user.uid}")
+//            }
+//        }
+
         setContent {
             val navController = rememberNavController()
             var startDestination by remember { mutableStateOf<String?>(null) }
@@ -92,7 +113,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize().safeDrawingPadding(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // 非同期処理でstartDestinationを決定
+//                     非同期処理でstartDestinationを決定
                     LaunchedEffect(Unit) {
                         val auth = FirebaseAuth.getInstance()
                         val currentUser = auth.currentUser
@@ -115,6 +136,7 @@ class MainActivity : ComponentActivity() {
                             authViewModel = authViewModel,
                             mainViewModel = mainViewModel,
                             ventCardCreationViewModel = ventCardCreationViewModel,
+                            ventCardsViewModel = ventCardsViewModel,
                             startDestination = it // 動的に決定したstartDestinationを渡す
                         )
                     }
@@ -126,7 +148,20 @@ class MainActivity : ComponentActivity() {
 //        super.onStart()
 //    }
 
+
     }
+//    override fun onStart() {
+//        super.onStart()
+//        // リスナーをtuika
+//            auth.addAuthStateListener(authStateListener)
+//    }
+//
+//    override fun onStop() {
+//        super.onStop()
+//        // リスナーを削除
+//        auth.removeAuthStateListener(authStateListener)
+//    }
+
 }
 
 
@@ -138,6 +173,7 @@ fun NavigationGraph(
     authViewModel: AuthViewModel,
     mainViewModel: MainViewModel,
     ventCardCreationViewModel: VentCardCreationViewModel,
+    ventCardsViewModel: VentCardsViewModel,
     startDestination: String
 ){
 
@@ -155,7 +191,9 @@ fun NavigationGraph(
         composable(Screen.TimeLineScreen.route){
             MainView(
                 mainViewModel = mainViewModel,
-                ventCardCreationViewModel = ventCardCreationViewModel
+                authViewModel = authViewModel,
+                ventCardCreationViewModel = ventCardCreationViewModel,
+                ventCardsViewModel = ventCardsViewModel
                 )
         }
     }

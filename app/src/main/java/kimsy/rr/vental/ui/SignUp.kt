@@ -75,6 +75,7 @@ fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
     LaunchedEffect(authResult) {
         if (authResult == true) {
             Log.d("TAG", "Navigate to timeline")
+            authViewModel.resetAuthResult()
             onNavigateToMainView()  // 遷移先の処理を呼び出す
         } else if (authResult == false) {
             Log.e("TAG", "New Sign-in")

@@ -1,5 +1,6 @@
 package kimsy.rr.vental.ui.commonUi
 
+import android.content.Intent
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
@@ -46,20 +47,25 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
+import kimsy.rr.vental.MainActivity
 import kimsy.rr.vental.Screen
 import kimsy.rr.vental.ViewModel.MainViewModel
 import kimsy.rr.vental.otherScreen
 import kimsy.rr.vental.screensInBottom
 import kotlinx.coroutines.CoroutineScope
 import kimsy.rr.vental.R
+import kimsy.rr.vental.ViewModel.AuthViewModel
 import kimsy.rr.vental.ViewModel.MyPageViewModel
 import kimsy.rr.vental.ViewModel.VentCardCreationViewModel
+import kimsy.rr.vental.ViewModel.VentCardsViewModel
 import kimsy.rr.vental.data.ImageUtils
 import kimsy.rr.vental.ui.FollowsView
 import kimsy.rr.vental.ui.MyPageView
 import kimsy.rr.vental.ui.MySwipeCardDemo
 import kimsy.rr.vental.ui.NotificationsView
+import kimsy.rr.vental.ui.SignInScreen
 import kimsy.rr.vental.ui.TimeLineView
 import kimsy.rr.vental.ui.VentCardCreationView
 import javax.inject.Inject
@@ -71,8 +77,12 @@ import javax.inject.Inject
 @Composable
 fun MainView(
     mainViewModel: MainViewModel,
-    ventCardCreationViewModel: VentCardCreationViewModel
+    authViewModel: AuthViewModel,
+    ventCardCreationViewModel: VentCardCreationViewModel,
+    ventCardsViewModel: VentCardsViewModel
 ){
+
+    Log.e("View", "Main called")
 
     val context = LocalContext.current
     val imageUtils = ImageUtils(context)
@@ -84,11 +94,13 @@ fun MainView(
     val currentScreen = remember {
         mainViewModel.currentScreen.value
     }
+    val auth = FirebaseAuth.getInstance()
 
 
     // 現在のルートに応じたタイトルを設定
     val title = remember { mutableStateOf("タイムライン") } // デフォルト値をセット
 
+    //TODO delete comment when initializing problem is solved. this isn't cause
     // ルートとタイトルを一致させる
     LaunchedEffect(nevBackStackEntry) {
         val route = nevBackStackEntry?.destination?.route
@@ -98,6 +110,22 @@ fun MainView(
         // スクロールの状態をリセット
         scrollBehavior.state.heightOffset = 0f
     }
+
+//    LaunchedEffect(Unit) {
+//        val authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+//            val user = firebaseAuth.currentUser
+//            if (user == null) {
+//                // サインアウトされた場合の処理（例えば、サインイン画面へ遷移）
+//                Log.e("AuthStateListener", "User signed out")
+//                // サインイン画面に遷移
+//                val intent = Intent(context, MainActivity::class.java)
+//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+//                context.startActivity(intent)            } else {
+//                Log.d("AuthStateListener", "User signed in: ${user.uid}")
+//            }
+//        }
+//        auth.addAuthStateListener(authStateListener)
+//    }
 
     Scaffold(
         bottomBar = {
@@ -115,34 +143,41 @@ fun MainView(
                  AppTopBarView(
                      title = title.value,
                      context = context,
+                     navController = controller,
                      {controller.navigateUp()},
-                     {controller.navigate(Screen.VentCardCreation.route)},
+                     {controller.navigate(Screen.BottomScreen.VentCardCreation.route)},
                      scrollBehavior,
                      viewModel = ventCardCreationViewModel)
 
         },
         scaffoldState = scaffoldState,
-        floatingActionButton = {
-            if(
-                title.value.contains("タイムライン") || title.value.contains("VentCards")
-            ) {
-                FloatingActionButton(
-                    onClick = {
-                              controller.navigate(Screen.VentCardCreation.route)
-                    },
-                    modifier = Modifier.padding(all = 8.dp),
-                ) {
-                    Icon(imageVector = Icons.Default.Add, contentDescription = null)
-                }
-            }
-        }
+//        floatingActionButton = {
+//            if(
+//                title.value.contains("タイムライン") || title.value.contains("VentCards")
+//            ) {
+//                FloatingActionButton(
+//                    onClick = {
+//                              controller.navigate(Screen.VentCardCreation.route)
+//                    },
+//                    modifier = Modifier.padding(all = 8.dp),
+//                ) {
+//                    Icon(imageVector = Icons.Default.Add, contentDescription = null)
+//                }
+//            }
+//        }
     ) {
+        Log.d("View", "MV calls Navigation")
+
         Navigation(
             navController = controller,
             mainViewModel = mainViewModel,
+            authViewModel = authViewModel,
             ventCardCreationViewModel = ventCardCreationViewModel,
+            ventCardsViewModel = ventCardsViewModel,
             pd = it)
     }
+
+    //TODO delete comment when initializing problem is solved. this isn't cause
     LaunchedEffect(ventCardCreationViewModel.isSent){
         if (ventCardCreationViewModel.isSent){
             Toast.makeText(context,"送信完了",Toast.LENGTH_SHORT).show()
@@ -155,9 +190,12 @@ fun MainView(
 fun Navigation(
     navController: NavController,
     mainViewModel: MainViewModel,
+    authViewModel: AuthViewModel,
     ventCardCreationViewModel: VentCardCreationViewModel,
+    ventCardsViewModel: VentCardsViewModel,
     pd:PaddingValues){
 
+    Log.d("Navigation", "Navigation called")
 
     val context = LocalContext.current
     val imageUtils = ImageUtils(context)
@@ -167,23 +205,34 @@ fun Navigation(
         modifier = Modifier.padding(pd)){
 
         composable(Screen.BottomScreen.VentCards.bottomRoute) {
-            MySwipeCardDemo()
+            Log.d("Navigation", "to MSCD")
+            MySwipeCardDemo(ventCardsViewModel)
         }
         composable(Screen.BottomScreen.TimeLine.bottomRoute) {
             TimeLineView()
         }
         composable(Screen.BottomScreen.Follows.bottomRoute) {
+            Log.d("Navigation", "to Follows")
             FollowsView()
         }
-        composable(Screen.BottomScreen.Notifications.bottomRoute) {
+        composable(Screen.Notifications.route) {
+            Log.d("Navigation", "to Noti")
             NotificationsView()
         }
         composable(Screen.BottomScreen.MyPage.bottomRoute) {
             val viewModel = MyPageViewModel(mainViewModel)
-            MyPageView(viewModel)
+            MyPageView(viewModel, authViewModel, mainViewModel ,onSignOutSuccess = {
+                navController.navigate(Screen.SignupScreen.route)
+            })
         }
-        composable(Screen.VentCardCreation.route) {
+        composable(Screen.BottomScreen.VentCardCreation.route) {
+            Log.d("Navigation", "to VCCVM")
             VentCardCreationView(ventCardCreationViewModel, context)
+        }
+        composable(Screen.SignupScreen.route) {
+            SignInScreen(authViewModel = authViewModel){
+                navController.navigate(Screen.BottomScreen.TimeLine.bottomRoute)
+            }
         }
 
     }
