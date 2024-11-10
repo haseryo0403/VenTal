@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.data.VentCard
 import kimsy.rr.vental.data.VentCardRepository
@@ -13,10 +14,9 @@ import kimsy.rr.vental.data.VentCardWithUser
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 
-
-
+@HiltViewModel
 class VentCardsViewModel @Inject constructor(
-    private val mainViewModel: MainViewModel,
+    private val authViewModel: AuthViewModel,
     private val ventCardRepository: VentCardRepository
 ):ViewModel() {
 
@@ -24,7 +24,7 @@ class VentCardsViewModel @Inject constructor(
         Log.e("VM initialization", "VCVM initialized")
     }
 
-    val currentUser: LiveData<User> = mainViewModel.currentUser
+    val currentUser: LiveData<User> = authViewModel.currentUser
     private val _ventCards = MutableLiveData<List<VentCardWithUser>>()
     val ventCards: LiveData<List<VentCardWithUser>> get() = _ventCards
 

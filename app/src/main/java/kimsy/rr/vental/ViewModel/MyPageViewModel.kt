@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 //@HiltViewModel
 class MyPageViewModel @Inject constructor(
-    private val mainViewModel: MainViewModel
+//    private val mainViewModel: MainViewModel
 ): ViewModel() {
 //    val currentUser: LiveData<User> = mainViewModel.currentUser
 

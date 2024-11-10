@@ -72,6 +72,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
 import kimsy.rr.vental.ViewModel.VentCardsViewModel
@@ -187,7 +188,6 @@ fun VentCardsView(
     }
 }
 
-
 private enum class OpenedSwipeableState {
     INITIAL,
     OPENED,
@@ -267,32 +267,33 @@ private fun SwipeableRow(
     }
 }
 
-
-
 @Composable
-fun MySwipeCardDemo(viewModel: VentCardsViewModel) {
+fun MySwipeCardDemo(
+    viewModel: VentCardsViewModel = hiltViewModel()
+) {
     // currentUserをobserveしてStateとして取得
     val user by viewModel.currentUser.observeAsState()
     viewModel.loadVentCards()
     val ventCards by viewModel.ventCards.observeAsState(emptyList())
 
-    VentCardsView(
-        onSwipeLeft = { /* 左にスワイプしたときの処理 */ },
-        onSwipeRight = { /* 右にスワイプしたときの処理 */ },
-        content = {
-            ElevatedCard(
-                onClick = {},
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.8f)
-//                    .padding(top = 32.dp)
-            ){
-                Box(modifier = Modifier.fillMaxSize()){
-                    LazyColumn(
-                        modifier = Modifier.padding(12.dp)
+    ventCards.forEach { ventCard->
+        VentCardsView(
+            onSwipeLeft = {},
+            onSwipeRight = {},
+            content = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.8f))
+                {
+                    ElevatedCard(
+                        onClick = {},
+                        modifier = Modifier.fillMaxSize()
                     ) {
-                        items(ventCards){ventCard ->
-
+                        LazyColumn(
+                            modifier = Modifier.padding(12.dp)
+                        ){
+                            item {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -335,55 +336,79 @@ fun MySwipeCardDemo(viewModel: VentCardsViewModel) {
                                         }
                                     }
                                 }
-
-                        }
-                        item {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            ){
-                                //TODO　DBから自分が投稿したもの意外を取得
-                                Image(
-                                    painter = rememberAsyncImagePainter(user?.photoURL),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .size(56.dp)
-                                        .clip(CircleShape),
-                                    contentScale = ContentScale.Crop
-                                )
-                                Column(
-                                    modifier = Modifier.weight(5f)
-                                ) {
-                                    Row(modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween) {
-                                        user?.name?.let { Text(text = it) }
-                                        Text(text = "23時間")
-                                    }
-                                    Text(text = "アストンマーチンは、英国発の高級スポーツカーメーカーで、美しいデザインと圧倒的なパフォーマンスが特徴です。映画『007』シリーズでのボンドカーとしても有名で、エレガンスと力強さを融合させた独自のスタイルが世界中の愛車家に支持されています。文字数を最大の140文字に設定してあります")
-                                    Text(text = "#学校", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                    //TODO color choose
-                                    Image(painter = painterResource(id = R.drawable.aston_martin),
-                                        contentDescription = "Image",
-                                        modifier = Modifier.clip(RoundedCornerShape(16.dp)))
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(4.dp),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.End
-                                    ) {
-                                        Icon(painter = painterResource(id = R.drawable.baseline_heart_broken_24),
-                                            contentDescription = "haert")
-                                        Text(text = "64")
-                                    }
-                                }
                             }
                         }
                     }
                 }
             }
-        }
-    )
+        )
+    }
+
+//    VentCardsView(
+//        onSwipeLeft = { /* 左にスワイプしたときの処理 */ },
+//        onSwipeRight = { /* 右にスワイプしたときの処理 */ },
+//        content = {
+//            ElevatedCard(
+//                onClick = {},
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .fillMaxHeight(0.8f)
+////                    .padding(top = 32.dp)
+//            ){
+//                Box(modifier = Modifier.fillMaxSize()){
+//                    LazyColumn(
+//                        modifier = Modifier.padding(12.dp)
+//                    ) {
+//                        items(ventCards){ventCard ->
+//
+//                            Row(
+//                                modifier = Modifier
+//                                    .fillMaxWidth()
+//                            ){
+//                                //TODO　DBから自分が投稿したもの意外を取得
+//                                Image(
+//                                    painter = rememberAsyncImagePainter(ventCard.posterImageURL),
+//                                    contentDescription = null,
+//                                    modifier = Modifier
+//                                        .size(56.dp)
+//                                        .clip(CircleShape),
+//                                    contentScale = ContentScale.Crop
+//                                )
+//                                Column(
+//                                    modifier = Modifier.weight(5f)
+//                                ) {
+//                                    Row(modifier = Modifier.fillMaxWidth(),
+//                                        horizontalArrangement = Arrangement.SpaceBetween) {
+//                                        Text(text = ventCard.posterName)
+//                                        Text(text = ventCard.swipeCardCreatedDateTime.toString())
+//                                    }
+//                                    Text(text = ventCard.swipeCardContent)
+//                                    ventCard.tags.forEach {tag ->
+//                                        Text(text = tag, color = MaterialTheme.colorScheme.onSurfaceVariant)
+//                                    }
+//                                    //TODO color choose
+//                                    Image(painter = rememberAsyncImagePainter(ventCard.swipeCardImageURL),
+//                                        contentDescription = "Image",
+//                                        modifier = Modifier.clip(RoundedCornerShape(16.dp)))
+//                                    Row(
+//                                        modifier = Modifier
+//                                            .fillMaxWidth()
+//                                            .padding(4.dp),
+//                                        verticalAlignment = Alignment.CenterVertically,
+//                                        horizontalArrangement = Arrangement.End
+//                                    ) {
+//                                        Icon(painter = painterResource(id = R.drawable.baseline_heart_broken_24),
+//                                            contentDescription = "haert")
+//                                        Text(text = ventCard.likeCount.toString())
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    )
 }
 
 //@Preview(

@@ -48,8 +48,6 @@ class ImageRepository @Inject constructor(
 
                 Result.success(downloadUrl)
             }
-
-
         } catch (e: TimeoutException) {
             Log.e("ImageRepository", "Failed to save image: ${e.message}", e)
             Result.failure(e)
@@ -57,7 +55,6 @@ class ImageRepository @Inject constructor(
             Log.e("ImageRepository", "Failed to save image: ${e.message}", e)
             Result.failure(e)
         }
-
     }
 
     @SuppressLint("Range")

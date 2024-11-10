@@ -24,7 +24,6 @@ class UserRepository @Inject constructor(
     private val auth: FirebaseAuth,
     private val db: FirebaseFirestore
 ) {
-
     // Googleサインインを開始するメソッド
     fun signInWithGoogle(activityResultLauncher: ActivityResultLauncher<Intent>) {
         val signInIntent = googleSignInClient.signInIntent
@@ -67,13 +66,6 @@ class UserRepository @Inject constructor(
             null
         }
     }
-
-//    suspend fun getCurentUser(): User? {
-//        val user = auth.currentUser
-//        user?.let {
-//
-//        }
-//    }
 
     suspend fun saveUserToFirestore() {
         val user = auth.currentUser

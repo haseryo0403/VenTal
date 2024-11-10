@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
@@ -35,30 +34,24 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.MainActivity
 import kimsy.rr.vental.R
 import kimsy.rr.vental.ViewModel.AuthViewModel
-import kimsy.rr.vental.ViewModel.MainViewModel
 import kimsy.rr.vental.ViewModel.MyPageViewModel
 
 @Composable
 fun MyPageView(
     viewModel: MyPageViewModel,
     authViewModel: AuthViewModel,
-    mainViewModel: MainViewModel,
     onSignOutSuccess:() -> Unit
 ){
-
     val context = LocalContext.current
 
     // currentUserをobserveしてStateとして取得
-    val user by mainViewModel.currentUser.observeAsState()
+    val user by authViewModel.currentUser.observeAsState()
 
     val signOutResult by authViewModel.signOutResult.observeAsState()
-
 
     // サインアウト結果に基づいて遷移処理を行う
     LaunchedEffect(signOutResult) {
@@ -70,7 +63,6 @@ fun MyPageView(
             Log.e("SignOut", "Sign out failed")
         }
     }
-
 
     LazyColumn(
         modifier = Modifier.fillMaxWidth()
@@ -92,10 +84,6 @@ fun MyPageView(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
 
-
-
-
-
                         Log.d("TAG", "Image URL: ${user?.photoURL}")
                         Image(
                             painter = rememberAsyncImagePainter(user?.photoURL),
@@ -107,20 +95,14 @@ fun MyPageView(
                         )
                         user?.name?.let { Text(text = it) }
 
-
-
-
-
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-//                            modifier = Modifier.weight(5f)
                         ) {
                             Text(text = "7")
                             Text(text = "討論")
                         }
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-//                            modifier = Modifier.weight(5f)
                         ) {
                             Text(text = "16")
                             Text(text = "フォロワー")
@@ -130,13 +112,11 @@ fun MyPageView(
                         Text(text = "プロフィールを編集")
                     }
                     Button(onClick = {
-                        mainViewModel.signOut(){
+                        authViewModel.signOut(){
                             val intent = Intent(context, MainActivity::class.java)
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
                             context.startActivity(intent)
                         }
-
-
                     }) {
                         Text(text = "ログアウト")
                     }

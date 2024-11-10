@@ -51,10 +51,6 @@ fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        // 認証結果の処理
-        // result.resultCodeで結果を確認可能
-        Log.d("TAG","launcher backed")
-        Log.d("TAG",result.resultCode.toString())
         if (result.resultCode == RESULT_OK) {
             val signInIntent = result.data
             // ViewModelで結果を処理
@@ -68,14 +64,13 @@ fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
 
     // 認証結果を監視
     val authResult by authViewModel.authResult.observeAsState()
-
     val isLoading = authViewModel.isLoading
 
     // 認証成功で画面遷移
     LaunchedEffect(authResult) {
         if (authResult == true) {
             Log.d("TAG", "Navigate to timeline")
-            authViewModel.resetAuthResult()
+//            authViewModel.resetAuthResult()
             onNavigateToMainView()  // 遷移先の処理を呼び出す
         } else if (authResult == false) {
             Log.e("TAG", "New Sign-in")

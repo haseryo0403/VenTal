@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
@@ -40,10 +41,9 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import kimsy.rr.vental.MainActivity
 import kimsy.rr.vental.R
-import kimsy.rr.vental.ViewModel.MainViewModel
 import kimsy.rr.vental.ViewModel.VentCardCreationViewModel
-import kimsy.rr.vental.data.ImageUtils
 import kimsy.rr.vental.screensInBottom
+import kimsy.rr.vental.ui.CommonComposable.ImagePermissionAndSelection
 import javax.inject.Inject
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -54,6 +54,7 @@ fun AppBottomBarView(
     navController: NavController,
     currentRoute: String,
     context: Context,
+
     viewModel: VentCardCreationViewModel
 ){
     if (!title.contains("VCC") ){
@@ -79,7 +80,15 @@ fun AppBottomBarView(
         androidx.compose.material3.BottomAppBar(
             actions = {
 // 右寄               Spacer(modifier = Modifier.weight(1f))
-                viewModel.handleImagePermissionAndSelection(context)
+                ImagePermissionAndSelection(
+                    context = context,
+                    onImageSelected = {uri ->
+                        // 選択された画像URIをここで処理
+                        if (uri != null) {
+                            // 画像URIが選択された場合の処理
+                            viewModel.selectedImageUri = uri
+                        }
+                })
             },
             modifier = Modifier.height(48.dp)
         )

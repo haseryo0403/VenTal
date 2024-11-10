@@ -61,10 +61,8 @@ fun VentCardCreationView(
     viewModel: VentCardCreationViewModel,
     context: Context
 ){
-
     val selectedUri = viewModel.selectedImageUri
     val dialogOpen = remember { mutableStateOf(false)}
-
 
     LazyColumn(
     modifier = Modifier
@@ -87,7 +85,6 @@ fun VentCardCreationView(
                     focusedIndicatorColor = Color.Transparent // 選択時の下線を透明に設定
                 )
                 )
-
 
             FlowRow(
                 modifier = Modifier.fillMaxWidth()

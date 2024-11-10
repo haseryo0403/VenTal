@@ -15,7 +15,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kimsy.rr.vental.data.ImageRepository
-import kimsy.rr.vental.data.ImageUtils
 import kimsy.rr.vental.data.UserRepository
 import kimsy.rr.vental.data.VentCardRepository
 import javax.inject.Singleton
@@ -86,9 +85,9 @@ object AppModule {
 
 
 
-    @Provides
-    @Singleton
-    fun provideImageUtils(@ApplicationContext context: Context): ImageUtils {
-        return ImageUtils(context) // ImageUtilsのインスタンスを提供
-    }
+//    @Provides
+//    @Singleton
+//    fun provideImageUtils(@ApplicationContext context: Context): ImageUtils {
+//        return ImageUtils(context) // ImageUtilsのインスタンスを提供
+//    }
 }

@@ -30,8 +30,12 @@ class AuthViewModel @Inject constructor(
 
 
     ) : ViewModel() {
+
     private val _currentUser = MutableLiveData<User>()
     val currentUser: LiveData<User> get() = _currentUser
+    init {
+        loadCurrentUser()
+    }
 
     // 状態管理用の変数
     var isLoading by mutableStateOf(false)
@@ -40,9 +44,6 @@ class AuthViewModel @Inject constructor(
     fun updateLoading(loading: Boolean) {
         isLoading = loading
     }
-
-    var errorMessage by mutableStateOf<String?>(null)
-        private set
 
     private val _authResult = MutableLiveData<Boolean>()
     val authResult: LiveData<Boolean> = _authResult
@@ -73,40 +74,7 @@ class AuthViewModel @Inject constructor(
             Log.e("TAG", "Google sign-in failed: ${e.statusCode}")
         }
     }
-//TODO Delete
-//    fun firebaseAuthWithGoogle(idToken: String) {
-//        Log.d("TAG","firebase signIn executed")
-//        viewModelScope.launch {
-//            //FirebaseAuth
-//            val firebaseResult = userRepository.firebaseAuthWithGoogle(idToken)
-//            if (firebaseResult.isSuccess) {
-//                Log.d("TAG", "FireBaseAuth Success")
-//                var result: List<User>
-//                viewModelScope.launch {
-//                    //FireStoreからユーザー取得
-//                    result = userRepository.getUser()
-//                    Log.d("TAG", result.toString())
-//                    if (result.isEmpty()) {
-//                        // データを取得できなかった場合(初回ログイン)
-//                        // 新規ユーザー登録
-//                        Log.d("TAG", "New User")
-//                        userRepository.saveUserToFirestore()
-//                        _authResult.value = false
-//
-//                    } else {
-//                        // データを取得できた場合(２回目以降ログイン)
-//                        // ログインした後一番最初に表示したい画面に移動
-//                        Log.d("TAG", "Old User")
-//                        _authResult.value = true
-//                    }
-//                }
-//            } else {
-//                isLoading = false
-//                // Firebaseサインイン失敗
-//                Log.d("TAG", "firebase fail")
-//            }
-//        }
-//    }
+
     fun firebaseAuthWithGoogle(idToken: String) {
         Log.d("TAG","firebase signIn executed")
         viewModelScope.launch {
@@ -143,7 +111,7 @@ class AuthViewModel @Inject constructor(
 
     @SuppressLint("SuspiciousIndentation")
     fun loadCurrentUser(){
-        Log.d("TAG　MainViewModel", "load Current User")
+        Log.d("TAG　AuthViewModel", "load Current User")
         viewModelScope.launch {
             //FireStoreからユーザー取得
             val result = userRepository.getCurrentUser()
@@ -164,6 +132,7 @@ class AuthViewModel @Inject constructor(
         auth.signOut()
         val result = userRepository.signOutFromGoogle()
         if (result.isSuccess){
+            Log.e("Sign out", "sign out success")
             onSignOutComplete()
         } else{
             Log.e("SignOut", "Sign Out failed")
