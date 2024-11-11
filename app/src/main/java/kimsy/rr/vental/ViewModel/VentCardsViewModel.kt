@@ -28,9 +28,9 @@ class VentCardsViewModel @Inject constructor(
     private val _ventCards = MutableLiveData<List<VentCardWithUser>>()
     val ventCards: LiveData<List<VentCardWithUser>> get() = _ventCards
 
-    fun loadVentCards(){
+    fun loadVentCards(userId: String){
         viewModelScope.launch{
-            val result = ventCardRepository.getVentCardsWithUser()
+            val result = ventCardRepository.getVentCardsWithUser(userId)
             result
                 .onSuccess {data ->
                     Log.d("loadVentCards", "Vent Cards: $data")  // dataの中身をログに出力

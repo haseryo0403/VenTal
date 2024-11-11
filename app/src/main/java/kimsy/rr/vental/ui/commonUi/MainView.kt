@@ -134,7 +134,7 @@ fun Navigation(
 
         composable(Screen.BottomScreen.VentCards.bottomRoute) {
             Log.d("Navigation", "to MSCD")
-            MySwipeCardDemo()
+            MySwipeCardDemo(authViewModel = authViewModel)
         }
         composable(Screen.BottomScreen.TimeLine.bottomRoute) {
             TimeLineView()

@@ -1,13 +1,9 @@
 package kimsy.rr.vental.ui
 
 import android.annotation.SuppressLint
-import android.util.Log
-import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.End
-import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Start
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.SpringSpec
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -17,38 +13,25 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Arrangement.Absolute.Center
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Shapes
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -66,17 +49,19 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalGraphicsContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
+import kimsy.rr.vental.ViewModel.AuthViewModel
 import kimsy.rr.vental.ViewModel.VentCardsViewModel
+import kimsy.rr.vental.ui.CommonComposable.formatTimeDifference
 import kotlinx.coroutines.delay
+import okhttp3.internal.format
+import java.text.SimpleDateFormat
+import java.util.Locale
 import kotlin.math.roundToInt
 
 
@@ -269,12 +254,13 @@ private fun SwipeableRow(
 
 @Composable
 fun MySwipeCardDemo(
-    viewModel: VentCardsViewModel = hiltViewModel()
-) {
+    ventCardsViewModel: VentCardsViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel
+    ) {
     // currentUserをobserveしてStateとして取得
-    val user by viewModel.currentUser.observeAsState()
-    viewModel.loadVentCards()
-    val ventCards by viewModel.ventCards.observeAsState(emptyList())
+    val user by authViewModel.currentUser.observeAsState()
+    user?.let { ventCardsViewModel.loadVentCards(it.uid) }
+    val ventCards by ventCardsViewModel.ventCards.observeAsState(emptyList())
 
     ventCards.forEach { ventCard->
         VentCardsView(
@@ -291,12 +277,12 @@ fun MySwipeCardDemo(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         LazyColumn(
-                            modifier = Modifier.padding(12.dp)
+                            modifier = Modifier.padding(12.dp).fillMaxSize()
                         ){
                             item {
                                 Row(
                                     modifier = Modifier
-                                        .fillMaxWidth()
+                                        .fillMaxSize()
                                 ){
                                     //TODO　DBから自分が投稿したもの意外を取得
                                     Image(
@@ -308,12 +294,17 @@ fun MySwipeCardDemo(
                                         contentScale = ContentScale.Crop
                                     )
                                     Column(
-                                        modifier = Modifier.weight(5f)
+                                        modifier = Modifier.weight(5f).fillMaxWidth()
                                     ) {
                                         Row(modifier = Modifier.fillMaxWidth(),
                                             horizontalArrangement = Arrangement.SpaceBetween) {
                                             Text(text = ventCard.posterName)
-                                            Text(text = ventCard.swipeCardCreatedDateTime.toString())
+                                            Text(
+//                                                text = ventCard.swipeCardCreatedDateTime.toString()
+                                                text = ventCard.swipeCardCreatedDateTime?.let {
+                                                    formatTimeDifference(it)
+                                                } ?: "日付不明"
+                                            )
                                         }
                                         Text(text = ventCard.swipeCardContent)
                                         ventCard.tags.forEach {tag ->
@@ -322,7 +313,9 @@ fun MySwipeCardDemo(
                                         //TODO color choose
                                         Image(painter = rememberAsyncImagePainter(ventCard.swipeCardImageURL),
                                             contentDescription = "Image",
-                                            modifier = Modifier.clip(RoundedCornerShape(16.dp)))
+                                            modifier = Modifier.clip(RoundedCornerShape(16.dp)).fillMaxWidth(),
+                                            contentScale = ContentScale.FillWidth
+                                        )
                                         Row(
                                             modifier = Modifier
                                                 .fillMaxWidth()
@@ -330,7 +323,7 @@ fun MySwipeCardDemo(
                                             verticalAlignment = Alignment.CenterVertically,
                                             horizontalArrangement = Arrangement.End
                                         ) {
-                                            Icon(painter = painterResource(id = R.drawable.baseline_heart_broken_24),
+                                            Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
                                                 contentDescription = "haert")
                                             Text(text = ventCard.likeCount.toString())
                                         }

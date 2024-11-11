@@ -1,6 +1,8 @@
 package kimsy.rr.vental.data
 
 import com.google.firebase.firestore.FieldValue
+import com.google.type.DateTime
+import java.util.Date
 
 data class VentCardWithUser(
     val posterId: String = "",
@@ -12,5 +14,5 @@ data class VentCardWithUser(
     val tags: List<String> = emptyList(),
     val swipeCardReportFlag: Boolean = false,
     val swipeCardDeletionRequestFlag: Boolean = false,
-    val swipeCardCreatedDateTime: Any = FieldValue.serverTimestamp()
+    val swipeCardCreatedDateTime: Date? = null
 )
