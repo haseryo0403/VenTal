@@ -5,6 +5,7 @@ import com.google.type.DateTime
 import java.util.Date
 
 data class VentCardWithUser(
+    val swipeCardId: String = "",
     val posterId: String = "",
     val posterName: String = "",
     val posterImageURL: String = "",

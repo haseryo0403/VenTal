@@ -37,10 +37,12 @@ import kimsy.rr.vental.screensInBottom
 import kimsy.rr.vental.ViewModel.AuthViewModel
 import kimsy.rr.vental.ViewModel.MyPageViewModel
 import kimsy.rr.vental.ViewModel.VentCardCreationViewModel
+import kimsy.rr.vental.ui.DebateCreationView
 import kimsy.rr.vental.ui.FollowsView
 import kimsy.rr.vental.ui.MyPageView
 import kimsy.rr.vental.ui.MySwipeCardDemo
 import kimsy.rr.vental.ui.NotificationsView
+import kimsy.rr.vental.ui.SwipeCardsView
 import kimsy.rr.vental.ui.TimeLineView
 import kimsy.rr.vental.ui.VentCardCreationView
 
@@ -118,6 +120,7 @@ fun MainView(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun Navigation(
     navController: NavController,
@@ -134,7 +137,11 @@ fun Navigation(
 
         composable(Screen.BottomScreen.VentCards.bottomRoute) {
             Log.d("Navigation", "to MSCD")
-            MySwipeCardDemo(authViewModel = authViewModel)
+//            MySwipeCardDemo(authViewModel = authViewModel)
+            SwipeCardsView(
+                authViewModel = authViewModel,
+                toDebateCreationView = {navController.navigate(Screen.DebateCreation.route)}
+            )
         }
         composable(Screen.BottomScreen.TimeLine.bottomRoute) {
             TimeLineView()
@@ -156,6 +163,9 @@ fun Navigation(
         composable(Screen.BottomScreen.VentCardCreation.route) {
             Log.d("Navigation", "to VCCVM")
             VentCardCreationView(ventCardCreationViewModel, context)
+        }
+        composable(Screen.DebateCreation.route) {
+            DebateCreationView(context = context)
         }
     }
 }

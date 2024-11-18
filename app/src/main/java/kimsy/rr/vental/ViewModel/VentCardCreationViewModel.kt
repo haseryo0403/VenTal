@@ -61,7 +61,7 @@ class VentCardCreationViewModel @Inject constructor(
     }
     private suspend fun saveVentCardWithoutImage(): Result<Unit> {
         val ventCard = VentCard(
-            userId = authViewModel.currentUser.value?.uid.toString(),
+            posterId = authViewModel.currentUser.value?.uid.toString(),
             swipeCardContent = content,
             swipeCardImageURL = "",
             tags = tags
@@ -83,7 +83,7 @@ class VentCardCreationViewModel @Inject constructor(
                 Log.d("VCCVM", " saveImageToStorage success")
                 // 画像保存が成功したので、次にVentCardを保存する
                 val ventCard = VentCard(
-                    userId = authViewModel.currentUser.value?.uid.toString(),
+                    posterId = authViewModel.currentUser.value?.uid.toString(),
                     swipeCardContent = content,
                     swipeCardImageURL = downloadUrl,
                     tags = tags

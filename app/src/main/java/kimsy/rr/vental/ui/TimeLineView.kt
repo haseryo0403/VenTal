@@ -121,11 +121,6 @@ fun TimeLineView(){
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Spacer(modifier = Modifier.height(4.dp))
-//                            Text(
-//                                text = "2023/04/03",
-//                                style = MaterialTheme.typography.bodySmall,
-//                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-//                            )
                         }
                     }
                 }

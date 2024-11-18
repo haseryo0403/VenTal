@@ -3,7 +3,7 @@ package kimsy.rr.vental.data
 import com.google.firebase.firestore.FieldValue
 
 data class VentCard(
-    val userId: String = "",
+    val posterId: String = "",
     val swipeCardContent: String = "",
     val swipeCardImageURL: String = "",
     val likeCount: Int = 0,
