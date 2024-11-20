@@ -1,6 +1,10 @@
 package kimsy.rr.vental.ui
 
 
+import android.content.Context
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -49,6 +53,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
 import kimsy.rr.vental.ViewModel.AuthViewModel
+import kimsy.rr.vental.ViewModel.DebateCreationViewModel
 import kimsy.rr.vental.ViewModel.VentCardsViewModel
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.CardStack
@@ -165,111 +170,13 @@ fun VentCardsView(
     }
 }
 
-@Composable
-fun MySwipeCardDemo(
-    ventCardsViewModel: VentCardsViewModel = hiltViewModel(),
-    authViewModel: AuthViewModel
-    ) {
-    // currentUserをobserveしてStateとして取得
-    val user by authViewModel.currentUser.observeAsState(User())
-
-    // LaunchedEffectを使用して画面遷移時にのみloadVentCardsを呼び出す
-    LaunchedEffect(user.uid) {
-        ventCardsViewModel.loadVentCards(user.uid)
-    }
-    val ventCards by remember { derivedStateOf { ventCardsViewModel.ventCards } }
-
-    ventCards.forEach { ventCard->
-        VentCardsView(
-            onSwipeLeft = {
-
-            },
-            onSwipeRight = {
-                ventCardsViewModel.handleLikeAction(userId = user.uid, posterId = ventCard.posterId, ventCardId = ventCard.swipeCardId)
-            },
-            content = {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.8f))
-                {
-                    ElevatedCard(
-                        onClick = {},
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        LazyColumn(
-                            modifier = Modifier
-                                .padding(12.dp)
-                                .fillMaxSize()
-                        ){
-                            item {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                ){
-                                    //TODO　DBから自分が投稿したもの意外を取得
-                                    Image(
-                                        painter = rememberAsyncImagePainter(ventCard.posterImageURL),
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .size(56.dp)
-                                            .clip(CircleShape),
-                                        contentScale = ContentScale.Crop
-                                    )
-                                    Column(
-                                        modifier = Modifier
-                                            .weight(5f)
-                                            .fillMaxWidth()
-                                    ) {
-                                        Row(modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceBetween) {
-                                            Text(text = ventCard.posterName)
-                                            Text(
-//                                                text = ventCard.swipeCardCreatedDateTime.toString()
-                                                text = ventCard.swipeCardCreatedDateTime?.let {
-                                                    formatTimeDifference(it)
-                                                } ?: "日付不明"
-                                            )
-                                        }
-                                        Text(text = ventCard.swipeCardContent)
-                                        ventCard.tags.forEach {tag ->
-                                            Text(text = tag, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                        }
-                                        //TODO color choose
-                                        Image(painter = rememberAsyncImagePainter(ventCard.swipeCardImageURL),
-                                            contentDescription = "Image",
-                                            modifier = Modifier
-                                                .clip(RoundedCornerShape(16.dp))
-                                                .fillMaxWidth(),
-                                            contentScale = ContentScale.FillWidth
-                                        )
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(4.dp),
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.End
-                                        ) {
-                                            Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
-                                                contentDescription = "haert")
-                                            Text(text = ventCard.likeCount.toString())
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        )
-    }
-
-}
-
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SwipeCardsView(
     ventCardsViewModel: VentCardsViewModel = hiltViewModel(),
+    debateCreationViewModel: DebateCreationViewModel,
+    context: Context,
     toDebateCreationView: () -> Unit,
     authViewModel: AuthViewModel
 ){
@@ -302,7 +209,10 @@ fun SwipeCardsView(
                     ventCardId = ventCard.swipeCardId
                 )
             },
-            onSwipeLeft = {
+            onSwipeLeft = {ventCard->
+                debateCreationViewModel.ventCardWithUser = ventCard
+                Log.e("VCV", "ventCardId: ${ventCard.swipeCardId}")
+                debateCreationViewModel.getRelatedDebates(ventCard)
                 toDebateCreationView()
             },
             onEmptyStack = {},

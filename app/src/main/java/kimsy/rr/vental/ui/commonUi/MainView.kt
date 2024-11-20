@@ -35,12 +35,13 @@ import kimsy.rr.vental.Screen
 import kimsy.rr.vental.otherScreen
 import kimsy.rr.vental.screensInBottom
 import kimsy.rr.vental.ViewModel.AuthViewModel
+import kimsy.rr.vental.ViewModel.DebateCreationViewModel
 import kimsy.rr.vental.ViewModel.MyPageViewModel
 import kimsy.rr.vental.ViewModel.VentCardCreationViewModel
+import kimsy.rr.vental.data.VentCardWithUser
 import kimsy.rr.vental.ui.DebateCreationView
 import kimsy.rr.vental.ui.FollowsView
 import kimsy.rr.vental.ui.MyPageView
-import kimsy.rr.vental.ui.MySwipeCardDemo
 import kimsy.rr.vental.ui.NotificationsView
 import kimsy.rr.vental.ui.SwipeCardsView
 import kimsy.rr.vental.ui.TimeLineView
@@ -126,6 +127,7 @@ fun Navigation(
     navController: NavController,
     authViewModel: AuthViewModel,
     ventCardCreationViewModel: VentCardCreationViewModel,
+    debateCreationViewModel: DebateCreationViewModel = hiltViewModel(),
     context: Context,
     pd:PaddingValues){
 
@@ -139,7 +141,9 @@ fun Navigation(
             Log.d("Navigation", "to MSCD")
 //            MySwipeCardDemo(authViewModel = authViewModel)
             SwipeCardsView(
+                context = context,
                 authViewModel = authViewModel,
+                debateCreationViewModel = debateCreationViewModel,
                 toDebateCreationView = {navController.navigate(Screen.DebateCreation.route)}
             )
         }
@@ -165,7 +169,11 @@ fun Navigation(
             VentCardCreationView(ventCardCreationViewModel, context)
         }
         composable(Screen.DebateCreation.route) {
-            DebateCreationView(context = context)
+            DebateCreationView(
+                context = context,
+                authViewModel = authViewModel,
+                debateCreationViewModel = debateCreationViewModel
+            )
         }
     }
 }

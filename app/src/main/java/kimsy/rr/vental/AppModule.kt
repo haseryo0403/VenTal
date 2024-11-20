@@ -14,6 +14,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kimsy.rr.vental.data.Debate
+import kimsy.rr.vental.data.DebateRepository
 import kimsy.rr.vental.data.ImageRepository
 import kimsy.rr.vental.data.UserRepository
 import kimsy.rr.vental.data.VentCardRepository
@@ -81,6 +83,13 @@ object AppModule {
         storageReference: StorageReference
     ): VentCardRepository{
         return VentCardRepository(firebaseFirestore,firebaseStorage,storageReference)
+    }
+    @Provides
+    @Singleton
+    fun provideDebateRepository(
+        firebaseFirestore: FirebaseFirestore,
+    ): DebateRepository{
+        return DebateRepository(firebaseFirestore)
     }
 
 

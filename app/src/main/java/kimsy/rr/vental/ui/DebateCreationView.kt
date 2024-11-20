@@ -2,7 +2,9 @@ package kimsy.rr.vental.ui
 
 import android.content.ClipData.Item
 import android.content.Context
+import android.net.Uri
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
@@ -32,19 +35,25 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
+import kimsy.rr.vental.ViewModel.AuthViewModel
+import kimsy.rr.vental.ViewModel.DebateCreationViewModel
+import kimsy.rr.vental.data.VentCardWithUser
 import kimsy.rr.vental.ui.CommonComposable.ImagePermissionAndSelection
 import kimsy.rr.vental.ui.CommonComposable.MaxLengthOutlinedTextField
 
@@ -52,9 +61,14 @@ import kimsy.rr.vental.ui.CommonComposable.MaxLengthOutlinedTextField
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun DebateCreationView(
-    context: Context
+    context: Context,
+    authViewModel: AuthViewModel,
+    debateCreationViewModel: DebateCreationViewModel
 ){
+    val user by authViewModel.currentUser.observeAsState()
+    val relatedDebates by debateCreationViewModel.relatedDebates.observeAsState(emptyList())
     var text by remember { mutableStateOf("") }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
     val isKeyboardVisible = WindowInsets.isImeVisible
 
     Column(
@@ -66,11 +80,11 @@ fun DebateCreationView(
     LazyColumn(
         modifier = Modifier.weight(1f)
     ) {
-        item {
+        items(relatedDebates) {relatedDebate->
             ElevatedCard(
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
-                    .padding(16.dp)
+                    .padding(8.dp)
             ) {
                 Row(
                     modifier = Modifier
@@ -81,106 +95,163 @@ fun DebateCreationView(
                 ){
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        ){
+                    ){
                         Icon(painter = painterResource(id = R.drawable.baseline_account_circle_24),
                             contentDescription = "AccountIcon",
                             modifier = Modifier
                                 .size(48.dp)
                         )
-                        Text(text = "User Name")
+                        Text(text = "UserName")//TODO debaterの情報が必要
 
                     }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        ) {
+                    ) {
                         Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
                             contentDescription = "AccountIcon",
                             modifier = Modifier
                                 .size(40.dp)
                         )
-                        Text(text = "64")
+                        Text(text = relatedDebate.debaterLikeCount.toString())
 
                     }
                 }
 
-                Text(
-                    text = "基礎みたいなもんだろ",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(8.dp)
+                Image(painter = rememberAsyncImagePainter(relatedDebate.firstMessageImageURL),
+                    contentDescription = "Image",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                        .clip(RoundedCornerShape(16.dp)),
+                    contentScale = ContentScale.FillWidth
                 )
-            }
-
-            ElevatedCard(
-                modifier = Modifier
-                    .fillMaxWidth(0.8f)
-                    .padding(16.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ){
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        ){
-                        Icon(painter = painterResource(id = R.drawable.baseline_account_circle_24),
-                            contentDescription = "AccountIcon",
-                            modifier = Modifier
-                                .size(48.dp)
-                        )
-                        Text(text = "User Name")
-
-                    }
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                        Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
-                            contentDescription = "AccountIcon",
-                            modifier = Modifier
-                                .size(40.dp)
-                        )
-                        Text(text = "64")
-
-                    }
-                }
 
                 Text(
-                    text = "基礎みたいなもんだろ",
+                    text = relatedDebate.firstMessage,
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(8.dp)
                 )
             }
         }
+//        item {
+//            ElevatedCard(
+//                modifier = Modifier
+//                    .fillMaxWidth(0.8f)
+//                    .padding(16.dp)
+//            ) {
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(8.dp),
+//                    verticalAlignment = Alignment.CenterVertically,
+//                    horizontalArrangement = Arrangement.SpaceBetween
+//                ){
+//                    Row(
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        ){
+//                        Icon(painter = painterResource(id = R.drawable.baseline_account_circle_24),
+//                            contentDescription = "AccountIcon",
+//                            modifier = Modifier
+//                                .size(48.dp)
+//                        )
+//                        Text(text = "User Name")
+//
+//                    }
+//                    Row(
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        ) {
+//                        Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
+//                            contentDescription = "AccountIcon",
+//                            modifier = Modifier
+//                                .size(40.dp)
+//                        )
+//                        Text(text = "64")
+//
+//                    }
+//                }
+//
+//                Text(
+//                    text = "基礎みたいなもんだろ",
+//                    style = MaterialTheme.typography.bodyLarge,
+//                    modifier = Modifier.padding(8.dp)
+//                )
+//            }
+//
+//            ElevatedCard(
+//                modifier = Modifier
+//                    .fillMaxWidth(0.8f)
+//                    .padding(16.dp)
+//            ) {
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(8.dp),
+//                    verticalAlignment = Alignment.CenterVertically,
+//                    horizontalArrangement = Arrangement.SpaceBetween
+//                ){
+//                    Row(
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        ){
+//                        Icon(painter = painterResource(id = R.drawable.baseline_account_circle_24),
+//                            contentDescription = "AccountIcon",
+//                            modifier = Modifier
+//                                .size(48.dp)
+//                        )
+//                        Text(text = "User Name")
+//
+//                    }
+//                    Row(
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        ) {
+//                        Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
+//                            contentDescription = "AccountIcon",
+//                            modifier = Modifier
+//                                .size(40.dp)
+//                        )
+//                        Text(text = "64")
+//
+//                    }
+//                }
+//
+//                Text(
+//                    text = "基礎みたいなもんだろ",
+//                    style = MaterialTheme.typography.bodyLarge,
+//                    modifier = Modifier.padding(8.dp)
+//                )
+//            }
+//        }
     }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .heightIn(max = if (isKeyboardVisible) 160.dp else 48.dp),
-        verticalAlignment = Alignment.Bottom,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
 
-        ImagePermissionAndSelection(
-                    context = context,
-                    onImageSelected = {uri ->
-                        // 選択された画像URIをここで処理
-                        if (uri != null) {
-                            // 画像URIが選択された場合の処理
-//                            viewModel.selectedImageUri = uri
-                        }
-                    })
-        MaxLengthOutlinedTextField(value = text, onValueChange = {text = it}, maxLength = 140, modifier = Modifier.weight(1f))
-
-        IconButton(
-            onClick = {
-
-            }
+    if (relatedDebates.size <3) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+                .heightIn(max = if (isKeyboardVisible) 160.dp else 48.dp),
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Icon(imageVector = Icons.Default.Send, contentDescription = "Send")
+
+            ImagePermissionAndSelection(
+                        context = context,
+                        onImageSelected = {uri ->
+                            // 選択された画像URIをここで処理
+                            if (uri != null) {
+                                imageUri = uri
+                            }
+                        })
+            MaxLengthOutlinedTextField(value = text, onValueChange = {text = it}, maxLength = 140, modifier = Modifier.weight(1f))
+
+            IconButton(
+                onClick = {
+                    user?.let { debateCreationViewModel.handleDebateCreation(text,imageUri, it.uid, context) }
+                }
+            ) {
+                Icon(imageVector = Icons.Default.Send, contentDescription = "Send")
+            }
         }
+    } else {
+        Toast.makeText(context, "討論が上限数に達したため、これ以上作成できません。関連討論にタップして移動できます", Toast.LENGTH_SHORT).show()
     }
 
     }

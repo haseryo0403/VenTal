@@ -90,4 +90,10 @@ class UserRepository @Inject constructor(
             Log.e("SignOut", "google Sign out failed", e)
             Result.failure(e)
         }
+
+    suspend fun fetchUserInformation(
+        uid: String
+    ){
+
+    }
 }

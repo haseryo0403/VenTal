@@ -56,9 +56,10 @@ users:
         swipeCard_deletion_request_flag: false
         swipeCard_created_datetime: "2024-11-01T10:00:00Z"
 
-        discussions:
+        debates:
           # collection
-          - discussion_id: "discussion456"
+          - debate_id: "discussion456"
+            swipeCard_id: "card123"
             swipeCard_imageURL: "https://example.com/card123.jpg"
             poster_likeCount: 10
             # TODO: 冗長。以下3行はCloudFunctionsを使用してユーザー情報更新時に更新する予定。なしなら削除
@@ -70,9 +71,11 @@ users:
             debater_name: "佐藤花子"
             debater_imageURL: "https://example.com/image789.jpg"
             debater_likeCount: 5
-            discussion_report_flag: false
-            discussion_deletion_request_flag: false
-            discussion_created_datetime: "2024-11-02T15:00:00Z"
+            first_message_content: "基礎みたいなもんだろ"
+            first_message_imageURL: "https://example.com/card123.jpg"
+            debate_report_flag: false
+            debate_deletion_request_flag: false
+            debate_created_datetime: "2024-11-02T15:00:00Z"
 
             messages:
               # collection

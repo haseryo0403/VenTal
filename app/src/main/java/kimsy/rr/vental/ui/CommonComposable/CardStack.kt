@@ -85,11 +85,11 @@ fun CardStack(modifier : Modifier = Modifier,
 
     val cardStackController = rememberCardStackController()
     cardStackController.onSwipeLeft = {
-        onSwipeLeft(items[i])
+        onSwipeLeft(items[j])
         j++
     }
     cardStackController.onSwipeRight = {
-        onSwipeRight(items[i])
+        onSwipeRight(items[j])
         j++
         Log.e("CS", "index: $i")
     }
