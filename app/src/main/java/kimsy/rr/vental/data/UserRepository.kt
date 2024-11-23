@@ -16,6 +16,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.ktx.Firebase
 import kimsy.rr.vental.R
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
 
@@ -93,7 +94,23 @@ class UserRepository @Inject constructor(
 
     suspend fun fetchUserInformation(
         uid: String
-    ){
+    ): Result<User>{
+        return try {
+            withTimeout(10000L){
+                val query = db
+                    .collection("users")
+                    .whereEqualTo("uid", uid)
 
+                val querySnapshot = query.get().await()
+                val user = querySnapshot.toObjects(User::class.java).firstOrNull()
+                if (user != null) {
+                    Result.success(user)
+                } else {
+                    Result.failure(Exception("User data not found"))
+                }
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }

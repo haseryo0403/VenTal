@@ -18,9 +18,13 @@ users:
     liked_SwipeCards:
       # collection
       - swipeCard_id: "card789"
+      - liked_date: "2024-01-10T10:00:00Z"
     skipped_SwipeCards:
       # collection
       - swipeCard_id: "card678"
+    debating_swipeCards:
+      # collection
+      -swipeCard_id: "card789"
     liked_discussions:
       # collection
       - discussion_id: "discussion456"

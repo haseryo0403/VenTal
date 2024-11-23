@@ -1,7 +1,11 @@
 package kimsy.rr.vental.ViewModel
 
 import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -24,6 +28,9 @@ class VentCardsViewModel @Inject constructor(
     private val ventCardRepository: VentCardRepository
 ):ViewModel() {
 
+    var isLoading = mutableStateOf(true)
+        private set
+
     init {
         Log.e("VM initialization", "VCVM initialized")
     }
@@ -34,17 +41,21 @@ class VentCardsViewModel @Inject constructor(
 
     fun loadVentCards(userId: String){
         viewModelScope.launch{
-            val result = ventCardRepository.getVentCardsWithUser(userId, lastVisible)
+            val likedVentCard = ventCardRepository.fetchLikedVentCardIds(userId)
+            val debatingVentCard = ventCardRepository.fetchDebatingVentCardIds(userId)
+            val result = ventCardRepository.getVentCardsWithUser(userId, likedVentCard, debatingVentCard,lastVisible)
             Log.d("VCVM", "lastVisible: $lastVisible")
             result
                 .onSuccess {data ->
                     Log.d("loadVentCards", "Vent Cards: $data")  // dataの中身をログに出力
                     _ventCards.addAll(data.first)
                     lastVisible = data.second
+                    isLoading.value = false
 
                 }
                 .onFailure {
                     Log.e("loadVC fail", "error:$it")
+                    isLoading.value = false
                 }
         }
     }

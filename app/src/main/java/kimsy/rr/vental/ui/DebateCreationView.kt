@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
@@ -77,6 +78,8 @@ fun DebateCreationView(
             .padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        //TODO　これをcarouselにしたい
     LazyColumn(
         modifier = Modifier.weight(1f)
     ) {
@@ -96,12 +99,15 @@ fun DebateCreationView(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                     ){
-                        Icon(painter = painterResource(id = R.drawable.baseline_account_circle_24),
-                            contentDescription = "AccountIcon",
+                        Image(
+                            painter = rememberAsyncImagePainter(relatedDebate.debaterImageURL),
+                            contentDescription = null,
                             modifier = Modifier
                                 .size(48.dp)
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop
                         )
-                        Text(text = "UserName")//TODO debaterの情報が必要
+                        Text(text = relatedDebate.debaterName)
 
                     }
                     Row(
@@ -133,95 +139,7 @@ fun DebateCreationView(
                 )
             }
         }
-//        item {
-//            ElevatedCard(
-//                modifier = Modifier
-//                    .fillMaxWidth(0.8f)
-//                    .padding(16.dp)
-//            ) {
-//                Row(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(8.dp),
-//                    verticalAlignment = Alignment.CenterVertically,
-//                    horizontalArrangement = Arrangement.SpaceBetween
-//                ){
-//                    Row(
-//                        verticalAlignment = Alignment.CenterVertically,
-//                        ){
-//                        Icon(painter = painterResource(id = R.drawable.baseline_account_circle_24),
-//                            contentDescription = "AccountIcon",
-//                            modifier = Modifier
-//                                .size(48.dp)
-//                        )
-//                        Text(text = "User Name")
-//
-//                    }
-//                    Row(
-//                        verticalAlignment = Alignment.CenterVertically,
-//                        ) {
-//                        Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
-//                            contentDescription = "AccountIcon",
-//                            modifier = Modifier
-//                                .size(40.dp)
-//                        )
-//                        Text(text = "64")
-//
-//                    }
-//                }
-//
-//                Text(
-//                    text = "基礎みたいなもんだろ",
-//                    style = MaterialTheme.typography.bodyLarge,
-//                    modifier = Modifier.padding(8.dp)
-//                )
-//            }
-//
-//            ElevatedCard(
-//                modifier = Modifier
-//                    .fillMaxWidth(0.8f)
-//                    .padding(16.dp)
-//            ) {
-//                Row(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(8.dp),
-//                    verticalAlignment = Alignment.CenterVertically,
-//                    horizontalArrangement = Arrangement.SpaceBetween
-//                ){
-//                    Row(
-//                        verticalAlignment = Alignment.CenterVertically,
-//                        ){
-//                        Icon(painter = painterResource(id = R.drawable.baseline_account_circle_24),
-//                            contentDescription = "AccountIcon",
-//                            modifier = Modifier
-//                                .size(48.dp)
-//                        )
-//                        Text(text = "User Name")
-//
-//                    }
-//                    Row(
-//                        verticalAlignment = Alignment.CenterVertically,
-//                        ) {
-//                        Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
-//                            contentDescription = "AccountIcon",
-//                            modifier = Modifier
-//                                .size(40.dp)
-//                        )
-//                        Text(text = "64")
-//
-//                    }
-//                }
-//
-//                Text(
-//                    text = "基礎みたいなもんだろ",
-//                    style = MaterialTheme.typography.bodyLarge,
-//                    modifier = Modifier.padding(8.dp)
-//                )
-//            }
-//        }
     }
-
     if (relatedDebates.size <3) {
         Row(
             modifier = Modifier
@@ -251,12 +169,10 @@ fun DebateCreationView(
             }
         }
     } else {
+        //TODO 戻るボタンで表示されないようにする
         Toast.makeText(context, "討論が上限数に達したため、これ以上作成できません。関連討論にタップして移動できます", Toast.LENGTH_SHORT).show()
     }
 
     }
-
-
-
 }
 

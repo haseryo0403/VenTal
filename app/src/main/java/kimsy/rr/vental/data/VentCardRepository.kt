@@ -47,13 +47,15 @@ class VentCardRepository @Inject constructor(
 
     suspend fun getVentCardsWithUser(
         userId: String,
+        likedVentCard: List<LikedVentCard>,
+        debatingVentCard: List<DebatingVentCard>,
         lastVisible: DocumentSnapshot? = null
     ): Result<Pair<List<VentCardWithUser>, DocumentSnapshot?>> = try {
         val query = db
             .collectionGroup("swipeCards")
             .whereNotEqualTo("posterId", userId)
+            .whereLessThan("debateCount", 3)
             .orderBy("swipeCardCreatedDateTime", Query.Direction.DESCENDING)
-//            .limit(10)
 
         val querySnapshot = if (lastVisible == null) {
             query.limit(10).get().await()
@@ -65,7 +67,17 @@ class VentCardRepository @Inject constructor(
 
         Log.d("TAG", "ventCards: $querySnapshot size: ${querySnapshot.size()}")
 
+        val likedVentCarIds = likedVentCard.map { it.ventCardId }
+        val debatingVentCardIds = debatingVentCard.map { it.swipeCardId }
+
         val ventCardsWithUser = querySnapshot.documents.mapNotNull { document ->
+            val ventCard = document.toObject(VentCardWithUser::class.java)?.copy(
+                swipeCardId = document.reference.id
+            )
+
+            if (ventCard == null || likedVentCarIds.contains(ventCard.swipeCardId) || debatingVentCardIds.contains(ventCard.swipeCardId)){
+                return@mapNotNull null
+            }
             val parentReference = document.reference.parent.parent
 
             if (parentReference != null) {
@@ -74,6 +86,7 @@ class VentCardRepository @Inject constructor(
                     val name = parentDocument.getString("name")?: throw IllegalArgumentException("Poster Name is missing")
                     val photoURL = parentDocument.getString("photoURL")?: throw IllegalArgumentException("Poster Image is missing")
 
+                    //TODO　ここでうえでインスタンス化したやつについかすれば
                     // Firestoreから直接toObjectを使ってVentCardWithUserを作成
                     val ventCardWithUser = document.toObject(VentCardWithUser::class.java)?.copy(
                         swipeCardId = document.reference.id,
@@ -129,7 +142,7 @@ class VentCardRepository @Inject constructor(
     }
 
     suspend fun disLikeVentCard(userId: String, ventCardId: String) {
-        //TODO
+        // TODO
     }
 
     suspend fun checkIfLiked(userId: String, ventCardId: String): Boolean {
@@ -141,6 +154,51 @@ class VentCardRepository @Inject constructor(
 
         val docSnapshot = docRef.get().await()
         return docSnapshot.exists()
+    }
+
+    suspend fun fetchLikedVentCardIds(userId: String): List<LikedVentCard>{
+        return try {
+            withTimeout(10000L) {
+                val docRef = db
+                    .collection("users")
+                    .document(userId)
+                    .collection("likedSwipeCards")
+
+                val likedVentCardsSnapshot = docRef
+                    .get()
+                    .await()
+
+                likedVentCardsSnapshot.documents.mapNotNull {document->
+                    document.toObject(LikedVentCard::class.java)
+                }
+            }
+
+        } catch (e: Exception) {
+            Log.e("Firestore", "Error fetching liked vent cards", e)
+            emptyList()  // エラー時は空のリストを返す
+        }
+    }
+    suspend fun fetchDebatingVentCardIds(userId: String): List<DebatingVentCard>{
+        return try {
+            withTimeout(10000L) {
+                val docRef = db
+                    .collection("users")
+                    .document(userId)
+                    .collection("debatingSwipeCards")
+
+                val debatingVentCardsSnapshot = docRef
+                    .get()
+                    .await()
+
+                debatingVentCardsSnapshot.documents.mapNotNull {document->
+                    document.toObject(DebatingVentCard::class.java)
+                }
+            }
+
+        } catch (e: Exception) {
+            Log.e("Firestore", "Error fetching debating vent cards", e)
+            emptyList()  // エラー時は空のリストを返す
+        }
     }
 
 }

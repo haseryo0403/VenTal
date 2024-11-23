@@ -10,5 +10,6 @@ data class VentCard(
     val tags: List<String> = emptyList(),
     val swipeCardReportFlag: Boolean = false,
     val swipeCardDeletionRequestFlag: Boolean = false,
+    val debateCount: Int = 0,
     val swipeCardCreatedDateTime: Any = FieldValue.serverTimestamp()
     )

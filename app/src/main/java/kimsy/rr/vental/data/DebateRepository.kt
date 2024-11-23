@@ -1,13 +1,13 @@
 package kimsy.rr.vental.data
 
 import android.util.Log
-import androidx.compose.runtime.Composable
 import com.google.firebase.firestore.AggregateSource
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.time.withTimeout
 import kotlinx.coroutines.withTimeout
+import java.io.IOError
+import java.io.IOException
 import javax.inject.Inject
 
 class DebateRepository @Inject constructor(
@@ -30,12 +30,14 @@ class DebateRepository @Inject constructor(
                 }
                 Result.success(debates)
             }
+        } catch (e: IOException) {
+            Result.failure(e)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    suspend fun getRelatedDebatesCount(debate: Debate):Result<Int>{
+    suspend fun getRelatedDebatesCounts(debate: Debate):Result<Int>{
         Log.d("DR", "getRelatedDC called")
         return try {
             withTimeout(10000L) {
@@ -57,24 +59,65 @@ class DebateRepository @Inject constructor(
             Result.failure(e)
         }
     }
+    suspend fun getRelatedDebatesCount(posterId: String, swipeCardId: String):Result<Int>{
+        Log.d("DR", "getRelatedDC called")
+        return try {
+            withTimeout(10000L) {
+                val query = db
+                    .collection("users")
+                    .document(posterId)
+                    .collection("swipeCards")
+                    .document(swipeCardId)
+                    .collection("debates")
+
+                val querySnapshot = query.count().get(AggregateSource.SERVER).await()
+
+                val count = querySnapshot.count.toInt()
+
+                Result.success(count)
+            }
+        } catch (e: Exception){
+            Log.e("DRgRDC", "error: ${e.message}")
+            Result.failure(e)
+        }
+    }
 
     suspend fun createDebate(debate: Debate): Result<Unit>{
         Log.d("DR", "createDebate called")
         return try{
             withTimeout(10000L) {
-                db
+                val docRefOnSwipeCard = db
                     .collection("users")
                     .document(debate.posterId)
                     .collection("swipeCards")
                     .document(debate.swipeCardId)
+
+                docRefOnSwipeCard
                     .collection("debates")
                     .add(debate)
                     .await()
+
+                docRefOnSwipeCard
+                    .update("debateCount", FieldValue.increment(1))
+                    .await()
+
                 Result.success(Unit)
             }
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    suspend fun addDebatingSwipeCardUseCase (debaterId: String, swipeCardId: String) {
+        val docRef = db
+            .collection("users")
+            .document(debaterId)
+            .collection("debatingSwipeCards")
+            .document(swipeCardId)
+
+        val data = mapOf("swipeCardId" to swipeCardId)
+
+        docRef.set(data).await()
     }
 
 

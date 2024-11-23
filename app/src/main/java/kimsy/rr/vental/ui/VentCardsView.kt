@@ -180,6 +180,9 @@ fun SwipeCardsView(
     toDebateCreationView: () -> Unit,
     authViewModel: AuthViewModel
 ){
+    val isLoading by ventCardsViewModel.isLoading
+
+
     // currentUserをobserveしてStateとして取得
     val user by authViewModel.currentUser.observeAsState(User())
 
@@ -189,13 +192,14 @@ fun SwipeCardsView(
     }
     val ventCards by remember { derivedStateOf { ventCardsViewModel.ventCards } }
 
-    if (
-        ventCards.isEmpty()
-        ) {
+
+
+    if (isLoading) {
         // データがまだロードされていない場合、ローディングインジケーターを表示
         CircularProgressIndicator(
-
         )
+    } else if(ventCards.isEmpty()) {
+        Text(text = "No ventCards available")//TODO design
     } else {
         // データがロードされた場合、CardStackを表示
         CardStack(
