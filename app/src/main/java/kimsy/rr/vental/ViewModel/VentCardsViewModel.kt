@@ -15,7 +15,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.data.VentCard
-import kimsy.rr.vental.data.VentCardRepository
+import kimsy.rr.vental.data.repository.VentCardRepository
 import kimsy.rr.vental.data.VentCardWithUser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,7 +46,7 @@ class VentCardsViewModel @Inject constructor(
             val result = ventCardRepository.getVentCardsWithUser(userId, likedVentCard, debatingVentCard,lastVisible)
             Log.d("VCVM", "lastVisible: $lastVisible")
             result
-                .onSuccess {data ->
+                .onSuccess {data->
                     Log.d("loadVentCards", "Vent Cards: $data")  // dataの中身をログに出力
                     _ventCards.addAll(data.first)
                     lastVisible = data.second

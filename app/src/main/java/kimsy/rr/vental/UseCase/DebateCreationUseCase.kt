@@ -3,6 +3,7 @@ package kimsy.rr.vental.UseCase
 import android.net.Uri
 import android.util.Log
 import kimsy.rr.vental.data.Debate
+import kimsy.rr.vental.data.DebateWithUsers
 import kimsy.rr.vental.data.repository.DebateRepository
 import kimsy.rr.vental.data.VentCard
 import kimsy.rr.vental.data.VentCardWithUser
@@ -21,19 +22,19 @@ class DebateCreationUseCase @Inject constructor(
             Result.failure(e)
         }
     }
-    suspend fun execute(text: String, ventCard: VentCardWithUser, debaterId: String, firstMessageImageURL: String?): Result<Unit> {
+    suspend fun execute(text: String, ventCard: VentCardWithUser, debaterId: String, firstMessageImageURL: String?): Result<DebateWithUsers> {
         return try {
             val debate = createDebateInstance(text, ventCard, debaterId, firstMessageImageURL)
-            val debateId = debateRepository.createDebate(debate).getOrThrow()
+            val createdDebateWithUsers = debateRepository.createDebate(debate).getOrThrow()
             messageCreationUseCase.execute(
                 debate = debate,
                 debateWithUsers = null,
                 userId = debaterId,
-                debateId = debateId,
+                debateId = createdDebateWithUsers.debateId,
                 text = text,
                 messageImageURL = firstMessageImageURL
                 )
-            Result.success(Unit)
+            Result.success(createdDebateWithUsers)
         } catch (e: Exception) {
             Result.failure(e)
         }

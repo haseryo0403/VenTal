@@ -4,6 +4,7 @@ import com.google.firebase.firestore.FieldValue
 import java.util.Date
 
 data class DebateWithUsers(
+    val debateId: String = "",
     val swipeCardImageURL: String = "",
     val swipeCardId: String = "",
     val posterId: String = "",

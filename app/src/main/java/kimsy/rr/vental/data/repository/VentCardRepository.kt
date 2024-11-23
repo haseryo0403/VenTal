@@ -1,4 +1,4 @@
-package kimsy.rr.vental.data
+package kimsy.rr.vental.data.repository
 
 import android.util.Log
 import com.google.firebase.firestore.DocumentSnapshot
@@ -11,6 +11,10 @@ import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import kimsy.rr.vental.data.DebatingVentCard
+import kimsy.rr.vental.data.LikedVentCard
+import kimsy.rr.vental.data.VentCard
+import kimsy.rr.vental.data.VentCardWithUser
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.time.withTimeout
 import kotlinx.coroutines.withTimeout

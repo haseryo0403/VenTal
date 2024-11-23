@@ -15,13 +15,10 @@ import kimsy.rr.vental.UseCase.AddDebatingSwipeCardUseCase
 import kimsy.rr.vental.UseCase.CreateDebatesWithUsersUseCase
 import kimsy.rr.vental.UseCase.DebateCreationUseCase
 import kimsy.rr.vental.UseCase.DebateValidationUseCase
+import kimsy.rr.vental.UseCase.GetDebateInfoUseCase
 import kimsy.rr.vental.UseCase.GetRelatedDebatesUseCase
-import kimsy.rr.vental.UseCase.GetUserDetailsUseCase
-import kimsy.rr.vental.data.Debate
-import kimsy.rr.vental.data.repository.DebateRepository
 import kimsy.rr.vental.data.DebateWithUsers
-import kimsy.rr.vental.data.ImageRepository
-import kimsy.rr.vental.data.User
+import kimsy.rr.vental.data.repository.ImageRepository
 import kimsy.rr.vental.data.VentCardWithUser
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -34,16 +31,21 @@ class DebateCreationViewModel @Inject constructor(
     private val debateCreationUseCase: DebateCreationUseCase,
     private val debateValidationUseCase: DebateValidationUseCase,
     private val addDebatingSwipeCardUseCase: AddDebatingSwipeCardUseCase,
+    private val getDebateInfoUseCase: GetDebateInfoUseCase,
     private val imageRepository: ImageRepository
 ): ViewModel() {
+
+    var isLoading = mutableStateOf(true)
+        private set
+
     private val _relatedDebates = MutableLiveData<List<DebateWithUsers>>()
     val relatedDebates: LiveData<List<DebateWithUsers>> get() = _relatedDebates
 
     private val _errorState = MutableLiveData<String>()
     val errorState: LiveData<String> get() = _errorState
 
-    private val _debateResult = MutableLiveData<Result<Unit>>()
-    val debateResult: LiveData<Result<Unit>> get() = _debateResult
+    private val _createdDebateWithUsers = MutableLiveData<Result<DebateWithUsers>>()
+    val createdDebateWithUsers: LiveData<Result<DebateWithUsers>> get() = _createdDebateWithUsers
     var ventCardWithUser by mutableStateOf<VentCardWithUser?>(null)
 
     init {
@@ -53,6 +55,7 @@ class DebateCreationViewModel @Inject constructor(
     fun getRelatedDebates(ventCardWithUser: VentCardWithUser) {
         viewModelScope.launch {
             try {
+                isLoading.value = true
                 val debates = getRelatedDebatesUseCase.execute(ventCardWithUser).getOrThrow()
                 val debatesWithUsers = createDebatesWithUsersUseCase.execute(debates)
                 _relatedDebates.value = debatesWithUsers
@@ -61,6 +64,8 @@ class DebateCreationViewModel @Inject constructor(
                 handleNetworkError(e)
             } catch (e: Exception) {
                 handleUnexpectedError(e)
+            } finally {
+                isLoading.value = false
             }
         }
     }
@@ -68,12 +73,13 @@ class DebateCreationViewModel @Inject constructor(
     fun handleDebateCreation(text: String, imageUri: Uri?, debaterId: String, context: Context) {
         viewModelScope.launch {
             try {
+                isLoading.value = true
                 val ventCard = ventCardWithUser ?: throw IllegalStateException("No vent card available")
 
                 // バリデーション実行
                 val isValid = debateValidationUseCase.execute(ventCard.posterId, ventCard.swipeCardId).getOrThrow()
                 if (!isValid) {
-                    _debateResult.value = Result.failure(Exception("Validation failed"))
+                    _createdDebateWithUsers.value = Result.failure(Exception("Validation failed"))
                     return@launch
                 }
 
@@ -83,7 +89,8 @@ class DebateCreationViewModel @Inject constructor(
                 } else null
 
                 // 討論作成UseCaseの実行
-                _debateResult.value = debateCreationUseCase.execute(text, ventCard, debaterId, imageUrl)
+                val createdDebate = debateCreationUseCase.execute(text, ventCard, debaterId, imageUrl).getOrThrow()
+                _createdDebateWithUsers.value = getDebateInfoUseCase.execute(createdDebate)
 
                 // スワイプカードIDを保存
                 addDebatingSwipeCardUseCase.execute(debaterId, ventCard.swipeCardId)
@@ -91,6 +98,8 @@ class DebateCreationViewModel @Inject constructor(
                 handleNetworkError(e)
             } catch (e: Exception) {
                 handleUnexpectedError(e)
+            } finally {
+                isLoading.value = false
             }
         }
     }

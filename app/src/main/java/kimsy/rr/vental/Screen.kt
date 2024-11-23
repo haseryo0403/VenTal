@@ -18,6 +18,7 @@ sealed class Screen(val title: String, val route: String) {
     object TimeLineScreen:Screen("timeline","timelinescreen")
     object Notifications: Screen("通知", "notifications")
     object DebateCreation: Screen("反論", "debate creation")
+    object DebateScreen: Screen("投稿", "debate")
 
 }
 
@@ -33,5 +34,6 @@ val otherScreen = listOf(
     Screen.SignupScreen,
     Screen.TimeLineScreen,
     Screen.Notifications,
-    Screen.DebateCreation
+    Screen.DebateCreation,
+    Screen.DebateScreen
 )

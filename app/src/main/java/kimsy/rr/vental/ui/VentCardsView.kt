@@ -25,9 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,7 +37,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -192,37 +189,42 @@ fun SwipeCardsView(
     }
     val ventCards by remember { derivedStateOf { ventCardsViewModel.ventCards } }
 
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        if (isLoading) {
+            // データがまだロードされていない場合、ローディングインジケーターを表示
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        } else if(ventCards.isEmpty()) {
+            Text(text = "No ventCards available")//TODO design
+        } else {
+            // データがロードされた場合、CardStackを表示
+            CardStack(
+                modifier = Modifier,
+                enableButtons = true,
+                items = ventCards,
+                onSwipeRight = {ventCard ->
+                    ventCardsViewModel.handleLikeAction(
+                        userId = user.uid,
+                        posterId = ventCard.posterId,
+                        ventCardId = ventCard.swipeCardId
+                    )
+                },
+                onSwipeLeft = {ventCard->
+                    debateCreationViewModel.ventCardWithUser = ventCard
+                    Log.e("VCV", "ventCardId: ${ventCard.swipeCardId}")
+                    debateCreationViewModel.getRelatedDebates(ventCard)
+                    toDebateCreationView()
+                },
+                onEmptyStack = {},
+                onLessStack = {
+                    //カード少なくなったら補充
+                    ventCardsViewModel.loadVentCards(user.uid)
+                }
+            )
+        }
+
+    }
 
 
-    if (isLoading) {
-        // データがまだロードされていない場合、ローディングインジケーターを表示
-        CircularProgressIndicator(
-        )
-    } else if(ventCards.isEmpty()) {
-        Text(text = "No ventCards available")//TODO design
-    } else {
-        // データがロードされた場合、CardStackを表示
-        CardStack(
-            modifier = Modifier,
-            enableButtons = true,
-            items = ventCards,
-            onSwipeRight = {ventCard ->
-                ventCardsViewModel.handleLikeAction(
-                    userId = user.uid,
-                    posterId = ventCard.posterId,
-                    ventCardId = ventCard.swipeCardId
-                )
-            },
-            onSwipeLeft = {ventCard->
-                debateCreationViewModel.ventCardWithUser = ventCard
-                Log.e("VCV", "ventCardId: ${ventCard.swipeCardId}")
-                debateCreationViewModel.getRelatedDebates(ventCard)
-                toDebateCreationView()
-            },
-            onEmptyStack = {},
-            onLessStack = {
-                //カード少なくなったら補充
-                ventCardsViewModel.loadVentCards(user.uid)
-            }
-        )
-    }}
+}

@@ -1,4 +1,4 @@
-package kimsy.rr.vental.data
+package kimsy.rr.vental.data.repository
 
 
 import android.content.Intent
@@ -15,6 +15,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.ktx.Firebase
 import kimsy.rr.vental.R
+import kimsy.rr.vental.data.User
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
 import javax.inject.Inject

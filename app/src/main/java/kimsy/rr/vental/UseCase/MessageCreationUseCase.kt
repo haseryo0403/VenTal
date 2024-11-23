@@ -3,7 +3,7 @@ package kimsy.rr.vental.UseCase
 import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.DebateWithUsers
 import kimsy.rr.vental.data.Message
-import kimsy.rr.vental.data.MessageRepository
+import kimsy.rr.vental.data.repository.MessageRepository
 import kimsy.rr.vental.data.UserType
 import kimsy.rr.vental.data.VentCardWithUser
 import javax.inject.Inject

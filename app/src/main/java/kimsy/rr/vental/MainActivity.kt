@@ -29,7 +29,7 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import kimsy.rr.vental.ui.theme.VentalTheme
 import kimsy.rr.vental.ViewModel.AuthViewModel
-import kimsy.rr.vental.data.UserRepository
+import kimsy.rr.vental.data.repository.UserRepository
 import kimsy.rr.vental.ui.commonUi.MainView
 import kimsy.rr.vental.ui.SignInScreen
 import javax.inject.Inject

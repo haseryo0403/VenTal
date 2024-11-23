@@ -1,6 +1,7 @@
-package kimsy.rr.vental.data
+package kimsy.rr.vental.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
+import kimsy.rr.vental.data.Message
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
 import java.io.IOException

@@ -1,7 +1,7 @@
 package kimsy.rr.vental.UseCase
 
 import kimsy.rr.vental.data.User
-import kimsy.rr.vental.data.UserRepository
+import kimsy.rr.vental.data.repository.UserRepository
 import javax.inject.Inject
 
 class GetUserDetailsUseCase @Inject constructor(

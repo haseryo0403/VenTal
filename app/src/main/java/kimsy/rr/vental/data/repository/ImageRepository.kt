@@ -1,4 +1,4 @@
-package kimsy.rr.vental.data
+package kimsy.rr.vental.data.repository
 
 import android.annotation.SuppressLint
 import android.content.Context

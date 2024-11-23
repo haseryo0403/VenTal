@@ -10,9 +10,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kimsy.rr.vental.data.ImageRepository
+import kimsy.rr.vental.data.repository.ImageRepository
 import kimsy.rr.vental.data.VentCard
-import kimsy.rr.vental.data.VentCardRepository
+import kimsy.rr.vental.data.repository.VentCardRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject

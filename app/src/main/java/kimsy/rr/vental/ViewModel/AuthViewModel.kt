@@ -18,7 +18,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kimsy.rr.vental.data.User
-import kimsy.rr.vental.data.UserRepository
+import kimsy.rr.vental.data.repository.UserRepository
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

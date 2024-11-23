@@ -36,10 +36,12 @@ import kimsy.rr.vental.otherScreen
 import kimsy.rr.vental.screensInBottom
 import kimsy.rr.vental.ViewModel.AuthViewModel
 import kimsy.rr.vental.ViewModel.DebateCreationViewModel
+import kimsy.rr.vental.ViewModel.DebateViewModel
 import kimsy.rr.vental.ViewModel.MyPageViewModel
 import kimsy.rr.vental.ViewModel.VentCardCreationViewModel
 import kimsy.rr.vental.data.VentCardWithUser
 import kimsy.rr.vental.ui.DebateCreationView
+import kimsy.rr.vental.ui.DebateView
 import kimsy.rr.vental.ui.FollowsView
 import kimsy.rr.vental.ui.MyPageView
 import kimsy.rr.vental.ui.NotificationsView
@@ -128,6 +130,7 @@ fun Navigation(
     authViewModel: AuthViewModel,
     ventCardCreationViewModel: VentCardCreationViewModel,
     debateCreationViewModel: DebateCreationViewModel = hiltViewModel(),
+    debateViewModel: DebateViewModel = hiltViewModel(),
     context: Context,
     pd:PaddingValues){
 
@@ -172,9 +175,15 @@ fun Navigation(
             DebateCreationView(
                 context = context,
                 authViewModel = authViewModel,
-                debateCreationViewModel = debateCreationViewModel
+                debateCreationViewModel = debateCreationViewModel,
+                debateViewModel = debateViewModel,
+                toDebateView = {navController.navigate(Screen.DebateScreen.route)}
             )
         }
+        composable(Screen.DebateScreen.route) {
+            DebateView(debateViewModel)
+        }
+
     }
 }
 

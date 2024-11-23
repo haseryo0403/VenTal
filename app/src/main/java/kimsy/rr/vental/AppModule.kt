@@ -16,9 +16,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.repository.DebateRepository
-import kimsy.rr.vental.data.ImageRepository
-import kimsy.rr.vental.data.UserRepository
-import kimsy.rr.vental.data.VentCardRepository
+import kimsy.rr.vental.data.repository.ImageRepository
+import kimsy.rr.vental.data.repository.UserRepository
+import kimsy.rr.vental.data.repository.VentCardRepository
 import javax.inject.Singleton
 
 @Module
