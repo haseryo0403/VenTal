@@ -18,7 +18,7 @@ import kimsy.rr.vental.UseCase.DebateValidationUseCase
 import kimsy.rr.vental.UseCase.GetRelatedDebatesUseCase
 import kimsy.rr.vental.UseCase.GetUserDetailsUseCase
 import kimsy.rr.vental.data.Debate
-import kimsy.rr.vental.data.DebateRepository
+import kimsy.rr.vental.data.repository.DebateRepository
 import kimsy.rr.vental.data.DebateWithUsers
 import kimsy.rr.vental.data.ImageRepository
 import kimsy.rr.vental.data.User
@@ -49,27 +49,6 @@ class DebateCreationViewModel @Inject constructor(
     init {
         Log.d("DCVM", "initialized")
     }
-
-//    fun getRelatedDebatess(ventCardWithUser: VentCardWithUser) {
-//        viewModelScope.launch {
-//            runCatching {
-//                val debates = getRelatedDebatesUseCase.execute(ventCardWithUser).getOrThrow()
-//                debates.map {debate ->
-//                    val debater = getUserDetailsUseCase.execute(debate.debaterId).getOrThrow()
-//                    //TODO たぶんposterの情報いらない
-//                    val poster = getUserDetailsUseCase.execute(debate.posterId).getOrThrow()
-//                    createDebateWithUserInstance(debate, debater, poster)
-//                }
-//            }.onSuccess { debatesWithUsers->
-//                _relatedDebates.value = debatesWithUsers
-//                Log.d("DCVM", "relatedDebates: $debatesWithUsers")
-//            }.onFailure {exception->
-//                Log.e("DCVM", "Failed to fetch related debates", exception)
-//                //TODO 共通エラーハンドリング（必要に応じてカスタムメッセージやUI操作を追加）
-//
-//            }
-//        }
-//    }
 
     fun getRelatedDebates(ventCardWithUser: VentCardWithUser) {
         viewModelScope.launch {
@@ -116,10 +95,6 @@ class DebateCreationViewModel @Inject constructor(
         }
     }
 
-    // 画像アップロード処理
-    private suspend fun uploadImage(imageUri: Uri, context: Context): String {
-        return imageRepository.saveImageToStorage(imageUri, context).getOrThrow()
-    }
     private fun handleNetworkError(error: IOException) {
         _errorState.value = "ネットワーク接続に問題があります。" // UI向けメッセージ
         Log.e("DCVM", "Network error occurred", error)
@@ -129,83 +104,4 @@ class DebateCreationViewModel @Inject constructor(
         _errorState.value = "予期しないエラーが発生しました。" // UI向けメッセージ
         Log.e("DCVM", "Unexpected error occurred", error)
     }
-
-//討論内容受け取り＞インスタンス化＞バリデーション（関連討論数確認）＞画像があれば保存＞討論作成＞ユーザーに討論しているスワイプカードID保存
-
-//    fun handleDebateCreations(text: String, imageUri: Uri?, debaterId: String, context: Context) {
-//        val ventCard = ventCardWithUser ?: return
-//        viewModelScope.launch {
-//            //スワイプカードが表示されている時点でバリデーションの失敗率は低いので先にインスタンス化
-//            val debate = createDebateInstance(text, ventCard, debaterId)
-//
-//            val validationResult = validateDebate(debate)
-//            validationResult.fold(
-//                onSuccess = { isValid ->
-//                    if (isValid) {
-//                        handleImageUploadAndCreateDebate(debate, imageUri, context)
-//                    } else {
-//                        _debateResult.value = Result.failure(Exception("Validation failed"))
-//                    }
-//                },
-//                onFailure = { exception ->
-//                    _debateResult.value = Result.failure(exception)
-//                }
-//            )
-//        }
-//    }
-
-//    private fun createDebateInstance(text: String, ventCard: VentCardWithUser, debaterId: String): Debate {
-//        return Debate(
-//            swipeCardImageURL = ventCard.swipeCardImageURL,
-//            swipeCardId = ventCard.swipeCardId,
-//            posterId = ventCard.posterId,
-//            debaterId = debaterId,
-//            firstMessage = text
-//        )
-//    }
-
-//    private fun createDebateWithUserInstance(debate: Debate, debater: User, poster: User): DebateWithUsers {
-//        return DebateWithUsers(
-//            swipeCardImageURL = debate.swipeCardImageURL,
-//            swipeCardId = debate.swipeCardId,
-//            posterId = debate.posterId,
-//            posterName = poster.name,
-//            posterImageURL = poster.photoURL,
-//            posterLikeCount = debate.posterLikeCount,
-//            debaterId = debate.debaterId,
-//            debaterName = debater.name,
-//            debaterImageURL = debater.photoURL,
-//            debaterLikeCount = debate.debaterLikeCount,
-//            firstMessage = debate.firstMessage,
-//            firstMessageImageURL = debate.firstMessageImageURL,
-//            //TODO 討論作成時間
-//        )
-//    }
-
-//    private suspend fun validateDebate(debate: Debate): Result<Boolean> {
-//        return debateValidationUseCase.execute(debate)
-//    }
-
-//    private suspend fun handleImageUploadAndCreateDebate(debate: Debate, imageUri: Uri?, context: Context) {
-//        try {
-//            val updatedDebate = imageUri?.let {
-//                val imageResult = imageRepository.saveImageToStorage(it, context)
-//                imageResult.fold(
-//                    onSuccess = { imageURL->
-//                        Log.d("ImageUpload", "Image uploaded: $imageURL")
-//                        debate.copy(firstMessageImageURL = imageURL)
-//                    },
-//                    onFailure = { exception ->
-//                        Log.e("ImageUpload", "Image upload failed: ${exception.message}")
-//                        //TODO 必要に応じてエラー処理を追加
-//                        debate
-//                    }
-//                )
-//            } ?: debate
-//            _debateResult.value = debateCreationUseCase.execute(updatedDebate)
-//            addDebatingSwipeCardUseCase.execute(debate)
-//        } catch (e: Exception) {
-//            _debateResult.value = Result.failure(e)
-//        }
-//    }
 }

@@ -81,6 +81,7 @@ users:
             debate_deletion_request_flag: false
             debate_created_datetime: "2024-11-02T15:00:00Z"
 
+          # TODO: sender,debater側の視点では右寄左寄せは変えたいので、userTypeだとそれができないと思ったが、討論のほうで照合すればいいのか
             messages:
               # collection
               - message_id: "message123"

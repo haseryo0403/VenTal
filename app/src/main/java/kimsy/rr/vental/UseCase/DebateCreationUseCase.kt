@@ -3,14 +3,15 @@ package kimsy.rr.vental.UseCase
 import android.net.Uri
 import android.util.Log
 import kimsy.rr.vental.data.Debate
-import kimsy.rr.vental.data.DebateRepository
+import kimsy.rr.vental.data.repository.DebateRepository
 import kimsy.rr.vental.data.VentCard
 import kimsy.rr.vental.data.VentCardWithUser
 import java.net.URL
 import javax.inject.Inject
 
 class DebateCreationUseCase @Inject constructor(
-    private val debateRepository: DebateRepository
+    private val debateRepository: DebateRepository,
+    private val messageCreationUseCase: MessageCreationUseCase
 ) {
     suspend fun executes(debate: Debate): Result<Unit> {
         return try {
@@ -23,7 +24,15 @@ class DebateCreationUseCase @Inject constructor(
     suspend fun execute(text: String, ventCard: VentCardWithUser, debaterId: String, firstMessageImageURL: String?): Result<Unit> {
         return try {
             val debate = createDebateInstance(text, ventCard, debaterId, firstMessageImageURL)
-            debateRepository.createDebate(debate)
+            val debateId = debateRepository.createDebate(debate).getOrThrow()
+            messageCreationUseCase.execute(
+                debate = debate,
+                debateWithUsers = null,
+                userId = debaterId,
+                debateId = debateId,
+                text = text,
+                messageImageURL = firstMessageImageURL
+                )
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

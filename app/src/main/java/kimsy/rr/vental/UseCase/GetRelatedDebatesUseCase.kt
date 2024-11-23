@@ -1,7 +1,7 @@
 package kimsy.rr.vental.UseCase
 
 import kimsy.rr.vental.data.Debate
-import kimsy.rr.vental.data.DebateRepository
+import kimsy.rr.vental.data.repository.DebateRepository
 import kimsy.rr.vental.data.DebateWithUsers
 import kimsy.rr.vental.data.VentCardWithUser
 import javax.inject.Inject

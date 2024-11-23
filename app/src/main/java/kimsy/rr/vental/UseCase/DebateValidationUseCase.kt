@@ -2,7 +2,7 @@ package kimsy.rr.vental.UseCase
 
 import android.util.Log
 import kimsy.rr.vental.data.Debate
-import kimsy.rr.vental.data.DebateRepository
+import kimsy.rr.vental.data.repository.DebateRepository
 import kimsy.rr.vental.data.VentCardWithUser
 import javax.inject.Inject
 

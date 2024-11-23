@@ -2,7 +2,7 @@ package kimsy.rr.vental.UseCase
 
 import android.util.Log
 import kimsy.rr.vental.data.Debate
-import kimsy.rr.vental.data.DebateRepository
+import kimsy.rr.vental.data.repository.DebateRepository
 import javax.inject.Inject
 
 class AddDebatingSwipeCardUseCase @Inject constructor(
@@ -10,7 +10,7 @@ class AddDebatingSwipeCardUseCase @Inject constructor(
 ) {
     suspend fun execute(debaterId: String, swipeCardId: String): Result<Unit> {
         return try {
-            debateRepository.addDebatingSwipeCardUseCase(debaterId, swipeCardId)
+            debateRepository.addDebatingSwipeCard(debaterId, swipeCardId)
             Result.success(Unit)
         } catch (e: Exception) {
             Log.e("ADSCUC", "討論IDをユーザーに保持失敗")

@@ -1,9 +1,11 @@
-package kimsy.rr.vental.data
+package kimsy.rr.vental.data.repository
 
 import android.util.Log
 import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import kimsy.rr.vental.data.Debate
+import kimsy.rr.vental.data.VentCardWithUser
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
 import java.io.IOError
@@ -82,7 +84,7 @@ class DebateRepository @Inject constructor(
         }
     }
 
-    suspend fun createDebate(debate: Debate): Result<Unit>{
+    suspend fun createDebate(debate: Debate): Result<String>{
         Log.d("DR", "createDebate called")
         return try{
             withTimeout(10000L) {
@@ -92,7 +94,7 @@ class DebateRepository @Inject constructor(
                     .collection("swipeCards")
                     .document(debate.swipeCardId)
 
-                docRefOnSwipeCard
+                val debateDocRef = docRefOnSwipeCard
                     .collection("debates")
                     .add(debate)
                     .await()
@@ -101,14 +103,14 @@ class DebateRepository @Inject constructor(
                     .update("debateCount", FieldValue.increment(1))
                     .await()
 
-                Result.success(Unit)
+                Result.success(debateDocRef.id)
             }
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    suspend fun addDebatingSwipeCardUseCase (debaterId: String, swipeCardId: String) {
+    suspend fun addDebatingSwipeCard (debaterId: String, swipeCardId: String) {
         val docRef = db
             .collection("users")
             .document(debaterId)
