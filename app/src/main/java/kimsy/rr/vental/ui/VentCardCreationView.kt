@@ -70,7 +70,6 @@ fun VentCardCreationView(
         .padding(start = 16.dp, end = 16.dp)
     ) {
         item {
-            //TODO このTextfieldを背景と同じ色にすればあたかも大きなTextfieldに見えるはず
             MaxLengthTextField(
                 value = viewModel.content,
                 onValueChange = { newText -> viewModel.content = newText},

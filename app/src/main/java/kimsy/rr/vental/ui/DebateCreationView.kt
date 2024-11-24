@@ -161,31 +161,46 @@ fun DebateCreationView(
                 }
             }
             if (relatedDebates.size <3) {
-                Row(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp)
-                        .heightIn(max = if (isKeyboardVisible) 160.dp else 48.dp),
-                    verticalAlignment = Alignment.Bottom,
-                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-
-                    ImagePermissionAndSelection(
-                                context = context,
-                                onImageSelected = {uri ->
-                                    // 選択された画像URIをここで処理
-                                    if (uri != null) {
-                                        imageUri = uri
-                                    }
-                                })
-                    MaxLengthOutlinedTextField(value = text, onValueChange = {text = it}, maxLength = 140, modifier = Modifier.weight(1f))
-
-                    IconButton(
-                        onClick = {
-                            user?.let { debateCreationViewModel.handleDebateCreation(text,imageUri, it.uid, context) }
-                        }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                            .heightIn(max = if (isKeyboardVisible) 160.dp else 48.dp),
+                        verticalAlignment = Alignment.Bottom,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Icon(imageVector = Icons.Default.Send, contentDescription = "Send")
+
+                        ImagePermissionAndSelection(
+                                    context = context,
+                                    onImageSelected = {uri ->
+                                        // 選択された画像URIをここで処理
+                                        if (uri != null) {
+                                            imageUri = uri
+                                        }
+                                    })
+                        MaxLengthOutlinedTextField(value = text, onValueChange = {text = it}, maxLength = 140, modifier = Modifier.weight(1f))
+
+                        IconButton(
+                            onClick = {
+                                user?.let { debateCreationViewModel.handleDebateCreation(text,imageUri, it.uid, context) }
+                            }
+                        ) {
+                            Icon(imageVector = Icons.Default.Send, contentDescription = "Send")
+                        }
+                    }
+                    if (imageUri != null) {
+//                        Image(
+//                            painter = rememberAsyncImagePainter(imageUri),
+//                            contentDescription = "Selected Image",
+//                            modifier = Modifier
+//                                .fillMaxSize()
+//                                .clip(RoundedCornerShape(16.dp)),
+//                            contentScale = ContentScale.FillWidth,
+//                        )
                     }
                 }
             } else {

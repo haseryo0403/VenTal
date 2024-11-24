@@ -195,8 +195,11 @@ fun SwipeCardsView(
         if (isLoading) {
             // データがまだロードされていない場合、ローディングインジケーターを表示
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        } else if(ventCards.isEmpty()) {
+        } else if(ventCardsViewModel.hasFinishedLoadingAllCards) {
             Text(text = "No ventCards available")//TODO design
+        } else if (ventCards.isEmpty()) {
+            //TODO 初回はlastVisibleがNUllつまり初回でemptyの場合はループするかも　Repositoryで空ならそれで判断しちゃっていいかもlike抜いたあとじゃなくてDB取得直後
+            ventCardsViewModel.loadVentCards(user.uid)
         } else {
             // データがロードされた場合、CardStackを表示
             CardStack(
@@ -223,8 +226,5 @@ fun SwipeCardsView(
                 }
             )
         }
-
     }
-
-
 }

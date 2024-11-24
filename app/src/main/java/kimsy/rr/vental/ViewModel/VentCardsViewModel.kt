@@ -27,6 +27,8 @@ class VentCardsViewModel @Inject constructor(
     private val authViewModel: AuthViewModel,
     private val ventCardRepository: VentCardRepository
 ):ViewModel() {
+    var hasFinishedLoadingAllCards by mutableStateOf(false)
+        private set
 
     var isLoading = mutableStateOf(true)
         private set
@@ -41,6 +43,7 @@ class VentCardsViewModel @Inject constructor(
 
     fun loadVentCards(userId: String){
         viewModelScope.launch{
+            isLoading.value = true
             val likedVentCard = ventCardRepository.fetchLikedVentCardIds(userId)
             val debatingVentCard = ventCardRepository.fetchDebatingVentCardIds(userId)
             val result = ventCardRepository.getVentCardsWithUser(userId, likedVentCard, debatingVentCard,lastVisible)
@@ -48,6 +51,11 @@ class VentCardsViewModel @Inject constructor(
             result
                 .onSuccess {data->
                     Log.d("loadVentCards", "Vent Cards: $data")  // dataの中身をログに出力
+                    Log.d("VCVM", "lastVisible: ${lastVisible}, new lastVisible: ${data.second}")
+                    if (lastVisible == data.second //|| lastVisible == null
+                        ) {
+                        hasFinishedLoadingAllCards = true
+                    }
                     _ventCards.addAll(data.first)
                     lastVisible = data.second
                     isLoading.value = false

@@ -40,8 +40,6 @@ class DebateCreationUseCase @Inject constructor(
         }
     }
 
-
-
     private fun createDebateInstance(text: String, ventCard: VentCardWithUser, debaterId: String, firstMessageImageURL: String?): Debate {
         return Debate(
             swipeCardImageURL = ventCard.swipeCardImageURL,

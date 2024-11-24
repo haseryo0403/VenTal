@@ -24,13 +24,8 @@ import java.util.Date
 
 
 class VentCardRepository @Inject constructor(
-    private val db: FirebaseFirestore,
-    private val storage: FirebaseStorage,
-    private val storageRef: StorageReference
+    private val db: FirebaseFirestore
 ) {
-
-//    private var lastVisible: DocumentSnapshot? = null
-
     suspend fun saveVentCardToFireStore(
         ventCard: VentCard
     ): Result<Unit>{
@@ -65,6 +60,11 @@ class VentCardRepository @Inject constructor(
             query.limit(10).get().await()
         } else {
             query.startAfter(lastVisible).limit(10).get().await()
+        }
+
+        if (querySnapshot.isEmpty) {
+            //TODO　ここでDBから取得したものがnullならreturnするとかでいいんじゃないだろうか
+//            Result.success(Pair(null, null))// たぶんもっと良い方法ある
         }
 
         val newLastVisible = querySnapshot.documents.lastOrNull()

@@ -46,6 +46,7 @@ fun MaxLengthOutlinedTextField(
         onValueChange = onTextFieldValueChange,
         modifier = modifier,
         placeholder = placeHolder,
-        colors = colors
+        colors = colors,
+
     )
 }

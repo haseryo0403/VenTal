@@ -78,11 +78,9 @@ object AppModule {
     @Provides
     @Singleton
     fun provideVentCardRepository(
-        firebaseFirestore: FirebaseFirestore,
-        firebaseStorage: FirebaseStorage,
-        storageReference: StorageReference
+        firebaseFirestore: FirebaseFirestore
     ): VentCardRepository{
-        return VentCardRepository(firebaseFirestore,firebaseStorage,storageReference)
+        return VentCardRepository(firebaseFirestore)
     }
     @Provides
     @Singleton
