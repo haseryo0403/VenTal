@@ -69,7 +69,6 @@ fun CardStack(modifier : Modifier = Modifier,
     var hasOnLessStackCalled by remember { mutableStateOf(false) }
     Log.e("CS", "index: $i")
 
-    //TODO　これが呼ばれるのが配列が更新されるより一瞬遅い
     LaunchedEffect(items.size){
         Log.d("CS", "i size changed")
         hasOnLessStackCalled = false

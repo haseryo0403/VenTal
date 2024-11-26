@@ -36,17 +36,25 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import kimsy.rr.vental.R
 import kimsy.rr.vental.ViewModel.DebateViewModel
+import kimsy.rr.vental.ViewModel.VentCardsViewModel
 import kimsy.rr.vental.data.Message
+import kimsy.rr.vental.ui.CommonComposable.formatTimeDifference
 
 
 @Composable
 fun DebateView(
-    debateViewModel: DebateViewModel
-){
+    debateViewModel: DebateViewModel = hiltViewModel(),
+    ){
 
-    val debateWithUsers by debateViewModel.debateWithUsers
+    val debateWithUsers = debateViewModel.debateWithUsers.value
+    val isLoading by debateViewModel.isLoading
+
+    LaunchedEffect(Unit) {
+        debateViewModel.loadDebate()
+    }
 
     LazyColumn(
 
@@ -71,8 +79,13 @@ fun DebateView(
                         Row(modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween) {
                             debateWithUsers?.let { Text(text = it.posterName) }
-                            Text(text = "23時間")
+                            Text(text = debateWithUsers?.debateCreatedDatetime?.let { formatTimeDifference(it) }?: "日付不明")
                         }
+
+
+                        //TODO swipeCardの情報が必要
+
+
                         Text(text = "古文ってあんまり勉強したら人生に役に立つって感じがしないんだよね")
                         Text(text = "#学校", color = MaterialTheme.colorScheme.onSurfaceVariant)
                         //TODO color choose

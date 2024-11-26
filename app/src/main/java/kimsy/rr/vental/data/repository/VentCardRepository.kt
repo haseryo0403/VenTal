@@ -205,4 +205,23 @@ class VentCardRepository @Inject constructor(
         }
     }
 
+    suspend fun fetchVentCard(posterId: String ,ventCardId: String): VentCard? {
+        return try {
+            withTimeout(10000L) {
+                val docRef = db
+                    .collection("users")
+                    .document(posterId)
+                    .collection("swipeCards")
+                    .document(ventCardId)
+
+                val ventCardSnapshot = docRef.get().await()
+
+                ventCardSnapshot.toObject(VentCard::class.java)
+            }
+        } catch (e: Exception) {
+            Log.e("VCR", "error")
+            null
+        }
+    }
+
 }

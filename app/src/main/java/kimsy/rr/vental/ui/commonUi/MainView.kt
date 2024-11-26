@@ -130,7 +130,6 @@ fun Navigation(
     authViewModel: AuthViewModel,
     ventCardCreationViewModel: VentCardCreationViewModel,
     debateCreationViewModel: DebateCreationViewModel = hiltViewModel(),
-    debateViewModel: DebateViewModel = hiltViewModel(),
     context: Context,
     pd:PaddingValues){
 
@@ -176,12 +175,14 @@ fun Navigation(
                 context = context,
                 authViewModel = authViewModel,
                 debateCreationViewModel = debateCreationViewModel,
-                debateViewModel = debateViewModel,
-                toDebateView = {navController.navigate(Screen.DebateScreen.route)}
+                toDebateView = {
+                    Log.d("MV", "to DebateScreen")
+                    navController.navigate(Screen.DebateScreen.route)
+                }
             )
         }
         composable(Screen.DebateScreen.route) {
-            DebateView(debateViewModel)
+            DebateView()
         }
 
     }

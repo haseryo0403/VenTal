@@ -84,7 +84,9 @@ class DebateRepository @Inject constructor(
 
                 val createdDebateSnapshot = debateDocRef.get().await()
                 val createdDebate = createdDebateSnapshot.toObject(DebateWithUsers::class.java)
-                    ?.copy(debateId = debateDocRef.id)
+                    ?.copy(debateId = debateDocRef.id,
+                        //TODO dateに変換？
+                        )
                     ?: throw IllegalStateException("Failed to convert document to Debate")
 
                 Result.success(createdDebate)

@@ -17,6 +17,7 @@ import kimsy.rr.vental.UseCase.DebateCreationUseCase
 import kimsy.rr.vental.UseCase.DebateValidationUseCase
 import kimsy.rr.vental.UseCase.GetDebateInfoUseCase
 import kimsy.rr.vental.UseCase.GetRelatedDebatesUseCase
+import kimsy.rr.vental.data.DebateSharedModel
 import kimsy.rr.vental.data.DebateWithUsers
 import kimsy.rr.vental.data.repository.ImageRepository
 import kimsy.rr.vental.data.VentCardWithUser
@@ -70,7 +71,11 @@ class DebateCreationViewModel @Inject constructor(
         }
     }
 
-    fun handleDebateCreation(text: String, imageUri: Uri?, debaterId: String, context: Context) {
+    fun handleDebateCreation(text: String,
+                             imageUri: Uri?,
+                             debaterId: String,
+                             context: Context,
+                             onCreationSuccess: () -> Unit = {}) {
         viewModelScope.launch {
             try {
                 isLoading.value = true
@@ -90,10 +95,15 @@ class DebateCreationViewModel @Inject constructor(
 
                 // 討論作成UseCaseの実行
                 val createdDebate = debateCreationUseCase.execute(text, ventCard, debaterId, imageUrl).getOrThrow()
-                _createdDebateWithUsers.value = getDebateInfoUseCase.execute(createdDebate)
+                val createdDebateWithUsersInfo = getDebateInfoUseCase.execute(createdDebate).getOrThrow()
+                //これでviewから触れる
+//                _createdDebateWithUsers.value = getDebateInfoUseCase.execute(createdDebate)
 
                 // スワイプカードIDを保存
                 addDebatingSwipeCardUseCase.execute(debaterId, ventCard.swipeCardId)
+                DebateSharedModel.setDebate(createdDebateWithUsersInfo)
+
+                onCreationSuccess()
             } catch (e: IOException) {
                 handleNetworkError(e)
             } catch (e: Exception) {

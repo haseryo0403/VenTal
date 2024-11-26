@@ -40,7 +40,7 @@ class ImageRepository @Inject constructor(
             Log.d("TAG", "${storageRef.child("images/$uniqueFileName")}")
             Log.d("TAG","uri is: $uri")
 
-            withTimeout(10000L){
+            withTimeout(20000L){
                 storageRef.child("images/$uniqueFileName").putFile(uri).await()
 
                 val downloadUrl = storageRef.child("images/$uniqueFileName").downloadUrl.await().toString()
