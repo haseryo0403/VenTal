@@ -29,15 +29,14 @@ users:
       # collection
       - discussion_id: "discussion456"
         user_type: "poster"  # いいねしたユーザーがposterかdebaterか
-    notifications_settings:
-      message_enabled: true
-      comment_enabled: true
     notifications:
       # collection
       - notification_id: "notification123"
         link_id: "discussion456"
+        #TODO これだとユーザー情報が変更されたときに対応できない。たぶんidだけが正解
         action_user_name: "佐藤花子"  # お知らせの内容
         action_user_imageURL: "https://example.com/image789.jpg"  # お知らせの内容
+        action_user_id: "kdkkjojd",
         timestamp: "2024-11-03T12:00:00Z"  # ISO 8601形式での日時
         type: "comment"  # お知らせの種類
         read_flag: false  # 既読フラグ
@@ -114,3 +113,13 @@ tags:
   - tagId: "tag002"
     tagContent: "音楽"
     usedCount: 5
+
+# TODO ここにdeviceTOkenありじゃね
+notificationSettings:
+  # collection
+  -userId: "user123"
+  debateStartEnabled: true
+  messageEnabled: true
+  commentEnabled: true
+
+notificationsLog: #将来入れるかも

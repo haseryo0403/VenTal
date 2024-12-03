@@ -46,16 +46,20 @@ import kimsy.rr.vental.ViewModel.AuthViewModel
 @Composable
 fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
     var showDialog by remember { mutableStateOf(false)}
+    val errorMessage by authViewModel.errorMessage
 
     // Googleサインインの結果を受け取るランチャー
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
+            Log.e("SU", "result_ok")
             val signInIntent = result.data
             // ViewModelで結果を処理
             authViewModel.handleSignInResult(signInIntent)
         } else {
+            Log.e("SU", "result_NG")
+
             //TODO グーグル認証失敗処理
             authViewModel.updateLoading(false)
             showDialog = true
@@ -74,8 +78,9 @@ fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
             onNavigateToMainView()  // 遷移先の処理を呼び出す
         } else if (authResult == false) {
             Log.e("TAG", "New Sign-in")
-            onNavigateToMainView()  // 遷移先の処理を呼び出す
+//            onNavigateToMainView()  // 遷移先の処理を呼び出す
             //TODO 初期ログインのガイダンス的なの考慮
+            showDialog = true
         }
     }
 
@@ -83,7 +88,7 @@ fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
         AlertDialog(onDismissRequest = { showDialog = false },
             confirmButton = { /*TODO*/ },
             title = { Text(text = "ERROR")},
-            text = { Text(text = "Googleサインインに失敗しました。再試行してください。")}
+            text = { Text(text = errorMessage?: "不明なエラーが発生しました。")}
             )
     }
 

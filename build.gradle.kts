@@ -11,5 +11,6 @@ buildscript {
     dependencies {
         // 省略
         classpath ("com.google.dagger:hilt-android-gradle-plugin:2.46.1") // 追加
+
     }
 }

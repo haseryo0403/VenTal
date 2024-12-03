@@ -8,13 +8,16 @@ import androidx.activity.result.ActivityResultLauncher
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import kimsy.rr.vental.R
+import kimsy.rr.vental.data.NotificationSettings
 import kimsy.rr.vental.data.User
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
@@ -37,7 +40,6 @@ class UserRepository @Inject constructor(
             val credential = GoogleAuthProvider.getCredential(idToken, null)
             val authResult = auth.signInWithCredential(credential).await()
             val uid = authResult.user?.uid ?: return Result.failure(Exception("User not found"))
-            Log.d("TAG", uid)
             Result.success(uid)
         } catch (e: Exception) {
             Log.d("TAG", "firebase fail: ${e.message}")
@@ -45,41 +47,127 @@ class UserRepository @Inject constructor(
         }
     }
 
+//TODO
+//    suspend fun getCurrentUsers(): User? {
+//        val currentUser = auth.currentUser ?: return null
+//        return try {
+//            val uid = currentUser.uid
+//            Log.d("TAG", "uid: $uid")
+//            val result = db.collection("users")
+//                .whereEqualTo("uid", uid)
+//                .get()
+//                .await()
+//            Log.d("TAG","getUser")
+//            Log.d("TAG",result.toString())
+//
+//            // 取得結果が空でない場合は最初の要素を返し、空の場合は null を返す
+//            result.toObjects(User::class.java).firstOrNull()
+//        } catch (e: FirebaseFirestoreException) {
+//            Log.e("FirestoreError", "Firestore error: ${e.message}", e)
+//            null
+//        } catch (e: Exception) {
+//            Log.e("GeneralError", "An error occurred: ${e.message}", e)
+//            null
+//        }
+//    }
 
-    suspend fun getCurrentUser(): User? {
-        val currentUser = auth.currentUser ?: return null
+//    suspend fun getCurrentUser(): Result<User?> {
+//        val currentUser = auth.currentUser ?: return Result.failure(Exception("No authenticated user found"))//ここnull返すかも
+//        return try {
+//            val uid = currentUser.uid
+//            Log.d("TAG", "uid: $uid")
+//            val result = db.collection("users")
+//                .whereEqualTo("uid", uid)
+//                .get()
+//                .await()
+//            Log.d("TAG","getUser")
+//            Log.d("TAG",result.toString())
+//
+//            // 取得結果が空でない場合は最初の要素を返し、空の場合は null を返す
+//            val user = result.toObjects(User::class.java).firstOrNull()
+//            Result.success(user)
+//        } catch (e: FirebaseFirestoreException) {
+//            Log.e("FirestoreError", "Firestore error: ${e.message}", e)
+//            Result.failure(e)
+//        } catch (e: Exception) {
+//            Log.e("GeneralError", "An error occurred: ${e.message}", e)
+//            Result.failure(e)
+//        }
+//    }
+
+    // Firestore にデバイストークンを保存
+    suspend fun saveDeviceToken(userId: String): Result<Unit> {
         return try {
-            val uid = currentUser.uid
-            Log.d("TAG", "uid: $uid")
+            // 非同期でトークンを取得
+            val token = FirebaseMessaging.getInstance().token.await()
+            Log.d("UR", "token: $token, userId: $userId")
+
+            // トークンを Firestore に保存
+            db.collection("notificationSettings").document(userId)
+                .update("deviceToken", token)
+                .await()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e("FIREBASE", "Failed to save device token", e)
+            Result.failure(e)
+        }
+    }
+
+
+    suspend fun getCurrentUser(): Result<User?> {
+        val uid = auth.currentUser?.uid ?: return Result.failure(Exception("User not signed in"))
+        return try {
             val result = db.collection("users")
                 .whereEqualTo("uid", uid)
                 .get()
                 .await()
-            Log.d("TAG","getUser")
-            Log.d("TAG",result.toString())
-
-            // 取得結果が空でない場合は最初の要素を返し、空の場合は null を返す
-            result.toObjects(User::class.java).firstOrNull()
-        } catch (e: FirebaseFirestoreException) {
-            Log.e("FirestoreError", "Firestore error: ${e.message}", e)
-            null
+            Result.success(result.toObjects(User::class.java).firstOrNull())
         } catch (e: Exception) {
-            Log.e("GeneralError", "An error occurred: ${e.message}", e)
-            null
+            Result.failure(e)
         }
     }
 
-    suspend fun saveUserToFirestore() {
-        val user = auth.currentUser
-        user?.let {
+
+
+
+//    suspend fun saveUserToFirestore() {
+//        val user = auth.currentUser
+//        user?.let {
+//            // 認証ユーザーの情報を取得
+//            val newUser = User(
+//                uid = it.uid,
+//                name = it.displayName ?: "",
+//                email = it.email ?: "",
+//                photoURL = it.photoUrl?.toString() ?:""
+//            )
+//            db.collection("users").document(newUser.uid).set(newUser).await()
+//        }
+//    }
+
+    suspend fun saveUserToFirestore(): Result<Unit> {
+        return try {
+            val user = auth.currentUser
+                ?: return Result.failure(Exception("No user to save"))
             // 認証ユーザーの情報を取得
             val newUser = User(
-                uid = it.uid,
-                name = it.displayName ?: "",
-                email = it.email ?: "",
-                photoURL = it.photoUrl?.toString() ?:""
+                uid = user.uid,
+                name = user.displayName ?: "",
+                email = user.email ?: "",
+                photoURL = user.photoUrl?.toString() ?:""
             )
             db.collection("users").document(newUser.uid).set(newUser).await()
+
+            //TODO コード整理。ここはrepositoryわけたほうがいい。useCase使ってたら楽だったのに
+            val defaultNotificationSettings = NotificationSettings()
+            db.collection("notificationSettings")
+                .document(newUser.uid)
+                .set(defaultNotificationSettings)
+                .await()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 

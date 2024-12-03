@@ -13,6 +13,7 @@ data class VentCardWithUser(
     val swipeCardImageURL: String = "",
     val likeCount: Int = 0,
     val tags: List<String> = emptyList(),
+    val debateCount: Int = 0,
     val swipeCardReportFlag: Boolean = false,
     val swipeCardDeletionRequestFlag: Boolean = false,
     val swipeCardCreatedDateTime: Date? = null

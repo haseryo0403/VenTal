@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
@@ -70,9 +71,9 @@ fun SwipeCardsView(
     authViewModel: AuthViewModel
 ){
     val isLoading by ventCardsViewModel.isLoading
-
-
-    // currentUserをobserveしてStateとして取得
+    val errorMessage by ventCardsViewModel.errorMessage
+    var showDialog by remember { mutableStateOf(false)}
+    var noCardsLeft by remember { mutableStateOf(false) }
     val user by authViewModel.currentUser.observeAsState(User())
 
     // LaunchedEffectを使用して画面遷移時にのみloadVentCardsを呼び出す
@@ -84,16 +85,24 @@ fun SwipeCardsView(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        if (isLoading) {
+
+        if(showDialog){
+            AlertDialog(onDismissRequest = { showDialog = false },
+                confirmButton = { /*TODO*/ },
+                title = { Text(text = "ERROR")},
+                text = { Text(text = errorMessage?: "不明なエラーが発生しました。")}
+            )
+        }
+        if (isLoading && ventCards.isEmpty()) {
             // データがまだロードされていない場合、ローディングインジケーターを表示
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        } else if(ventCardsViewModel.hasFinishedLoadingAllCards) {
+        } else if (noCardsLeft) {
             Text(text = "No ventCards available")//TODO design
-        } else if (ventCards.isEmpty()) {
-            //TODO 初回はlastVisibleがNUllつまり初回でemptyの場合はループするかも　Repositoryで空ならそれで判断しちゃっていいかもlike抜いたあとじゃなくてDB取得直後
-            ventCardsViewModel.loadVentCards(user.uid)
+        } else if (errorMessage != null) {
+            showDialog = true
         } else {
             // データがロードされた場合、CardStackを表示
+
             CardStack(
                 modifier = Modifier,
                 enableButtons = true,
@@ -111,7 +120,11 @@ fun SwipeCardsView(
                     debateCreationViewModel.getRelatedDebates(ventCard)
                     toDebateCreationView()
                 },
-                onEmptyStack = {},
+                onEmptyStack = {
+                    if (ventCardsViewModel.hasFinishedLoadingAllCards) {
+                        noCardsLeft = true
+                    }
+                },
                 onLessStack = {
                     //カード少なくなったら補充
                     ventCardsViewModel.loadVentCards(user.uid)

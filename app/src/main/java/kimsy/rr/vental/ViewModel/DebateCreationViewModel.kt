@@ -17,8 +17,13 @@ import kimsy.rr.vental.UseCase.DebateCreationUseCase
 import kimsy.rr.vental.UseCase.DebateValidationUseCase
 import kimsy.rr.vental.UseCase.GetDebateInfoUseCase
 import kimsy.rr.vental.UseCase.GetRelatedDebatesUseCase
+import kimsy.rr.vental.UseCase.SaveNotificationDataUseCase
+import kimsy.rr.vental.UseCase.SendAndSaveNotificationUseCase
 import kimsy.rr.vental.data.DebateSharedModel
 import kimsy.rr.vental.data.DebateWithUsers
+import kimsy.rr.vental.data.NotificationData
+import kimsy.rr.vental.data.NotificationType
+import kimsy.rr.vental.data.User
 import kimsy.rr.vental.data.repository.ImageRepository
 import kimsy.rr.vental.data.VentCardWithUser
 import kotlinx.coroutines.launch
@@ -33,6 +38,8 @@ class DebateCreationViewModel @Inject constructor(
     private val debateValidationUseCase: DebateValidationUseCase,
     private val addDebatingSwipeCardUseCase: AddDebatingSwipeCardUseCase,
     private val getDebateInfoUseCase: GetDebateInfoUseCase,
+    private val saveNotificationDataUseCase: SaveNotificationDataUseCase,
+    private val sendAndSaveNotificationUseCase: SendAndSaveNotificationUseCase,
     private val imageRepository: ImageRepository
 ): ViewModel() {
 
@@ -103,6 +110,8 @@ class DebateCreationViewModel @Inject constructor(
                 addDebatingSwipeCardUseCase.execute(debaterId, ventCard.swipeCardId)
                 DebateSharedModel.setDebate(createdDebateWithUsersInfo)
 
+                handleNotification(debaterId, ventCard.posterId, text)
+
                 onCreationSuccess()
             } catch (e: IOException) {
                 handleNetworkError(e)
@@ -112,6 +121,53 @@ class DebateCreationViewModel @Inject constructor(
                 isLoading.value = false
             }
         }
+    }
+
+    fun handleNotification(
+//        fromUser: User,
+//        toUser: User,
+        fromUserId: String,
+        toUserId: String,
+        body: String,
+
+        ){
+        viewModelScope.launch {
+//            val notificationData = NotificationData.createForDebateStart(fromUser.uid, body)
+            try {
+//                // saveNoti to db
+//                saveNotificationDataUseCase(
+//                    notificationData,
+//                    toUser.uid
+//                )
+//                // check noti status
+
+
+                // send noti TODO fix 通知可否をチェックするときにdeviceToken取得する
+//                sendNotificationUseCase(
+//                    notificationData,
+//                    fromUser,
+//                    toUser.deviceToken
+//                )
+
+                sendAndSaveNotificationUseCase(fromUserId, toUserId, body)
+                    .onSuccess {
+                        Log.d("DebateCreationViewModel", "sent notification")
+                    }
+                    .onFailure {
+                        Log.e("DebateCreationViewModel", "send notification fail")
+
+                    }
+
+
+            } catch (e: IOException) {
+                handleNetworkError(e)
+            } catch (e: Exception) {
+                handleUnexpectedError(e)
+            }
+        }
+
+
+
     }
 
     private fun handleNetworkError(error: IOException) {

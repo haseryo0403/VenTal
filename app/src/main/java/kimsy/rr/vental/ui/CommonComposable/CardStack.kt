@@ -60,7 +60,7 @@ fun CardStack(modifier : Modifier = Modifier,
               enableButtons: Boolean = false,
               onSwipeLeft : ( item : VentCardWithUser) -> Unit = {},
               onSwipeRight : ( item : VentCardWithUser) ->  Unit = {},
-              onEmptyStack : ( lastItem : VentCardWithUser) -> Unit = {},
+              onEmptyStack : () -> Unit = {},
               onLessStack : () -> Unit = {}
 ){
     var j by remember { mutableStateOf(0)}
@@ -75,7 +75,7 @@ fun CardStack(modifier : Modifier = Modifier,
     }
 
     if( i == -1 ){
-        onEmptyStack( items.last() )
+        onEmptyStack()
     } else if (i <= 2 && !hasOnLessStackCalled){
         //ventCardをロード
         onLessStack()

@@ -62,6 +62,8 @@ dependencies {
 
 
     implementation ("com.google.accompanist:accompanist-permissions:0.23.1")
+    implementation ("com.google.firebase:firebase-messaging-ktx:23.0.6")
+
 
 
     //hilt
@@ -73,6 +75,14 @@ dependencies {
     //Firebase Storage
     implementation ("com.google.firebase:firebase-storage-ktx")
     implementation("com.google.firebase:firebase-appcheck-debug")
+
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // Kotlin Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 
 
     val nav_version = "2.8.3"
@@ -119,6 +129,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     implementation ("androidx.constraintlayout:constraintlayout-compose:1.0.0")
+
 
 
 }

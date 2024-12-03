@@ -2,25 +2,16 @@ package kimsy.rr.vental.data.repository
 
 import android.util.Log
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.ktx.toObject
-import com.google.firebase.firestore.toObject
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
 import kimsy.rr.vental.data.DebatingVentCard
 import kimsy.rr.vental.data.LikedVentCard
 import kimsy.rr.vental.data.VentCard
 import kimsy.rr.vental.data.VentCardWithUser
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.time.withTimeout
 import kotlinx.coroutines.withTimeout
-import okhttp3.internal.wait
 import javax.inject.Inject
-import java.util.Date
 
 
 class VentCardRepository @Inject constructor(
@@ -43,13 +34,87 @@ class VentCardRepository @Inject constructor(
             Result.failure(e)
         }
     }
+//
+//    suspend fun getVentCardsWithUser(
+//        userId: String,
+//        likedVentCard: List<LikedVentCard>,
+//        debatingVentCard: List<DebatingVentCard>,
+//        lastVisible: DocumentSnapshot? = null
+//    ): Result<Pair<List<VentCardWithUser>, DocumentSnapshot?>> = try {
+//        val query = db
+//            .collectionGroup("swipeCards")
+//            .whereNotEqualTo("posterId", userId)
+//            .whereLessThan("debateCount", 3)
+//            .orderBy("swipeCardCreatedDateTime", Query.Direction.DESCENDING)
+//
+//        val querySnapshot = if (lastVisible == null) {
+//            query.limit(10).get().await()
+//        } else {
+//            query.startAfter(lastVisible).limit(10).get().await()
+//        }
+//
+//        if (querySnapshot.isEmpty) {
+//            //TODO　ここでViewModelまでもどして表示するカードがもうないことをUIに知らせたい
+//        }
+//
+//        val newLastVisible = querySnapshot.documents.lastOrNull()
+//
+//        Log.d("TAG", "ventCards: $querySnapshot size: ${querySnapshot.size()}")
+//
+//        val likedVentCardIds = likedVentCard.map { it.ventCardId }
+//        val debatingVentCardIds = debatingVentCard.map { it.swipeCardId }
+//
+//        val ventCardsWithUser = querySnapshot.documents.mapNotNull { document ->
+//            val ventCard = document.toObject(VentCardWithUser::class.java)?.copy(
+//                swipeCardId = document.reference.id
+//            )
+//
+//            if (ventCard == null || likedVentCardIds.contains(ventCard.swipeCardId) || debatingVentCardIds.contains(ventCard.swipeCardId)){
+//                return@mapNotNull null
+//            }
+//            val parentReference = document.reference.parent.parent
+//
+//            if (parentReference != null) {
+//                try {
+//                    val parentDocument = parentReference.get().await()
+//                    val name = parentDocument.getString("name")?: throw IllegalArgumentException("Poster Name is missing")
+//                    val photoURL = parentDocument.getString("photoURL")?: throw IllegalArgumentException("Poster Image is missing")
+//
+//                    //TODO　ここでうえでインスタンス化したやつについかすれば
+//                    // Firestoreから直接toObjectを使ってVentCardWithUserを作成
+//                    val ventCardWithUser = document.toObject(VentCardWithUser::class.java)?.copy(
+//                        swipeCardId = document.reference.id,
+//                        posterName = name,
+//                        posterImageURL = photoURL,
+//                        swipeCardCreatedDateTime = document.getTimestamp("swipeCardCreatedDateTime")!!.toDate()
+//                    )
+//
+//
+//                    ventCardWithUser
+//
+//                } catch (e: Exception) {
+//                    Log.w("Firestore", "Error getting parent document", e)
+//                    null
+//                }
+//            } else {
+//                null
+//            }
+//        }
+//        if (ventCardsWithUser.isEmpty()) {
+//            getVentCardsWithUser(userId, likedVentCard, debatingVentCard, newLastVisible)
+//        }
+//        Result.success(Pair(ventCardsWithUser, newLastVisible))
+//    } catch (e: Exception) {
+//        Result.failure(e)
+//    }
 
-    suspend fun getVentCardsWithUser(
-        userId: String,
-        likedVentCard: List<LikedVentCard>,
-        debatingVentCard: List<DebatingVentCard>,
-        lastVisible: DocumentSnapshot? = null
-    ): Result<Pair<List<VentCardWithUser>, DocumentSnapshot?>> = try {
+suspend fun getVentCardsWithUser(
+    userId: String,
+    likedVentCard: List<LikedVentCard>,
+    debatingVentCard: List<DebatingVentCard>,
+    lastVisible: DocumentSnapshot? = null
+): Result<Pair<List<VentCardWithUser>, DocumentSnapshot?>> {
+    return try {
         val query = db
             .collectionGroup("swipeCards")
             .whereNotEqualTo("posterId", userId)
@@ -63,15 +128,15 @@ class VentCardRepository @Inject constructor(
         }
 
         if (querySnapshot.isEmpty) {
-            //TODO　ここでDBから取得したものがnullならreturnするとかでいいんじゃないだろうか
-//            Result.success(Pair(null, null))// たぶんもっと良い方法ある
+            // データがない場合、空リストとnullを返す
+            return Result.success(Pair(emptyList(), null))
         }
 
         val newLastVisible = querySnapshot.documents.lastOrNull()
 
         Log.d("TAG", "ventCards: $querySnapshot size: ${querySnapshot.size()}")
 
-        val likedVentCarIds = likedVentCard.map { it.ventCardId }
+        val likedVentCardIds = likedVentCard.map { it.ventCardId }
         val debatingVentCardIds = debatingVentCard.map { it.swipeCardId }
 
         val ventCardsWithUser = querySnapshot.documents.mapNotNull { document ->
@@ -79,28 +144,25 @@ class VentCardRepository @Inject constructor(
                 swipeCardId = document.reference.id
             )
 
-            if (ventCard == null || likedVentCarIds.contains(ventCard.swipeCardId) || debatingVentCardIds.contains(ventCard.swipeCardId)){
+            if (ventCard == null || likedVentCardIds.contains(ventCard.swipeCardId) || debatingVentCardIds.contains(ventCard.swipeCardId)) {
                 return@mapNotNull null
             }
+
             val parentReference = document.reference.parent.parent
 
             if (parentReference != null) {
                 try {
                     val parentDocument = parentReference.get().await()
-                    val name = parentDocument.getString("name")?: throw IllegalArgumentException("Poster Name is missing")
-                    val photoURL = parentDocument.getString("photoURL")?: throw IllegalArgumentException("Poster Image is missing")
+                    val name = parentDocument.getString("name") ?: return@mapNotNull null
+                    val photoURL = parentDocument.getString("photoURL") ?: return@mapNotNull null
 
-                    //TODO　ここでうえでインスタンス化したやつについかすれば
                     // Firestoreから直接toObjectを使ってVentCardWithUserを作成
-                    val ventCardWithUser = document.toObject(VentCardWithUser::class.java)?.copy(
+                    document.toObject(VentCardWithUser::class.java)?.copy(
                         swipeCardId = document.reference.id,
                         posterName = name,
                         posterImageURL = photoURL,
                         swipeCardCreatedDateTime = document.getTimestamp("swipeCardCreatedDateTime")!!.toDate()
                     )
-
-                    ventCardWithUser
-
                 } catch (e: Exception) {
                     Log.w("Firestore", "Error getting parent document", e)
                     null
@@ -109,55 +171,72 @@ class VentCardRepository @Inject constructor(
                 null
             }
         }
+
+        if (ventCardsWithUser.isEmpty() && newLastVisible != null) {
+            return getVentCardsWithUser(userId, likedVentCard, debatingVentCard, newLastVisible)
+        }
+
         Result.success(Pair(ventCardsWithUser, newLastVisible))
     } catch (e: Exception) {
         Result.failure(e)
     }
+}
 
 
-    suspend fun likeVentCard(userId: String, posterId: String, ventCardId: String){
 
-        Log.d("VCR", "likeVentCard called")
+    suspend fun likeVentCard(userId: String, posterId: String, ventCardId: String): Result<Unit>{
+        return try {
+            Log.d("VCR", "likeVentCard called")
 
-        val likeData = mapOf(
-            "ventCardId" to ventCardId,
-            "likedDate" to FieldValue.serverTimestamp()
-        )
-        val docRefOnUser = db
-            .collection("users")
-            .document(userId)
-            .collection("likedSwipeCards")
-            .document(ventCardId)
+            val likeData = mapOf(
+                "ventCardId" to ventCardId,
+                "likedDate" to FieldValue.serverTimestamp()
+            )
+            val docRefOnUser = db
+                .collection("users")
+                .document(userId)
+                .collection("likedSwipeCards")
+                .document(ventCardId)
 
-        val docRefOnSwipeCard = db
-            .collection("users")
-            .document(posterId)
-            .collection("swipeCards")
-            .document(ventCardId)
+            val docRefOnSwipeCard = db
+                .collection("users")
+                .document(posterId)
+                .collection("swipeCards")
+                .document(ventCardId)
 
-        docRefOnUser
-            .set(likeData)
-            .await()
+            docRefOnUser
+                .set(likeData)
+                .await()
 
-        // add to like list
-        docRefOnSwipeCard
-            .update("likeCount", FieldValue.increment(1)).await()
-        //increment sc like
+            // add to like list
+            docRefOnSwipeCard
+                .update("likeCount", FieldValue.increment(1)).await()
+            //increment sc like
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
     suspend fun disLikeVentCard(userId: String, ventCardId: String) {
         // TODO
     }
 
-    suspend fun checkIfLiked(userId: String, ventCardId: String): Boolean {
-        val docRef = db
-            .collection("users")
-            .document(userId)
-            .collection("likedSwipeCards")
-            .document(ventCardId)
+    suspend fun checkIfLiked(userId: String, ventCardId: String): Result<Boolean> {
+        return try {
+            val docRef = db
+                .collection("users")
+                .document(userId)
+                .collection("likedSwipeCards")
+                .document(ventCardId)
 
-        val docSnapshot = docRef.get().await()
-        return docSnapshot.exists()
+            val docSnapshot = docRef.get().await()
+            val isLiked = docSnapshot.exists()
+            Result.success(isLiked)
+
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
     suspend fun fetchLikedVentCardIds(userId: String): List<LikedVentCard>{

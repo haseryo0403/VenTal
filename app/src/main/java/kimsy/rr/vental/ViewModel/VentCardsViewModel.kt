@@ -1,6 +1,7 @@
 package kimsy.rr.vental.ViewModel
 
 import android.util.Log
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -13,6 +14,8 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kimsy.rr.vental.UseCase.HandleLikeActionUseCase
+import kimsy.rr.vental.UseCase.LoadVentCardsUseCase
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.data.VentCard
 import kimsy.rr.vental.data.repository.VentCardRepository
@@ -24,72 +27,123 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class VentCardsViewModel @Inject constructor(
-    private val authViewModel: AuthViewModel,
-    private val ventCardRepository: VentCardRepository
-):ViewModel() {
+    private val loadVentCardsUseCase: LoadVentCardsUseCase,
+    private val handleLikeActionUseCase: HandleLikeActionUseCase
+) : ViewModel() {
+    private val _errorMessage = mutableStateOf<String?>(null)
+    val errorMessage: State<String?> = _errorMessage
+
     var hasFinishedLoadingAllCards by mutableStateOf(false)
         private set
 
     var isLoading = mutableStateOf(true)
         private set
 
-    init {
-        Log.e("VM initialization", "VCVM initialized")
-    }
     private val _ventCards = mutableStateListOf<VentCardWithUser>()
     val ventCards: List<VentCardWithUser> get() = _ventCards
 
     private var lastVisible: DocumentSnapshot? = null
 
-    fun loadVentCards(userId: String){
-        viewModelScope.launch{
-            isLoading.value = true
-            val likedVentCard = ventCardRepository.fetchLikedVentCardIds(userId)
-            val debatingVentCard = ventCardRepository.fetchDebatingVentCardIds(userId)
-            val result = ventCardRepository.getVentCardsWithUser(userId, likedVentCard, debatingVentCard,lastVisible)
-            Log.d("VCVM", "lastVisible: $lastVisible")
-            result
-                .onSuccess {data->
-                    Log.d("loadVentCards", "Vent Cards: $data")  // dataの中身をログに出力
-                    Log.d("VCVM", "lastVisible: ${lastVisible}, new lastVisible: ${data.second}")
-                    if (lastVisible == data.second //|| lastVisible == null
-                        ) {
-                        hasFinishedLoadingAllCards = true
-                    }
-                    _ventCards.addAll(data.first)
-                    lastVisible = data.second
-                    isLoading.value = false
-
-                }
-                .onFailure {
-                    Log.e("loadVC fail", "error:$it")
-                    isLoading.value = false
-                }
-        }
-    }
-
-    fun handleLikeAction(userId: String,posterId: String, ventCardId: String) {
+    fun loadVentCards(userId: String) {
         viewModelScope.launch {
-            val isLiked = ventCardRepository.checkIfLiked(userId, ventCardId)
-            try {
-                if (!isLiked) {
-                    ventCardRepository.likeVentCard(userId, posterId, ventCardId)
-//TODO　使うとサイコンポーズされてしまう                    _ventCards.removeIf{it.swipeCardId == ventCardId}
-                } else {
-                    //TODO dislike
-                    ventCardRepository.disLikeVentCard(userId,ventCardId)
-//TODO　使うとサイコンポーズされてしまう                        _ventCards.removeIf{it.swipeCardId == ventCardId}
-
-                    Log.e("VCVM", "like exists")
+            isLoading.value = true
+            val result = loadVentCardsUseCase.execute(userId, lastVisible)
+            result.onSuccess { (cards, newLastVisible) ->
+                if (cards.isEmpty()) {
+                    hasFinishedLoadingAllCards = true
                 }
-            } catch (e: Exception) {
-                Log.e("VCVM", "error : $e")
+                _ventCards.addAll(cards)
+                lastVisible = newLastVisible
+                isLoading.value = false
+            }.onFailure {
+                Log.e("loadVC fail", "error: $it")
+                //TODO エラーメッセージを登録
+                isLoading.value = false
             }
         }
     }
 
-
-
-
-
+    fun handleLikeAction(userId: String, posterId: String, ventCardId: String) {
+        viewModelScope.launch {
+            handleLikeActionUseCase.execute(userId, posterId, ventCardId).onFailure {
+                Log.e("VCVM", "Like action failed: $it")
+                _errorMessage.value = it.toString()
+            }
+        }
+    }
 }
+
+
+
+//
+//@HiltViewModel
+//class VentCardsViewModel @Inject constructor(
+//    private val authViewModel: AuthViewModel,
+//    private val ventCardRepository: VentCardRepository
+//):ViewModel() {
+//    var hasFinishedLoadingAllCards by mutableStateOf(false)
+//        private set
+//
+//    var isLoading = mutableStateOf(true)
+//        private set
+//
+//    init {
+//        Log.e("VM initialization", "VCVM initialized")
+//    }
+//    private val _ventCards = mutableStateListOf<VentCardWithUser>()
+//    val ventCards: List<VentCardWithUser> get() = _ventCards
+//
+//    private var lastVisible: DocumentSnapshot? = null
+//
+//    fun loadVentCards(userId: String){
+//        viewModelScope.launch{
+//            isLoading.value = true
+//            val likedVentCard = ventCardRepository.fetchLikedVentCardIds(userId)
+//            val debatingVentCard = ventCardRepository.fetchDebatingVentCardIds(userId)
+//            val result = ventCardRepository.getVentCardsWithUser(userId, likedVentCard, debatingVentCard,lastVisible)
+//            Log.d("VCVM", "lastVisible: $lastVisible")
+//            result
+//                .onSuccess {data->
+//                    Log.d("loadVentCards", "Vent Cards: $data")  // dataの中身をログに出力
+//                    Log.d("VCVM", "lastVisible: ${lastVisible}, new lastVisible: ${data.second}")
+//                    if (lastVisible == data.second //|| lastVisible == null
+//                        ) {
+//                        hasFinishedLoadingAllCards = true
+//                    }
+//                    _ventCards.addAll(data.first)
+//                    lastVisible = data.second
+//                    isLoading.value = false
+//
+//                }
+//                .onFailure {
+//                    Log.e("loadVC fail", "error:$it")
+//                    isLoading.value = false
+//                }
+//        }
+//    }
+//
+//    fun handleLikeAction(userId: String,posterId: String, ventCardId: String) {
+//        viewModelScope.launch {
+//            val isLiked = ventCardRepository.checkIfLiked(userId, ventCardId)
+//            try {
+//                if (!isLiked) {
+//                    ventCardRepository.likeVentCard(userId, posterId, ventCardId)
+////TODO　使うとサイコンポーズされてしまう                    _ventCards.removeIf{it.swipeCardId == ventCardId}
+//                } else {
+//                    //TODO dislike
+//                    ventCardRepository.disLikeVentCard(userId,ventCardId)
+////TODO　使うとサイコンポーズされてしまう                        _ventCards.removeIf{it.swipeCardId == ventCardId}
+//
+//                    Log.e("VCVM", "like exists")
+//                }
+//            } catch (e: Exception) {
+//                Log.e("VCVM", "error : $e")
+//            }
+//        }
+//    }
+//
+//
+//
+//
+//
+//}
