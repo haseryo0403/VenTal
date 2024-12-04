@@ -1,35 +1,41 @@
 package kimsy.rr.vental.data
 
+import android.util.Log
 import com.google.firebase.firestore.FieldValue
 
 data class NotificationData(
     val fromUserId: String = "",
     val type: NotificationType = NotificationType.DEBATESTART,
+    val targetId: String = "",
     val body: String = "",
     val readFlag: Boolean = false,
     val notificationDatetime: Any = FieldValue.serverTimestamp(),
     ){
     companion object {
-        fun createForDebateStart(actionUserId: String, body: String): NotificationData {
+        fun createForDebateStart(fromUserId: String, targetId: String, body: String): NotificationData {
+            Log.d("ND", "createForDebateStart called")
             return NotificationData(
-                fromUserId = actionUserId,
+                fromUserId = fromUserId,
                 type = NotificationType.DEBATESTART,
+                targetId = targetId,
                 body = body
             )
         }
 
-        fun createForDebateMessage(actionUserId: String, body: String): NotificationData {
+        fun createForDebateMessage(fromUserId: String, targetId: String, body: String): NotificationData {
             return NotificationData(
-                fromUserId = actionUserId,
+                fromUserId = fromUserId,
                 type = NotificationType.DEBATEMESSAGE,
+                targetId = targetId,
                 body = body
             )
         }
 
-        fun createForDebateComment(actionUserId: String, body: String): NotificationData {
+        fun createForDebateComment(fromUserId: String, targetId: String, body: String): NotificationData {
             return NotificationData(
-                fromUserId = actionUserId,
+                fromUserId = fromUserId,
                 type = NotificationType.DEBATECOMMENT,
+                targetId = targetId,
                 body = body
             )
         }

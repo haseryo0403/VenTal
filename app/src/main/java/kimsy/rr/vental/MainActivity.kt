@@ -5,6 +5,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -26,9 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -42,11 +41,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.messaging
 import dagger.hilt.android.AndroidEntryPoint
-import kimsy.rr.vental.ui.theme.VentalTheme
 import kimsy.rr.vental.ViewModel.AuthViewModel
 import kimsy.rr.vental.data.repository.UserRepository
-import kimsy.rr.vental.ui.commonUi.MainView
 import kimsy.rr.vental.ui.SignInScreen
+import kimsy.rr.vental.ui.commonUi.MainView
+import kimsy.rr.vental.ui.theme.VentalTheme
 import javax.inject.Inject
 
 
@@ -62,6 +61,14 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+        if (intent.hasExtra("debateId")) {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            Log.d("MA", "activity is called with intent")
+            finish()
+        }
 
 
         FirebaseApp.initializeApp(this)
@@ -81,7 +88,9 @@ class MainActivity : ComponentActivity() {
             var startDestination by remember { mutableStateOf<String?>(null) }
             VentalTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize().safeDrawingPadding(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .safeDrawingPadding(),
                     color = MaterialTheme.colorScheme.background
                 ) {
 //                     非同期処理でstartDestinationを決定
@@ -112,6 +121,24 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+            Log.d("MA", "onNewIntent is called")
+        if (intent.extras != null) {
+            for (key in intent.extras!!.keySet()) {
+                val value = intent.extras!![key]
+                Log.d("data ", "Key: $key Value: $value")
+            }
+        }
+
+        if (intent != null && intent.hasExtra("targetId")) {
+            val targetId = intent.getStringExtra("targetId")
+            Log.d("MA", "Received debateId: $targetId")
+            //TODO IDから画面遷移
+        }
+
     }
 
     fun subscribeTopics() {

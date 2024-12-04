@@ -47,6 +47,7 @@ class NotificationRepository @Inject constructor(
 
     suspend fun saveNotificationData(notificationData: NotificationData, toUserId: String): Result<Unit> {
         return try {
+            Log.d("NR", "saveNotificationData called")
             withTimeout(10000L) {
                 val docRef = db
                     .collection("users")

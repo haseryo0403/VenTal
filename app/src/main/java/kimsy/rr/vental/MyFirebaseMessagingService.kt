@@ -52,11 +52,12 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
 //        super.onMessageReceived(remoteMessage)
-        Log.d(TAG, "onMessageReceived: " + remoteMessage.data["message"])
+        Log.d(TAG, "onMessageReceived　targetId: " + remoteMessage.data["targetId"])
 
         //Push通知タップ時に起動するActivityを指定
         val intent = Intent(this, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        intent.putExtra("targetId", remoteMessage.data["targetId"])
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
         //通知を表示するchannelIdを指定
         val bitmap = getBitmapFromURL(remoteMessage.data["fromUserImageURL"])

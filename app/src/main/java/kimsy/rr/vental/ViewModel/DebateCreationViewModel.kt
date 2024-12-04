@@ -64,6 +64,7 @@ class DebateCreationViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 isLoading.value = true
+                //TODO １つのUseCaseに
                 val debates = getRelatedDebatesUseCase.execute(ventCardWithUser).getOrThrow()
                 val debatesWithUsers = createDebatesWithUsersUseCase.execute(debates)
                 _relatedDebates.value = debatesWithUsers
@@ -101,6 +102,7 @@ class DebateCreationViewModel @Inject constructor(
                 } else null
 
                 // 討論作成UseCaseの実行
+                //TODO １つのUseCaseに
                 val createdDebate = debateCreationUseCase.execute(text, ventCard, debaterId, imageUrl).getOrThrow()
                 val createdDebateWithUsersInfo = getDebateInfoUseCase.execute(createdDebate).getOrThrow()
                 //これでviewから触れる
@@ -109,8 +111,7 @@ class DebateCreationViewModel @Inject constructor(
                 // スワイプカードIDを保存
                 addDebatingSwipeCardUseCase.execute(debaterId, ventCard.swipeCardId)
                 DebateSharedModel.setDebate(createdDebateWithUsersInfo)
-
-                handleNotification(debaterId, ventCard.posterId, text)
+                handleNotification(debaterId, ventCard.posterId, createdDebate.debateId, text)
 
                 onCreationSuccess()
             } catch (e: IOException) {
@@ -128,46 +129,25 @@ class DebateCreationViewModel @Inject constructor(
 //        toUser: User,
         fromUserId: String,
         toUserId: String,
+        debateId: String,
         body: String,
 
         ){
         viewModelScope.launch {
-//            val notificationData = NotificationData.createForDebateStart(fromUser.uid, body)
             try {
-//                // saveNoti to db
-//                saveNotificationDataUseCase(
-//                    notificationData,
-//                    toUser.uid
-//                )
-//                // check noti status
-
-
-                // send noti TODO fix 通知可否をチェックするときにdeviceToken取得する
-//                sendNotificationUseCase(
-//                    notificationData,
-//                    fromUser,
-//                    toUser.deviceToken
-//                )
-
-                sendAndSaveNotificationUseCase(fromUserId, toUserId, body)
+                sendAndSaveNotificationUseCase(fromUserId, toUserId, debateId, body)
                     .onSuccess {
                         Log.d("DebateCreationViewModel", "sent notification")
                     }
                     .onFailure {
                         Log.e("DebateCreationViewModel", "send notification fail")
-
                     }
-
-
             } catch (e: IOException) {
                 handleNetworkError(e)
             } catch (e: Exception) {
                 handleUnexpectedError(e)
             }
         }
-
-
-
     }
 
     private fun handleNetworkError(error: IOException) {

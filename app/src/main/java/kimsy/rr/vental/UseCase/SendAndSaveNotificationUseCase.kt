@@ -1,5 +1,6 @@
 package kimsy.rr.vental.UseCase
 
+import android.util.Log
 import kimsy.rr.vental.data.NotificationData
 import kimsy.rr.vental.data.NotificationType
 import kimsy.rr.vental.data.User
@@ -34,39 +35,57 @@ class SendAndSaveNotificationUseCase @Inject constructor(
     suspend operator fun invoke(
         fromUserId: String,
         toUserId: String,
+        targetId: String,
         body: String
         ): Result<Unit> {
         return try {
-            val fromUser = getUserDetailsUseCase.execute(fromUserId).getOrThrow()
-            val toUser = getUserDetailsUseCase.execute(toUserId).getOrThrow()
-            val notificationData = NotificationData.createForDebateStart(fromUser.uid, body)
+            Log.d("SASNUC", "$fromUserId, $toUserId, $targetId, $body")
+//            val fromUser = getUserDetailsUseCase.execute(fromUserId).getOrThrow()
+//            val toUser = getUserDetailsUseCase.execute(toUserId).getOrThrow()
+
+            val fromUser = try {
+                getUserDetailsUseCase.execute(fromUserId).getOrThrow()
+            } catch (e: Exception) {
+                Log.e("SASNUC", "Error fetching fromUser: ${e.message}")
+                return Result.failure(e)
+            }
+
+            val toUser = try {
+                getUserDetailsUseCase.execute(toUserId).getOrThrow()
+            } catch (e: Exception) {
+                Log.e("SASNUC", "Error fetching toUser: ${e.message}")
+                return Result.failure(e)
+            }
+
+            val notificationData = NotificationData.createForDebateStart(fromUser.uid, targetId, body)
             // 通知をデータベースに保存
             notificationRepository.saveNotificationData(notificationData, toUser.uid)
 
-            // 通知設定を取得
-            val settings = notificationSettingsRepository.getNotificationSettings(toUser.uid).getOrThrow()
-
-            // 通知タイプごとの処理
-            val isNotificationEnabled = when (notificationData.type) {
-                NotificationType.DEBATESTART -> settings.debateStartNotification
-                NotificationType.DEBATEMESSAGE -> settings.messageNotification
-                NotificationType.DEBATECOMMENT -> settings.commentNotification
-            }
-
-            if (isNotificationEnabled && settings.deviceToken.isNotEmpty()) {
-                // 通知タイトルと本文を動的に設定
-                val title = when (notificationData.type) {
-                    NotificationType.DEBATESTART -> "New Debate Started!"
-                    NotificationType.DEBATEMESSAGE -> "New Message in Debate!"
-                    NotificationType.DEBATECOMMENT -> "New Comment on Debate!"
-                }
-
-                // 通知を送信
-                notificationRepository.sendNotification(notificationData, title, settings.deviceToken)
-            }
+//            // 通知設定を取得
+//            val settings = notificationSettingsRepository.getNotificationSettings(toUser.uid).getOrThrow()
+//
+//            // 通知タイプごとの処理
+//            val isNotificationEnabled = when (notificationData.type) {
+//                NotificationType.DEBATESTART -> settings.debateStartNotification
+//                NotificationType.DEBATEMESSAGE -> settings.messageNotification
+//                NotificationType.DEBATECOMMENT -> settings.commentNotification
+//            }
+//
+//            if (isNotificationEnabled && settings.deviceToken.isNotEmpty()) {
+//                // 通知タイトルと本文を動的に設定
+//                val title = when (notificationData.type) {
+//                    NotificationType.DEBATESTART -> "New Debate Started!"
+//                    NotificationType.DEBATEMESSAGE -> "New Message in Debate!"
+//                    NotificationType.DEBATECOMMENT -> "New Comment on Debate!"
+//                }
+//
+//                // 通知を送信
+//                notificationRepository.sendNotification(notificationData, title, settings.deviceToken)
+//            }
 
             Result.success(Unit)
         } catch (e: Exception) {
+            Log.e("SASNUC", "Error in invoke: ${e.message}")
             Result.failure(e)
         }
     }
