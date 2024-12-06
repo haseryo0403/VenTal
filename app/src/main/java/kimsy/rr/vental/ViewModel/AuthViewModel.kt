@@ -1,6 +1,8 @@
 package kimsy.rr.vental.ViewModel
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
@@ -20,9 +22,13 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
+import kimsy.rr.vental.MainActivity
+import kimsy.rr.vental.UseCase.FinishMainActivityUseCase
 import kimsy.rr.vental.UseCase.LoadCurrentUserUseCase
 import kimsy.rr.vental.UseCase.SaveDeviceTokenUseCase
+import kimsy.rr.vental.UseCase.SaveUserUseCase
 import kimsy.rr.vental.UseCase.SignInAndFetchUserUseCase
+import kimsy.rr.vental.UseCase.SignOutUseCase
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.data.repository.UserRepository
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -34,15 +40,19 @@ class AuthViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val loadCurrentUserUseCase: LoadCurrentUserUseCase,
     private val saveDeviceTokenUseCase: SaveDeviceTokenUseCase,
-    private val auth: FirebaseAuth,
-    private val signInAndFetchUserUseCase: SignInAndFetchUserUseCase
+    private val signInAndFetchUserUseCase: SignInAndFetchUserUseCase,
+    private val signOutUseCase: SignOutUseCase,
+    private val finishMainActivityUseCase: FinishMainActivityUseCase,
+    private val saveUserUseCase: SaveUserUseCase
 
 
     ) : ViewModel() {
 
+        //?を入れてみた
     private val _currentUser = MutableLiveData<User>()
     val currentUser: LiveData<User> get() = _currentUser
     init {
+        Log.d("AVM","AVM is initialized")
         loadCurrentUser()
     }
 
@@ -54,9 +64,11 @@ class AuthViewModel @Inject constructor(
         isLoading = loading
     }
 
+    //TODO これとエラーメッセージを統合できそう？しなくてもいいかもだけど
     private val _authResult = MutableLiveData<Boolean>()
     val authResult: LiveData<Boolean> = _authResult
 
+    //TODO 多分使ってない　削除
     private val _signOutResult = MutableLiveData<Boolean>()
     val signOutResult: LiveData<Boolean> get() = _signOutResult
 
@@ -83,140 +95,85 @@ class AuthViewModel @Inject constructor(
                 _errorMessage.value = "idToken is null"
             }
         } catch (e: ApiException) {
-            isLoading = false
             Log.e("TAG", "Google sign-in failed: ${e.statusCode}")
-            _errorMessage.value = e.message ?: "不明なエラーが発生しました"
+            setErrorMessage(e.message)
         }
-
     }
 
     private fun firebaseAuthWithGoogle(idToken: String) {
         viewModelScope.launch {
-//            try {
-                signInAndFetchUserUseCase.execute(idToken).onSuccess {
-                    _authResult.value = true
+            signInAndFetchUserUseCase.execute(idToken)
+                .onSuccess {user->
+                    if (user == null) {
+                        saveNewUser()
+                    } else {
+                        _authResult.value = true
+                    }
                 }.onFailure {exception->
                     Log.e("AVM", "signInAndFetchUserUseCase.execute failure")
                     _authResult.value = false
-                    isLoading = false
-                    _errorMessage.value = exception.message ?: "不明なエラーが発生しました"
+                    setErrorMessage(exception.message)
+
                 }
-//            } catch (e: Exception) {
-//                Log.d("TAG", "firebase fail")
-//                isLoading = false
-//            }
         }
     }
-//
-//    fun firebaseAuthWithGoogles(idToken: String) {
-//        Log.d("TAG","firebase signIn executed")
-//        viewModelScope.launch {
-//            //FirebaseAuth
-//            val firebaseResult = userRepository.firebaseAuthWithGoogle(idToken)
-//            if (firebaseResult.isSuccess) {
-//                Log.d("TAG", "FireBaseAuth Success")
-//                viewModelScope.launch {
-//                    //FireStoreからユーザー取得
-//                    var result = userRepository.getCurrentUser()
-//                    Log.d("TAG", result.toString())
-//                    if (result == null) {
-//                        // データを取得できなかった場合(初回ログイン)
-//                        // 新規ユーザー登録
-//                        Log.d("TAG", "No data found in firestore")
-//                        userRepository.saveUserToFirestore()
-//                        //TODO ユーザー情報登録に失敗した場合
-//                        _authResult.value = false
-//
-//                    } else {
-//                        // データを取得できた場合(２回目以降ログイン)
-//                        // ログインした後一番最初に表示したい画面に移動
-//                        Log.d("TAG", "Old User")
-//                        _authResult.value = true
-//                    }
-//                }
-//            } else {
-//                isLoading = false
-//                // Firebaseサインイン失敗
-//                Log.d("TAG", "firebase fail")
-//            }
-//        }
-//    }
-//
-//    @SuppressLint("SuspiciousIndentation")
-//    fun loadCurrentUsers(){
-//        Log.d("TAG　AuthViewModel", "load Current User")
-//        viewModelScope.launch {
-//            //FireStoreからユーザー取得
-//            val result = userRepository.getCurrentUsers()//TODO いじった1127
-//            Log.d("TAG", result.toString())
-//            if (result != null) {
-//                _currentUser.value = result
-//
-//            } else {
-//                // データを取得できなかった場合
-//                _currentUser.value = null  // 必要に応じてnullをセット
-//            }
-//        }
-//    }
+
+    private fun saveNewUser() {
+        viewModelScope.launch {
+            saveUserUseCase.execute()
+                .onSuccess {
+                    _authResult.value = true
+                }
+                .onFailure {exception->
+                    _authResult.value = false
+                    setErrorMessage(exception.message)
+                }
+        }
+    }
 
     private fun saveDeviceToken() {
         viewModelScope.launch {
-            try {
-                currentUser.value?.let { saveDeviceTokenUseCase(it.uid) }
-                Log.d("AuthViewModel", "Device token saved")
-            } catch (e: Exception) {
-                Log.e("AuthViewModel", "Failed to save device token: ${e.message}", e)
-            }
+            currentUser.value?.let { saveDeviceTokenUseCase.execute(it.uid) }
         }
     }
 
-    fun saveDeviceTokenToFirestore() {
-        val user = Firebase.auth.currentUser ?: return
-        Firebase.messaging.token.addOnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Log.w("FCM", "Fetching FCM registration token failed", task.exception)
-                return@addOnCompleteListener
-            }
-            val token = task.result
-            Firebase.firestore.collection("users")
-                .document(user.uid)
-                .update("fcmToken", token)
-                .addOnSuccessListener {
-                    Log.d("FCM", "Token saved to Firestore successfully")
-                }
-                .addOnFailureListener { e ->
-                    Log.e("FCM", "Error saving token to Firestore", e)
-                }
-        }
-    }
-
-    @SuppressLint("SuspiciousIndentation")
+//    @SuppressLint("SuspiciousIndentation")
     fun loadCurrentUser(){
         Log.d("TAG　AuthViewModel", "load Current User")
         viewModelScope.launch {
             //FireStoreからユーザー取得
-            val result = loadCurrentUserUseCase.execute()
-            result.onSuccess {user->
-                _currentUser.value = user
-                saveDeviceToken()
-            }.onFailure {exception->
-                //TODO error handling
-//                _errorMessage.value = exception.message ?: "不明なエラーが発生しました"
-            }
+            loadCurrentUserUseCase.execute()
+                .onSuccess {user->
+                    Log.e("AVM", "loadUser Onsuccess")
+                    if (user != null) {
+                        _currentUser.value = user
+                        saveDeviceToken()
+                    }
+                }.onFailure {exception->
+                    setErrorMessage(exception.message)
+                    Log.e("AVM", "${exception.message}")
+                }
         }
     }
 
-    fun signOut(
-        onSignOutComplete: () -> Unit
-    ) {
-        auth.signOut()
-        val result = userRepository.signOutFromGoogle()
-        if (result.isSuccess){
-            Log.e("Sign out", "sign out success")
-            onSignOutComplete()
-        } else{
-            Log.e("SignOut", "Sign Out failed")
+    fun signOut(context: Context) {
+        viewModelScope.launch {
+            signOutUseCase.execute()
+                .onSuccess {
+                    Log.d("AVM", "Sign out success")
+                    finishMainActivityUseCase.execute(context)
+                }
+                .onFailure {exception->
+                    Log.e("SignOut", "Sign Out failed")
+                    setErrorMessage(exception.message)
+
+                }
         }
+    }
+
+    private fun setErrorMessage(message: String?) {
+        isLoading = false
+        _errorMessage.value = message?: "不明なエラーが発生しました"
     }
 
 }

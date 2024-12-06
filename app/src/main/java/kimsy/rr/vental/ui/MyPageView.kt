@@ -1,5 +1,6 @@
 package kimsy.rr.vental.ui
 
+import android.app.Activity
 import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -112,11 +113,12 @@ fun MyPageView(
                         Text(text = "プロフィールを編集")
                     }
                     Button(onClick = {
-                        authViewModel.signOut(){
-                            val intent = Intent(context, MainActivity::class.java)
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                            context.startActivity(intent)
-                        }
+//                        authViewModel.signOut(){
+//                            val intent = Intent(context, MainActivity::class.java)
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+//                            context.startActivity(intent)
+//                        }
+                        authViewModel.signOut(context)
                     }) {
                         Text(text = "ログアウト")
                     }

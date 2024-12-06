@@ -62,14 +62,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         if (intent.hasExtra("debateId")) {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             Log.d("MA", "activity is called with intent")
             finish()
         }
-
 
         FirebaseApp.initializeApp(this)
         val firebaseAppCheck = FirebaseAppCheck.getInstance()

@@ -35,12 +35,37 @@ class UserRepository @Inject constructor(
         activityResultLauncher.launch(signInIntent)
     }
 
-    suspend fun firebaseAuthWithGoogle(idToken: String): Result<String> {
+//    suspend fun firebaseAuthWithGoogle(idToken: String): Result<String> {
+//        return try {
+//            val credential = GoogleAuthProvider.getCredential(idToken, null)
+//            val authResult = auth.signInWithCredential(credential).await()
+//            val user = authResult.user
+//            if (user != null) {
+//                val userId = user.uid
+//                Result.success(userId)
+//            } else {
+//                Result.failure(Exception("User not found"))
+//            }
+////            val uid = authResult.user?.uid ?: return Result.failure(Exception("User not found"))
+////            Result.success(uid)
+//        } catch (e: Exception) {
+//            Log.d("TAG", "firebase fail: ${e.message}")
+//            Result.failure(e)
+//        }
+//    }
+    suspend fun firebaseAuthWithGoogle(idToken: String): Result<Unit> {
         return try {
             val credential = GoogleAuthProvider.getCredential(idToken, null)
             val authResult = auth.signInWithCredential(credential).await()
-            val uid = authResult.user?.uid ?: return Result.failure(Exception("User not found"))
-            Result.success(uid)
+            val user = authResult.user
+            if (user != null) {
+//                val userId = user.uid
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("User not found"))
+            }
+//            val uid = authResult.user?.uid ?: return Result.failure(Exception("User not found"))
+//            Result.success(uid)
         } catch (e: Exception) {
             Log.d("TAG", "firebase fail: ${e.message}")
             Result.failure(e)
@@ -116,13 +141,30 @@ class UserRepository @Inject constructor(
 
 
     suspend fun getCurrentUser(): Result<User?> {
+        Log.e("UR", "getcurrentUser called")
         val uid = auth.currentUser?.uid ?: return Result.failure(Exception("User not signed in"))
         return try {
-            val result = db.collection("users")
-                .whereEqualTo("uid", uid)
+            val userDoc = db.collection("users")
+                .document(uid)
+//                .whereEqualTo("uid", uid)
                 .get()
                 .await()
-            Result.success(result.toObjects(User::class.java).firstOrNull())
+
+            if (!userDoc.exists()) {
+                Log.d("UR", "User document does not exist")
+                Result.success(null)
+            }
+
+            val user = userDoc.toObject(User::class.java)
+            if (user != null) {
+                Log.d("user", uid)
+                Result.success(user)
+            } else {
+                Log.d("UR", "user data is not registered")
+                Result.success(null)
+//                Result.failure(Exception("User data not found"))
+            }
+            Result.success(user)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -145,41 +187,59 @@ class UserRepository @Inject constructor(
 //        }
 //    }
 
-    suspend fun saveUserToFirestore(): Result<Unit> {
+    suspend fun saveUserToFirestore(): Result<String> {
         return try {
             val user = auth.currentUser
                 ?: return Result.failure(Exception("No user to save"))
             // 認証ユーザーの情報を取得
-            val newUser = User(
-                uid = user.uid,
-                name = user.displayName ?: "",
-                email = user.email ?: "",
-                photoURL = user.photoUrl?.toString() ?:""
-            )
-            db.collection("users").document(newUser.uid).set(newUser).await()
-
-            //TODO コード整理。ここはrepositoryわけたほうがいい。useCase使ってたら楽だったのに
-            val defaultNotificationSettings = NotificationSettings()
-            db.collection("notificationSettings")
+//            val newUser = User(
+//                uid = user.uid,
+//                name = user.displayName ?: "",
+////                email = user.email ?: "",
+//                photoURL = user.photoUrl?.toString() ?:""
+//            )
+            val newUser = User.createUser(user.uid, user.displayName?: "", user.photoUrl.toString())
+            db
+                .collection("users")
                 .document(newUser.uid)
-                .set(defaultNotificationSettings)
+                .set(newUser)
                 .await()
 
-            Result.success(Unit)
+            //TODO コード整理。ここはrepositoryわけたほうがいい。useCase使ってたら楽だったのに
+//            val defaultNotificationSettings = NotificationSettings()
+//            db.collection("notificationSettings")
+//                .document(newUser.uid)
+//                .set(defaultNotificationSettings)
+//                .await()
+
+            Result.success(newUser.uid)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    //TODO delete
-    fun signOutFromGoogle(): Result<Boolean> =
-        try {
-            googleSignInClient.signOut()
-            Result.success(true)
+    suspend fun signOutFromFirebaseAuth(): Result<Unit> {
+        return try {
+            withTimeout(10000L){
+                auth.signOut()
+                Result.success(Unit)
+            }
+        } catch (e: Exception) {
+            Log.e("SignOut", "firebaseAuth Sign out failed", e)
+            Result.failure(e)
+        }
+    }
+    suspend fun signOutFromGoogle(): Result<Boolean> {
+        return try {
+            withTimeout(10000L) {
+                googleSignInClient.signOut()
+                Result.success(true)
+            }
         } catch (e: Exception) {
             Log.e("SignOut", "google Sign out failed", e)
             Result.failure(e)
         }
+    }
 
     suspend fun fetchUserInformation(
         uid: String

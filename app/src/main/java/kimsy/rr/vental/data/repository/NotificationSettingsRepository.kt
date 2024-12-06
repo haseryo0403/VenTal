@@ -32,4 +32,21 @@ class NotificationSettingsRepository @Inject constructor(
             Result.failure(e)
         }
     }
+
+    suspend fun setNotificationSettings (userId: String):Result<Unit> {
+        return try {
+            val defaultNotificationSettings = NotificationSettings()
+            withTimeout(10000L) {
+                db
+                    .collection("notificationSettings")
+                    .document(userId)
+                    .set(defaultNotificationSettings)
+                    .await()
+
+                Result.success(Unit)
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }
