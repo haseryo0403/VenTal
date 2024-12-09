@@ -51,10 +51,6 @@ class AuthViewModel @Inject constructor(
         //?を入れてみた
     private val _currentUser = MutableLiveData<User>()
     val currentUser: LiveData<User> get() = _currentUser
-    init {
-        Log.d("AVM","AVM is initialized")
-        loadCurrentUser()
-    }
 
     // 状態管理用の変数
     var isLoading by mutableStateOf(false)
@@ -75,6 +71,13 @@ class AuthViewModel @Inject constructor(
     private val _errorMessage = mutableStateOf<String?>(null)
     val errorMessage: State<String?> = _errorMessage
 
+    private val _errorState = MutableLiveData<String>()
+    val errorState: LiveData<String> get() = _errorState
+
+    init {
+        Log.d("AVM","AVM is initialized")
+        loadCurrentUser()
+    }
 
     // Googleサインインを開始するメソッド
     fun signInWithGoogle(activityResultLauncher: ActivityResultLauncher<Intent>) {
@@ -137,7 +140,7 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-//    @SuppressLint("SuspiciousIndentation")
+    @SuppressLint("SuspiciousIndentation")
     fun loadCurrentUser(){
         Log.d("TAG　AuthViewModel", "load Current User")
         viewModelScope.launch {
@@ -151,7 +154,7 @@ class AuthViewModel @Inject constructor(
                     }
                 }.onFailure {exception->
                     setErrorMessage(exception.message)
-                    Log.e("AVM", "${exception.message}")
+//                    Log.e("AVM", "${exception.message}")
                 }
         }
     }

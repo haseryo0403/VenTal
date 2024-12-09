@@ -72,6 +72,8 @@ class UserRepository @Inject constructor(
         }
     }
 
+
+
 //TODO
 //    suspend fun getCurrentUsers(): User? {
 //        val currentUser = auth.currentUser ?: return null
@@ -138,6 +140,9 @@ class UserRepository @Inject constructor(
             Result.failure(e)
         }
     }
+
+
+
 
 
     suspend fun getCurrentUser(): Result<User?> {
