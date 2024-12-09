@@ -16,6 +16,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +40,7 @@ import kimsy.rr.vental.ViewModel.DebateCreationViewModel
 import kimsy.rr.vental.ViewModel.DebateViewModel
 import kimsy.rr.vental.ViewModel.MyPageViewModel
 import kimsy.rr.vental.ViewModel.VentCardCreationViewModel
+import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.VentCardWithUser
 import kimsy.rr.vental.ui.DebateCreationView
 import kimsy.rr.vental.ui.DebateView
@@ -114,13 +116,22 @@ fun MainView(
             pd = it)
     }
 
-    //TODO delete comment when initializing problem is solved. this isn't cause
-    LaunchedEffect(ventCardCreationViewModel.isSent){
-        if (ventCardCreationViewModel.isSent){
+//    LaunchedEffect(ventCardCreationViewModel.isSent){
+//        if (ventCardCreationViewModel.isSent){
+//            Toast.makeText(context,"送信完了",Toast.LENGTH_SHORT).show()
+//            ventCardCreationViewModel.isSent = false
+//        }
+//    }
+    val saveState = ventCardCreationViewModel.saveState.collectAsState()
+
+    LaunchedEffect(saveState.value.status){
+        Log.d("ssss", "ssss")
+        if (saveState.value.status == Status.SUCCESS){
             Toast.makeText(context,"送信完了",Toast.LENGTH_SHORT).show()
-            ventCardCreationViewModel.isSent = false
+            //TODO リセット？
         }
     }
+
 }
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)

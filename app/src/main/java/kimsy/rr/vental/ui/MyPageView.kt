@@ -52,19 +52,6 @@ fun MyPageView(
     // currentUserをobserveしてStateとして取得
     val user by authViewModel.currentUser.observeAsState()
 
-    val signOutResult by authViewModel.signOutResult.observeAsState()
-
-//    // サインアウト結果に基づいて遷移処理を行う
-//    LaunchedEffect(signOutResult) {
-//        if (signOutResult == true) {
-//            // サインアウト成功時にメイン画面などに遷移
-//            onSignOutSuccess()
-//        } else if (signOutResult == false) {
-//            // サインアウト失敗時の処理（エラーメッセージなど）
-//            Log.e("SignOut", "Sign out failed")
-//        }
-//    }
-
     LazyColumn(
         modifier = Modifier.fillMaxWidth()
     ){

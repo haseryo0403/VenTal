@@ -33,6 +33,8 @@ import kimsy.rr.vental.data.User
 import kimsy.rr.vental.data.repository.UserRepository
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -61,18 +63,14 @@ class AuthViewModel @Inject constructor(
     }
 
     //TODO これとエラーメッセージを統合できそう？しなくてもいいかもだけど
-    private val _authResult = MutableLiveData<Boolean>()
-    val authResult: LiveData<Boolean> = _authResult
+//    private val _authResult = MutableLiveData<Boolean>()
+//    val authResult: LiveData<Boolean> = _authResult
 
-    //TODO 多分使ってない　削除
-    private val _signOutResult = MutableLiveData<Boolean>()
-    val signOutResult: LiveData<Boolean> get() = _signOutResult
+    private val _authResult = MutableStateFlow(false)
+    val authResult: StateFlow<Boolean> get() = _authResult
 
     private val _errorMessage = mutableStateOf<String?>(null)
     val errorMessage: State<String?> = _errorMessage
-
-    private val _errorState = MutableLiveData<String>()
-    val errorState: LiveData<String> get() = _errorState
 
     init {
         Log.d("AVM","AVM is initialized")
@@ -177,6 +175,11 @@ class AuthViewModel @Inject constructor(
     private fun setErrorMessage(message: String?) {
         isLoading = false
         _errorMessage.value = message?: "不明なエラーが発生しました"
+    }
+
+    // エラーメッセージのリセット
+    fun resetErrorMessage() {
+        _errorMessage.value = null
     }
 
 }

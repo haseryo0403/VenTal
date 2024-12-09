@@ -62,7 +62,7 @@ class UserRepository @Inject constructor(
 //                val userId = user.uid
                 Result.success(Unit)
             } else {
-                Result.failure(Exception("User not found"))
+                Result.failure(Exception("ユーザーが見つかりませんでした。"))
             }
 //            val uid = authResult.user?.uid ?: return Result.failure(Exception("User not found"))
 //            Result.success(uid)

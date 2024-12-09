@@ -19,6 +19,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +31,7 @@ import androidx.navigation.NavController
 import kimsy.rr.vental.R
 import kimsy.rr.vental.Screen
 import kimsy.rr.vental.ViewModel.VentCardCreationViewModel
+import kimsy.rr.vental.data.Status
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,7 +48,7 @@ fun AppTopBarView(
     viewModel: VentCardCreationViewModel
 ){
     val titleToDisableScroll = listOf("VCC", "VentCards")
-    var isLoading by remember { mutableStateOf(false) }
+    val saveState = viewModel.saveState.collectAsState()
 
     val navigationIcon: (@Composable () -> Unit)? =
         {
@@ -76,27 +78,12 @@ fun AppTopBarView(
                         Toast.makeText(context, "内容を入力してください", Toast.LENGTH_LONG).show()
                     } else {
                         onBackNavClicked()
-                        isLoading =true
-                        viewModel.startSavingVentCard(
-                            context,
-                            onError = {
-                                isLoading = false
-
-                                CoroutineScope(Dispatchers.Main).launch {
-                                    onSavingFailure() // メインスレッドでバックスタックを操作
-                                    Toast.makeText(context, "送信に失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
-                                }
-                            },
-                            onComplete = {
-                                isLoading = false
-                            }
-                        )
+                        viewModel.startSavingVentCard(context)
                     }
                      }) {
-                    // テキストを追加
                     Text(
                         text = "送信",
-                        modifier = Modifier // 右側のパディング
+                        modifier = Modifier
                     )
                 }
             } else if(!title.contains("通知")){
@@ -116,12 +103,10 @@ fun AppTopBarView(
         modifier = Modifier.fillMaxWidth()
     ){
         CenterAlignedTopAppBar(
-//            modifier = Modifier.height(48.dp),
             title = {
                 if(title != "VCC"){
                     Text(
                         title,
-//                        style = MaterialTheme.typography.titleLarge
                     )
                 } else {
                     null
@@ -135,12 +120,23 @@ fun AppTopBarView(
                                 scrollBehavior
                             }
         )
-        if(isLoading){
-            LinearProgressIndicator(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-            )
+        when (saveState.value.status) {
+            Status.LOADING -> {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                )            }
+            Status.SUCCESS -> {viewModel.resetValues()}
+            Status.ERROR -> {
+                Log.e("ATB", "${saveState.value.message}")
+                CoroutineScope(Dispatchers.Main).launch {
+                    onSavingFailure() // メインスレッドでバックスタックを操作
+                    Toast.makeText(context, "送信に失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
+                }
+                viewModel.resetStatus()
+            }
+            else -> {}
         }
 
     }

@@ -12,4 +12,20 @@ data class VentCard(
     val swipeCardDeletionRequestFlag: Boolean = false,
     val debateCount: Int = 0,
     val swipeCardCreatedDateTime: Any = FieldValue.serverTimestamp()
-    )
+    ){
+    companion object {
+        fun createVentCard(
+            posterId: String,
+            swipeCardContent: String,
+            swipeCardImageURL: String,
+            tags: List<String>,
+        ): VentCard {
+            return VentCard(
+                posterId = posterId,
+                swipeCardContent = swipeCardContent,
+                swipeCardImageURL = swipeCardImageURL,
+                tags = tags
+            )
+        }
+    }
+}

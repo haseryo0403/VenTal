@@ -10,94 +10,57 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kimsy.rr.vental.UseCase.SaveImageUseCase
+import kimsy.rr.vental.UseCase.SaveVentCardUseCase
+import kimsy.rr.vental.data.Resource
+import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.repository.ImageRepository
 import kimsy.rr.vental.data.VentCard
 import kimsy.rr.vental.data.repository.VentCardRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class VentCardCreationViewModel @Inject constructor(
     private val authViewModel: AuthViewModel,
-    private val imageRepository: ImageRepository,
-    private val ventCardRepository: VentCardRepository
+    private val saveVentCardUseCase: SaveVentCardUseCase
 ): ViewModel(){
     init {
         Log.d("VentCardCreationViewModel", "ViewModel instance created: $this")
     }
 
     var selectedImageUri by mutableStateOf<Uri?>(null)
-    var content by mutableStateOf<String>("")
+    var content by mutableStateOf("")
     var tags =  mutableStateListOf<String>()
-    var isSent by mutableStateOf(false)
+    private val _saveState = MutableStateFlow<Resource<Unit>>(Resource.idle())
+    val saveState: StateFlow<Resource<Unit>> get() = _saveState
 
     fun startSavingVentCard(
-        context: Context,
-        onComplete: () -> Unit,
-        onError: () -> Unit
+        context: Context
     ){
         viewModelScope.launch(Dispatchers.IO) {
-            val result = saveVentCard(context)
-            result
-                .onSuccess { onComplete() }
-                .onFailure{
-                    Log.d("VCCVM", "onFailure executed")
-                    onError()
-                }
+            _saveState.value = Resource.loading()
+            val result = saveVentCardUseCase.execute(
+                posterId = authViewModel.currentUser.value?.uid.toString(),
+                content = content,
+                selectedImageUri = selectedImageUri,
+                tags = tags.toList(),
+                context = context
+            )
+            _saveState.value = result
         }
     }
 
-    suspend fun saveVentCard(context: Context):Result<Unit> {
-        return if (selectedImageUri == null){
-            Log.d("VCCVM", "saveVentCardWithoutImage executed")
-
-            saveVentCardWithoutImage()
-        } else {
-            Log.d("VCCVM", " saveVentCardWithImage executed")
-
-            saveVentCardWithImage(context)
-        }
+    fun resetStatus() {
+        _saveState.value = Resource.idle()
     }
-    private suspend fun saveVentCardWithoutImage(): Result<Unit> {
-        val ventCard = VentCard(
-            posterId = authViewModel.currentUser.value?.uid.toString(),
-            swipeCardContent = content,
-            swipeCardImageURL = "",
-            tags = tags
-        )
-        return ventCardRepository.saveVentCardToFireStore(ventCard)
-            .onSuccess {
-                Log.d("VCCVM", " saveVentCardToFireStore success")
-                // 成功時の後処理
-                isSent = true
-                content = ""
-                selectedImageUri = null
-                tags.clear()
-            }
-    }
-    private suspend fun saveVentCardWithImage(context: Context): Result<Unit> {
-        // 画像を保存してからVentCardを保存する
-        return imageRepository.saveImageToStorage(selectedImageUri!!, context)
-            .mapCatching { downloadUrl ->
-                Log.d("VCCVM", " saveImageToStorage success")
-                // 画像保存が成功したので、次にVentCardを保存する
-                val ventCard = VentCard(
-                    posterId = authViewModel.currentUser.value?.uid.toString(),
-                    swipeCardContent = content,
-                    swipeCardImageURL = downloadUrl,
-                    tags = tags
-                )
-                // VentCardの保存処理
-                ventCardRepository.saveVentCardToFireStore(ventCard).getOrThrow() // エラーがあれば例外を投げる
-            }.onSuccess {
-                Log.d("VCCVM", " saveVentCardToFireStore success")
 
-                // 全て成功した場合、リセットなどの処理を行う
-                isSent = true
-                content = ""
-                selectedImageUri = null
-                tags.clear()
-            }
+    fun resetValues() {
+        content = ""
+        selectedImageUri = null
+        tags.clear()
     }
 }

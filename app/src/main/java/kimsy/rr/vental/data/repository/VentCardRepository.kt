@@ -7,6 +7,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kimsy.rr.vental.data.DebatingVentCard
 import kimsy.rr.vental.data.LikedVentCard
+import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.VentCard
 import kimsy.rr.vental.data.VentCardWithUser
 import kotlinx.coroutines.tasks.await
@@ -32,6 +33,23 @@ class VentCardRepository @Inject constructor(
             }
         } catch (e : Exception) {
             Result.failure(e)
+        }
+    }
+    suspend fun saveVentCardToFireStores(
+        ventCard: VentCard
+    ): Resource<Unit>{
+        return try {
+            withTimeout(10000L){
+                db
+                    .collection("users")
+                    .document(ventCard.posterId)
+                    .collection("swipeCards")
+                    .add(ventCard)
+                    .await()
+                Resource.success(Unit)
+            }
+        } catch (e : Exception) {
+            Resource.failure(e.message)
         }
     }
 //

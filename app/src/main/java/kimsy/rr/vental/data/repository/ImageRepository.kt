@@ -12,10 +12,12 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kimsy.rr.vental.MainActivity
+import kimsy.rr.vental.data.Resource
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
 import java.io.File
 import java.io.FileNotFoundException
+import java.io.IOException
 import java.io.InputStream
 import java.util.UUID
 import java.util.concurrent.TimeoutException
@@ -54,6 +56,39 @@ class ImageRepository @Inject constructor(
         } catch (e: Exception) {
             Log.e("ImageRepository", "Failed to save image: ${e.message}", e)
             Result.failure(e)
+        }
+    }
+
+    @SuppressLint("SuspiciousIndentation", "Recycle")
+    suspend fun saveImageToStorages(
+        uri: Uri,
+        context: Context
+    ): Resource<String> {
+        return try {
+            withTimeout(10000L){
+                val originalFileName  = getFileName(context, uri) ?: "image"
+                val uniqueFileName = "${UUID.randomUUID()}_$originalFileName"
+
+                Log.d("TAG", "${storageRef.child("images/$uniqueFileName")}")
+                Log.d("TAG","uri is: $uri")
+
+                withTimeout(20000L){
+                    storageRef.child("images/$uniqueFileName").putFile(uri).await()
+
+                    val downloadUrl = storageRef.child("images/$uniqueFileName").downloadUrl.await().toString()
+                    Log.d("IRepo", "URL get success: $downloadUrl")
+
+                    Resource.success(downloadUrl)
+    //                Result.success(downloadUrl)
+            }
+
+            }
+        } catch (e: IOException) {
+            Log.e("ImageRepository", "Failed to save image: ${e.message}", e)
+            Resource.failure(e.message)
+        } catch (e: Exception) {
+            Log.e("ImageRepository", "Failed to save image: ${e.message}", e)
+            Resource.failure(e.message)
         }
     }
 

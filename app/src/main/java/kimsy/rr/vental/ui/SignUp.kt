@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -48,6 +49,11 @@ fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
     var showDialog by remember { mutableStateOf(false)}
     val errorMessage by authViewModel.errorMessage
 
+    // 認証結果を監視
+    val authResult by authViewModel.authResult.collectAsState()
+//    val authResult by authViewModel.authResult.observeAsState()
+    val isLoading = authViewModel.isLoading
+
     // Googleサインインの結果を受け取るランチャー
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -66,28 +72,25 @@ fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
         }
     }
 
-    // 認証結果を監視
-    val authResult by authViewModel.authResult.observeAsState()
-    val isLoading = authViewModel.isLoading
-
     // 認証成功で画面遷移
     LaunchedEffect(authResult) {
         if (authResult == true) {
             Log.d("TAG", "Navigate to timeline")
-//            authViewModel.resetAuthResult()
             onNavigateToMainView()  // 遷移先の処理を呼び出す
-        } else if (authResult == false) {
-            Log.e("TAG", "New Sign-in")
-//            onNavigateToMainView()  // 遷移先の処理を呼び出す
-            //TODO 初期ログインのガイダンス的なの考慮
-            showDialog = true
         }
     }
 
+    if (errorMessage != null) {
+        showDialog = true
+    }
+
     if(showDialog){
-        AlertDialog(onDismissRequest = { showDialog = false },
+        AlertDialog(onDismissRequest = {
+            showDialog = false
+            authViewModel.resetErrorMessage()  // ダイアログが閉じられたらエラーメッセージをリセット
+        },
             confirmButton = { /*TODO*/ },
-            title = { Text(text = "ERROR")},
+            title = { Text(text = "エラー")},
             text = { Text(text = errorMessage?: "不明なエラーが発生しました。")}
             )
     }
