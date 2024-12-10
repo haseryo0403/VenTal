@@ -18,24 +18,25 @@ import javax.inject.Inject
 class VentCardRepository @Inject constructor(
     private val db: FirebaseFirestore
 ) {
+//    suspend fun saveVentCardToFireStore(
+//        ventCard: VentCard
+//    ): Result<Unit>{
+//        return try {
+//            withTimeout(10000L){
+//                db
+//                    .collection("users")
+//                    .document(ventCard.posterId)
+//                    .collection("swipeCards")
+//                    .add(ventCard)
+//                    .await()
+//                Result.success(Unit)
+//            }
+//        } catch (e : Exception) {
+//            Result.failure(e)
+//        }
+//    }
+    
     suspend fun saveVentCardToFireStore(
-        ventCard: VentCard
-    ): Result<Unit>{
-        return try {
-            withTimeout(10000L){
-                db
-                    .collection("users")
-                    .document(ventCard.posterId)
-                    .collection("swipeCards")
-                    .add(ventCard)
-                    .await()
-                Result.success(Unit)
-            }
-        } catch (e : Exception) {
-            Result.failure(e)
-        }
-    }
-    suspend fun saveVentCardToFireStores(
         ventCard: VentCard
     ): Resource<Unit>{
         return try {
@@ -52,6 +53,7 @@ class VentCardRepository @Inject constructor(
             Resource.failure(e.message)
         }
     }
+
 //
 //    suspend fun getVentCardsWithUser(
 //        userId: String,
@@ -131,7 +133,7 @@ suspend fun getVentCardsWithUser(
     likedVentCard: List<LikedVentCard>,
     debatingVentCard: List<DebatingVentCard>,
     lastVisible: DocumentSnapshot? = null
-): Result<Pair<List<VentCardWithUser>, DocumentSnapshot?>> {
+): Resource<Pair<List<VentCardWithUser>, DocumentSnapshot?>> {
     return try {
         val query = db
             .collectionGroup("swipeCards")
@@ -147,7 +149,7 @@ suspend fun getVentCardsWithUser(
 
         if (querySnapshot.isEmpty) {
             // データがない場合、空リストとnullを返す
-            return Result.success(Pair(emptyList(), null))
+            return Resource.success(Pair(emptyList(), null))
         }
 
         val newLastVisible = querySnapshot.documents.lastOrNull()
@@ -194,15 +196,90 @@ suspend fun getVentCardsWithUser(
             return getVentCardsWithUser(userId, likedVentCard, debatingVentCard, newLastVisible)
         }
 
-        Result.success(Pair(ventCardsWithUser, newLastVisible))
+        Resource.success(Pair(ventCardsWithUser, newLastVisible))
     } catch (e: Exception) {
-        Result.failure(e)
+        Resource.failure("Error fetching vent cards: ${e.message}")
     }
 }
 
+//
+//suspend fun getVentCardsWithUser(
+//    userId: String,
+//    likedVentCard: List<LikedVentCard>,
+//    debatingVentCard: List<DebatingVentCard>,
+//    lastVisible: DocumentSnapshot? = null
+//): Result<Pair<List<VentCardWithUser>, DocumentSnapshot?>> {
+//    return try {
+//        val query = db
+//            .collectionGroup("swipeCards")
+//            .whereNotEqualTo("posterId", userId)
+//            .whereLessThan("debateCount", 3)
+//            .orderBy("swipeCardCreatedDateTime", Query.Direction.DESCENDING)
+//
+//        val querySnapshot = if (lastVisible == null) {
+//            query.limit(10).get().await()
+//        } else {
+//            query.startAfter(lastVisible).limit(10).get().await()
+//        }
+//
+//        if (querySnapshot.isEmpty) {
+//            // データがない場合、空リストとnullを返す
+//            return Result.success(Pair(emptyList(), null))
+//        }
+//
+//        val newLastVisible = querySnapshot.documents.lastOrNull()
+//
+//        Log.d("TAG", "ventCards: $querySnapshot size: ${querySnapshot.size()}")
+//
+//        val likedVentCardIds = likedVentCard.map { it.ventCardId }
+//        val debatingVentCardIds = debatingVentCard.map { it.swipeCardId }
+//
+//        val ventCardsWithUser = querySnapshot.documents.mapNotNull { document ->
+//            val ventCard = document.toObject(VentCardWithUser::class.java)?.copy(
+//                swipeCardId = document.reference.id
+//            )
+//
+//            if (ventCard == null || likedVentCardIds.contains(ventCard.swipeCardId) || debatingVentCardIds.contains(ventCard.swipeCardId)) {
+//                return@mapNotNull null
+//            }
+//
+//            val parentReference = document.reference.parent.parent
+//
+//            if (parentReference != null) {
+//                try {
+//                    val parentDocument = parentReference.get().await()
+//                    val name = parentDocument.getString("name") ?: return@mapNotNull null
+//                    val photoURL = parentDocument.getString("photoURL") ?: return@mapNotNull null
+//
+//                    // Firestoreから直接toObjectを使ってVentCardWithUserを作成
+//                    document.toObject(VentCardWithUser::class.java)?.copy(
+//                        swipeCardId = document.reference.id,
+//                        posterName = name,
+//                        posterImageURL = photoURL,
+//                        swipeCardCreatedDateTime = document.getTimestamp("swipeCardCreatedDateTime")!!.toDate()
+//                    )
+//                } catch (e: Exception) {
+//                    Log.w("Firestore", "Error getting parent document", e)
+//                    null
+//                }
+//            } else {
+//                null
+//            }
+//        }
+//
+//        if (ventCardsWithUser.isEmpty() && newLastVisible != null) {
+//            return getVentCardsWithUser(userId, likedVentCard, debatingVentCard, newLastVisible)
+//        }
+//
+//        Result.success(Pair(ventCardsWithUser, newLastVisible))
+//    } catch (e: Exception) {
+//        Result.failure(e)
+//    }
+//}
+//
 
 
-    suspend fun likeVentCard(userId: String, posterId: String, ventCardId: String): Result<Unit>{
+    suspend fun likeVentCard(userId: String, posterId: String, ventCardId: String): Resource<Unit>{
         return try {
             Log.d("VCR", "likeVentCard called")
 
@@ -226,18 +303,18 @@ suspend fun getVentCardsWithUser(
                 .set(likeData)
                 .await()
 
-            // add to like list
             docRefOnSwipeCard
                 .update("likeCount", FieldValue.increment(1)).await()
-            //increment sc like
-            Result.success(Unit)
+
+            Resource.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            Resource.failure(e.message)
         }
     }
 
-    suspend fun disLikeVentCard(userId: String, ventCardId: String) {
+    suspend fun disLikeVentCard(userId: String, ventCardId: String): Resource<Unit> {
         // TODO
+        return Resource.success(Unit)
     }
 
     suspend fun checkIfLiked(userId: String, ventCardId: String): Result<Boolean> {
@@ -257,7 +334,7 @@ suspend fun getVentCardsWithUser(
         }
     }
 
-    suspend fun fetchLikedVentCardIds(userId: String): List<LikedVentCard>{
+    suspend fun fetchLikedVentCardIds(userId: String): Resource<List<LikedVentCard>>{
         return try {
             withTimeout(10000L) {
                 val docRef = db
@@ -269,17 +346,18 @@ suspend fun getVentCardsWithUser(
                     .get()
                     .await()
 
-                likedVentCardsSnapshot.documents.mapNotNull {document->
+                val result = likedVentCardsSnapshot.documents.mapNotNull {document->
                     document.toObject(LikedVentCard::class.java)
                 }
+                Resource.success(result)
             }
 
         } catch (e: Exception) {
             Log.e("Firestore", "Error fetching liked vent cards", e)
-            emptyList()  // エラー時は空のリストを返す
+            Resource.failure("Error fetching liked vent cards: ${e.message}")
         }
     }
-    suspend fun fetchDebatingVentCardIds(userId: String): List<DebatingVentCard>{
+    suspend fun fetchDebatingVentCardIds(userId: String): Resource<List<DebatingVentCard>> {
         return try {
             withTimeout(10000L) {
                 val docRef = db
@@ -291,14 +369,14 @@ suspend fun getVentCardsWithUser(
                     .get()
                     .await()
 
-                debatingVentCardsSnapshot.documents.mapNotNull {document->
+                val result = debatingVentCardsSnapshot.documents.mapNotNull { document ->
                     document.toObject(DebatingVentCard::class.java)
                 }
+                Resource.success(result)
             }
-
         } catch (e: Exception) {
             Log.e("Firestore", "Error fetching debating vent cards", e)
-            emptyList()  // エラー時は空のリストを返す
+            Resource.failure("Error fetching debating vent cards: ${e.message}")
         }
     }
 

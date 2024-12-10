@@ -15,6 +15,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kimsy.rr.vental.data.Debate
+import kimsy.rr.vental.data.NetworkUtils
 import kimsy.rr.vental.data.repository.DebateRepository
 import kimsy.rr.vental.data.repository.ImageRepository
 import kimsy.rr.vental.data.repository.UserRepository
@@ -88,6 +89,11 @@ object AppModule {
         firebaseFirestore: FirebaseFirestore,
     ): DebateRepository{
         return DebateRepository(firebaseFirestore)
+    }
+
+    @Provides
+    fun provideNetworkUtils(@ApplicationContext context: Context): NetworkUtils {
+        return NetworkUtils(context)
     }
 
 

@@ -5,20 +5,16 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kimsy.rr.vental.UseCase.HandleLikeActionUseCase
 import kimsy.rr.vental.UseCase.LoadVentCardsUseCase
-import kimsy.rr.vental.data.User
-import kimsy.rr.vental.data.VentCard
-import kimsy.rr.vental.data.repository.VentCardRepository
+import kimsy.rr.vental.data.NetworkUtils
+import kimsy.rr.vental.data.Resource
+import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.VentCardWithUser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,120 +26,84 @@ class VentCardsViewModel @Inject constructor(
     private val loadVentCardsUseCase: LoadVentCardsUseCase,
     private val handleLikeActionUseCase: HandleLikeActionUseCase
 ) : ViewModel() {
-    private val _errorMessage = mutableStateOf<String?>(null)
-    val errorMessage: State<String?> = _errorMessage
+//    private val _errorMessage = mutableStateOf<String?>(null)
+//    val errorMessage: State<String?> = _errorMessage
 
     var hasFinishedLoadingAllCards by mutableStateOf(false)
         private set
 
-    var isLoading = mutableStateOf(true)
-        private set
+//    var isLoading = mutableStateOf(true)
+//        private set
 
     private val _ventCards = mutableStateListOf<VentCardWithUser>()
     val ventCards: List<VentCardWithUser> get() = _ventCards
 
+    private val _loadCardsState = MutableStateFlow<Resource<Pair<List<VentCardWithUser>, DocumentSnapshot?>>>(Resource.idle())
+    val loadCardsState: StateFlow<Resource<Pair<List<VentCardWithUser>, DocumentSnapshot?>>> get() = _loadCardsState
+    private val _likeState = MutableStateFlow<Resource<Unit>>(Resource.idle())
+    val likeState: StateFlow<Resource<Unit>> get() = _likeState
+
     private var lastVisible: DocumentSnapshot? = null
 
-    fun loadVentCards(userId: String) {
-        viewModelScope.launch {
-            isLoading.value = true
-            val result = loadVentCardsUseCase.execute(userId, lastVisible)
-            result.onSuccess { (cards, newLastVisible) ->
-                if (cards.isEmpty()) {
-                    hasFinishedLoadingAllCards = true
-                }
-                _ventCards.addAll(cards)
-                lastVisible = newLastVisible
-                isLoading.value = false
-            }.onFailure {
-                Log.e("loadVC fail", "error: $it")
-                //TODO エラーメッセージを登録
-                isLoading.value = false
-            }
-        }
-    }
-
-    fun handleLikeAction(userId: String, posterId: String, ventCardId: String) {
-        viewModelScope.launch {
-            handleLikeActionUseCase.execute(userId, posterId, ventCardId).onFailure {
-                Log.e("VCVM", "Like action failed: $it")
-                _errorMessage.value = it.toString()
-            }
-        }
-    }
-}
-
-
-
-//
-//@HiltViewModel
-//class VentCardsViewModel @Inject constructor(
-//    private val authViewModel: AuthViewModel,
-//    private val ventCardRepository: VentCardRepository
-//):ViewModel() {
-//    var hasFinishedLoadingAllCards by mutableStateOf(false)
-//        private set
-//
-//    var isLoading = mutableStateOf(true)
-//        private set
-//
-//    init {
-//        Log.e("VM initialization", "VCVM initialized")
-//    }
-//    private val _ventCards = mutableStateListOf<VentCardWithUser>()
-//    val ventCards: List<VentCardWithUser> get() = _ventCards
-//
-//    private var lastVisible: DocumentSnapshot? = null
-//
-//    fun loadVentCards(userId: String){
-//        viewModelScope.launch{
-//            isLoading.value = true
-//            val likedVentCard = ventCardRepository.fetchLikedVentCardIds(userId)
-//            val debatingVentCard = ventCardRepository.fetchDebatingVentCardIds(userId)
-//            val result = ventCardRepository.getVentCardsWithUser(userId, likedVentCard, debatingVentCard,lastVisible)
-//            Log.d("VCVM", "lastVisible: $lastVisible")
-//            result
-//                .onSuccess {data->
-//                    Log.d("loadVentCards", "Vent Cards: $data")  // dataの中身をログに出力
-//                    Log.d("VCVM", "lastVisible: ${lastVisible}, new lastVisible: ${data.second}")
-//                    if (lastVisible == data.second //|| lastVisible == null
-//                        ) {
-//                        hasFinishedLoadingAllCards = true
-//                    }
-//                    _ventCards.addAll(data.first)
-//                    lastVisible = data.second
-//                    isLoading.value = false
-//
-//                }
-//                .onFailure {
-//                    Log.e("loadVC fail", "error:$it")
-//                    isLoading.value = false
-//                }
-//        }
-//    }
-//
-//    fun handleLikeAction(userId: String,posterId: String, ventCardId: String) {
+//    fun loadVentCards(userId: String) {
 //        viewModelScope.launch {
-//            val isLiked = ventCardRepository.checkIfLiked(userId, ventCardId)
-//            try {
-//                if (!isLiked) {
-//                    ventCardRepository.likeVentCard(userId, posterId, ventCardId)
-////TODO　使うとサイコンポーズされてしまう                    _ventCards.removeIf{it.swipeCardId == ventCardId}
-//                } else {
-//                    //TODO dislike
-//                    ventCardRepository.disLikeVentCard(userId,ventCardId)
-////TODO　使うとサイコンポーズされてしまう                        _ventCards.removeIf{it.swipeCardId == ventCardId}
-//
-//                    Log.e("VCVM", "like exists")
+//            isLoading.value = true
+//            val result = loadVentCardsUseCase.execute(userId, lastVisible)
+//            result.onSuccess { (cards, newLastVisible) ->
+//                if (cards.isEmpty()) {
+//                    hasFinishedLoadingAllCards = true
 //                }
-//            } catch (e: Exception) {
-//                Log.e("VCVM", "error : $e")
+//                _ventCards.addAll(cards)
+//                lastVisible = newLastVisible
+//                isLoading.value = false
+//            }.onFailure {
+//                Log.e("loadVC fail", "error: $it")
+//                //TODO エラーメッセージを登録
+//                isLoading.value = false
 //            }
 //        }
 //    }
-//
-//
-//
-//
-//
-//}
+    fun loadVentCards(userId: String) {
+        viewModelScope.launch {
+            if (ventCards.isEmpty()) {
+                _loadCardsState.value = Resource.loading()
+            }
+            _loadCardsState.value = loadVentCardsUseCase.execute(userId, lastVisible)
+            when(_loadCardsState.value.status) {
+                Status.SUCCESS -> {
+                    _loadCardsState.value.data?. let { (cards, newLastVisible) ->
+                        if (cards.isEmpty()) {
+                            hasFinishedLoadingAllCards = true
+                        }
+                        _ventCards.addAll(cards)
+                        lastVisible = newLastVisible
+                    }
+                }
+                else -> {}
+            }
+        }
+    }
+    fun resetState() {
+        _loadCardsState.value = Resource.idle()
+        _likeState.value = Resource.idle()
+    }
+
+//    fun updateLoadingStatus() {
+//        _loadCardsState.value = Resource.loading()
+//    }
+
+//    fun handleLikeAction(userId: String, posterId: String, ventCardId: String) {
+//        viewModelScope.launch {
+//            handleLikeActionUseCase.execute(userId, posterId, ventCardId).onFailure {
+//                Log.e("VCVM", "Like action failed: $it")
+//                _errorMessage.value = it.toString()
+//            }
+//        }
+//    }
+
+    fun handleLikeAction(userId: String, posterId: String, ventCardId: String) {
+        viewModelScope.launch {
+            _likeState.value  = handleLikeActionUseCase.execute(userId, posterId, ventCardId)
+        }
+    }
+}

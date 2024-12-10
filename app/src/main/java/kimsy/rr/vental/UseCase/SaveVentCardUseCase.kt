@@ -5,7 +5,6 @@ import android.net.Uri
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.VentCard
-import kimsy.rr.vental.data.repository.ImageRepository
 import kimsy.rr.vental.data.repository.VentCardRepository
 import javax.inject.Inject
 
@@ -42,7 +41,7 @@ class SaveVentCardUseCase @Inject constructor(
             swipeCardImageURL = "",
             tags = tags
         )
-        return ventCardRepository.saveVentCardToFireStores(ventCard)
+        return ventCardRepository.saveVentCardToFireStore(ventCard)
     }
 
     private suspend fun saveVentCardWithImage(
@@ -61,9 +60,9 @@ class SaveVentCardUseCase @Inject constructor(
                     swipeCardImageURL = imageResourceURL.data ?: "",
                     tags = tags
                 )
-                return ventCardRepository.saveVentCardToFireStores(ventCard)
+                return ventCardRepository.saveVentCardToFireStore(ventCard)
             }
-            Status.ERROR -> Resource.failure(message = imageResourceURL.message)
+            Status.FAILURE -> Resource.failure(message = imageResourceURL.message)
             Status.LOADING -> Resource.loading()
             Status.IDLE -> Resource.idle()
         }

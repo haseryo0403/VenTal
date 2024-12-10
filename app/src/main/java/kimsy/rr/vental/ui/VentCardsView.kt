@@ -4,6 +4,7 @@ package kimsy.rr.vental.ui
 import android.content.Context
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
@@ -30,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -53,6 +55,7 @@ import kimsy.rr.vental.R
 import kimsy.rr.vental.ViewModel.AuthViewModel
 import kimsy.rr.vental.ViewModel.DebateCreationViewModel
 import kimsy.rr.vental.ViewModel.VentCardsViewModel
+import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.CardStack
 import kimsy.rr.vental.ui.CommonComposable.formatTimeDifference
@@ -70,9 +73,9 @@ fun SwipeCardsView(
     toDebateCreationView: () -> Unit,
     authViewModel: AuthViewModel
 ){
-    val isLoading by ventCardsViewModel.isLoading
-    val errorMessage by ventCardsViewModel.errorMessage
-    var showDialog by remember { mutableStateOf(false)}
+//    val isLoading by ventCardsViewModel.isLoading
+//    val errorMessage by ventCardsViewModel.errorMessage
+//    var showDialog by remember { mutableStateOf(false)}
     var noCardsLeft by remember { mutableStateOf(false) }
     val user by authViewModel.currentUser.observeAsState(User())
 
@@ -82,54 +85,162 @@ fun SwipeCardsView(
     }
     val ventCards by remember { derivedStateOf { ventCardsViewModel.ventCards } }
 
+    val loadCardsState = ventCardsViewModel.loadCardsState.collectAsState()
+    val likeCardState = ventCardsViewModel.likeState.collectAsState()
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
 
-        if(showDialog){
-            AlertDialog(onDismissRequest = { showDialog = false },
-                confirmButton = { /*TODO*/ },
-                title = { Text(text = "ERROR")},
-                text = { Text(text = errorMessage?: "不明なエラーが発生しました。")}
-            )
-        }
-        if (isLoading && ventCards.isEmpty()) {
-            // データがまだロードされていない場合、ローディングインジケーターを表示
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        } else if (noCardsLeft) {
-            Text(text = "No ventCards available")//TODO design
-        } else if (errorMessage != null) {
-            showDialog = true
-        } else {
-            // データがロードされた場合、CardStackを表示
+        when {
+            loadCardsState.value.status == Status.LOADING -> {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
 
-            CardStack(
-                modifier = Modifier,
-                enableButtons = true,
-                items = ventCards,
-                onSwipeRight = {ventCard ->
-                    ventCardsViewModel.handleLikeAction(
-                        userId = user.uid,
-                        posterId = ventCard.posterId,
-                        ventCardId = ventCard.swipeCardId
+            loadCardsState.value.status == Status.FAILURE && (noCardsLeft || ventCards.isEmpty()) -> {
+                Toast.makeText(context, "読み込みに失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
+                ventCardsViewModel.resetState()
+            }
+
+            loadCardsState.value.status == Status.SUCCESS && noCardsLeft -> {
+                Text(text = "No ventCards available", modifier = Modifier.align(Alignment.Center)) // TODO: デザインを追加
+            }
+
+            else -> {
+                // ここに共通のCardStackを配置
+                if (ventCards.isNotEmpty()) {
+                    CardStack(
+                        modifier = Modifier,
+                        enableButtons = true,
+                        items = ventCards,
+                        onSwipeRight = { ventCard ->
+                            ventCardsViewModel.handleLikeAction(
+                                userId = user.uid,
+                                posterId = ventCard.posterId,
+                                ventCardId = ventCard.swipeCardId
+                            )
+                        },
+                        onSwipeLeft = { ventCard ->
+                            debateCreationViewModel.ventCardWithUser = ventCard
+                            Log.e("VCV", "ventCardId: ${ventCard.swipeCardId}")
+                            debateCreationViewModel.getRelatedDebates(ventCard)
+                            toDebateCreationView()
+                        },
+                        onEmptyStack = {
+                            noCardsLeft = true
+                        },
+                        onLessStack = {
+                            ventCardsViewModel.loadVentCards(user.uid)
+                        }
                     )
-                },
-                onSwipeLeft = {ventCard->
-                    debateCreationViewModel.ventCardWithUser = ventCard
-                    Log.e("VCV", "ventCardId: ${ventCard.swipeCardId}")
-                    debateCreationViewModel.getRelatedDebates(ventCard)
-                    toDebateCreationView()
-                },
-                onEmptyStack = {
-                    if (ventCardsViewModel.hasFinishedLoadingAllCards) {
-                        noCardsLeft = true
-                    }
-                },
-                onLessStack = {
-                    //カード少なくなったら補充
-                    ventCardsViewModel.loadVentCards(user.uid)
                 }
-            )
+            }
         }
+
+//        when (loadCardsState.value.status) {
+//            Status.LOADING -> {
+//                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+//            }
+//            Status.FAILURE -> {
+//                if (noCardsLeft || ventCards.isEmpty()) {
+//                    Toast.makeText(context, "読み込みに失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
+//                    //TODO ここに読み込みエラー画面の表示をする
+//                ventCardsViewModel.resetState()
+//                }
+//            }
+//            Status.SUCCESS -> {
+//
+////                if (noCardsLeft) {
+//                if (ventCardsViewModel.hasFinishedLoadingAllCards && noCardsLeft) {
+//                    Text(text = "No ventCards available")//TODO design
+//                } else {
+//                    CardStack(
+//                        modifier = Modifier,
+//                        enableButtons = true,
+//                        items = ventCards,
+//                        onSwipeRight = {ventCard ->
+////                            ventCardsViewModel.handleLikeAction(
+////                                userId = user.uid,
+////                                posterId = ventCard.posterId,
+////                                ventCardId = ventCard.swipeCardId
+////                            )
+//                        },
+//                        onSwipeLeft = {ventCard->
+//                            debateCreationViewModel.ventCardWithUser = ventCard
+//                            Log.e("VCV", "ventCardId: ${ventCard.swipeCardId}")
+//                            debateCreationViewModel.getRelatedDebates(ventCard)
+//                            toDebateCreationView()
+//                        },
+//                        onEmptyStack = {
+//                            noCardsLeft = true
+////                            if (ventCardsViewModel.hasFinishedLoadingAllCards) {
+////                                noCardsLeft = true
+////                            } else {
+////                                ventCardsViewModel.updateLoadingStatus()
+////                            }
+//                        },
+//                        onLessStack = {
+//                            //カード少なくなったら補充
+//                            ventCardsViewModel.loadVentCards(user.uid)
+//                        }
+//                    )
+//                }
+//            }
+//            else -> {
+//                Text(text = "エラーーーーーーー") //TODO design
+//            }
+//        }
+        if (likeCardState.value.status == Status.FAILURE) {
+            Toast.makeText(context, "いいねに失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
+            ventCardsViewModel.resetState()
+        }
+//
+//
+//        if(showDialog){
+//            AlertDialog(onDismissRequest = { showDialog = false },
+//                confirmButton = { /*TODO*/ },
+//                title = { Text(text = "ERROR")},
+//                text = { Text(text = errorMessage?: "不明なエラーが発生しました。")}
+//            )
+//        }
+//        if (isLoading && ventCards.isEmpty()) {
+//            // データがまだロードされていない場合、ローディングインジケーターを表示
+//            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+//        } else if (noCardsLeft) {
+//            Text(text = "No ventCards available")//TODO design
+//        } else if (errorMessage != null) {
+//            showDialog = true
+//        } else {
+//            // データがロードされた場合、CardStackを表示
+//
+//            CardStack(
+//                modifier = Modifier,
+//                enableButtons = true,
+//                items = ventCards,
+//                onSwipeRight = {ventCard ->
+//                    ventCardsViewModel.handleLikeAction(
+//                        userId = user.uid,
+//                        posterId = ventCard.posterId,
+//                        ventCardId = ventCard.swipeCardId
+//                    )
+//                },
+//                onSwipeLeft = {ventCard->
+//                    debateCreationViewModel.ventCardWithUser = ventCard
+//                    Log.e("VCV", "ventCardId: ${ventCard.swipeCardId}")
+//                    debateCreationViewModel.getRelatedDebates(ventCard)
+//                    toDebateCreationView()
+//                },
+//                onEmptyStack = {
+//                    if (ventCardsViewModel.hasFinishedLoadingAllCards) {
+//                        noCardsLeft = true
+//                    }
+//                },
+//                onLessStack = {
+//                    //カード少なくなったら補充
+//                    ventCardsViewModel.loadVentCards(user.uid)
+//                }
+//            )
+//        }
+
     }
 }

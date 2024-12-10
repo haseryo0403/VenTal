@@ -10,13 +10,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kimsy.rr.vental.UseCase.SaveImageUseCase
 import kimsy.rr.vental.UseCase.SaveVentCardUseCase
 import kimsy.rr.vental.data.Resource
-import kimsy.rr.vental.data.Status
-import kimsy.rr.vental.data.repository.ImageRepository
-import kimsy.rr.vental.data.VentCard
-import kimsy.rr.vental.data.repository.VentCardRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

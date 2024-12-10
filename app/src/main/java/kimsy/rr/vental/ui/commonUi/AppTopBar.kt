@@ -128,10 +128,10 @@ fun AppTopBarView(
                         .fillMaxWidth()
                 )            }
             Status.SUCCESS -> {viewModel.resetValues()}
-            Status.ERROR -> {
+            Status.FAILURE -> {
                 Log.e("ATB", "${saveState.value.message}")
                 CoroutineScope(Dispatchers.Main).launch {
-                    onSavingFailure() // メインスレッドでバックスタックを操作
+                    onSavingFailure() // メインスレッドでventCardCreationViewに移動
                     Toast.makeText(context, "送信に失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
                 }
                 viewModel.resetStatus()
