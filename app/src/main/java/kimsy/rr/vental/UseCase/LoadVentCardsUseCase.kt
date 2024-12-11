@@ -13,7 +13,7 @@ import javax.inject.Inject
 class LoadVentCardsUseCase @Inject constructor(
     private val ventCardRepository: VentCardRepository,
     private val networkUtils: NetworkUtils
-) {
+){
     suspend fun execute(
         userId: String,
         lastVisible: DocumentSnapshot?
@@ -36,9 +36,7 @@ class LoadVentCardsUseCase @Inject constructor(
                     debatingVentCard.data ?: emptyList(),
                     lastVisible
                 )
-    //            Resource.success(result)
                 result
-
             }
         } catch (e: Exception) {
             Log.e("LoadVentCardsUseCase", "Error loading vent cards: $e")

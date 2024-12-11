@@ -45,6 +45,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -67,6 +68,7 @@ import kimsy.rr.vental.ViewModel.AuthViewModel
 import kimsy.rr.vental.ViewModel.DebateCreationViewModel
 import kimsy.rr.vental.ViewModel.DebateViewModel
 import kimsy.rr.vental.data.DebateWithUsers
+import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.VentCardWithUser
 import kimsy.rr.vental.ui.CommonComposable.ImagePermissionAndSelection
 import kimsy.rr.vental.ui.CommonComposable.MaxLengthOutlinedTextField
@@ -82,9 +84,8 @@ fun DebateCreationView(
     toDebateView: () -> Unit
 ){
     val user by authViewModel.currentUser.observeAsState()
-    val relatedDebates by debateCreationViewModel.relatedDebates.observeAsState(emptyList())
-    val createdDebateWithUsers by debateCreationViewModel.createdDebateWithUsers.observeAsState(null)
-    val isLoading by debateCreationViewModel.isLoading
+    val fetchRelatedDebateState by debateCreationViewModel.fetchRelatedDebateState.collectAsState()
+    val debateCreationState by debateCreationViewModel.debateCreationState.collectAsState()
     var text by remember { mutableStateOf("") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     val isKeyboardVisible = WindowInsets.isImeVisible
@@ -92,36 +93,56 @@ fun DebateCreationView(
     Box(
         modifier = Modifier.fillMaxSize()
     ){
-        if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        } else if (imageUri == null) {
-            viewWithOutImage(
-                relatedDebates = relatedDebates,
-                isKeyboardVisible = isKeyboardVisible,
-                context = context,
-                onImageSelected = {imageUri = it},
-                text = text,
-                onTextChange = {text = it}
-            ) {
-                user?.let { currentUser ->
-                    debateCreationViewModel.handleDebateCreation(
-                        text, imageUri, currentUser.uid, context, onCreationSuccess = toDebateView
-                    )
+        when {
+
+            fetchRelatedDebateState.status == Status.FAILURE-> {
+                Toast.makeText(context, "読み込みに失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
+                debateCreationViewModel.resetFetchRelatedDebateState()
+            }
+
+            debateCreationState.status == Status.FAILURE -> {
+                Toast.makeText(context, "登録に失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
+                debateCreationViewModel.resetDebateCreationState()
+            }
+
+            fetchRelatedDebateState.status == Status.LOADING || debateCreationState.status == Status.LOADING -> {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
+
+            fetchRelatedDebateState.status == Status.SUCCESS && imageUri == null -> {
+                fetchRelatedDebateState.data?.let {
+                    viewWithOutImage(
+                        relatedDebates = it,
+                        isKeyboardVisible = isKeyboardVisible,
+                        context = context,
+                        onImageSelected = {imageUri = it},
+                        text = text,
+                        onTextChange = {text = it}
+                    ) {
+                        user?.let { currentUser ->
+                            debateCreationViewModel.handleDebateCreation(
+                                text, imageUri, currentUser.uid, context, onCreationSuccess = toDebateView
+                            )
+                        }
+                    }
                 }
             }
-        } else {
-            viewWithImage(
-                imageUri = imageUri!!,
-                onImageDelete = { imageUri = null },
-                text = text,
-                onTextChange = {text = it}
+            fetchRelatedDebateState.status == Status.SUCCESS && imageUri != null -> {
+                viewWithImage(
+                    imageUri = imageUri!!,
+                    onImageDelete = { imageUri = null },
+                    text = text,
+                    onTextChange = {text = it}
                 ) {
-                user?.let { currentUser ->
-                    debateCreationViewModel.handleDebateCreation(
-                        text, imageUri, currentUser.uid, context, onCreationSuccess = toDebateView
-                    )
+                    user?.let { currentUser ->
+                        debateCreationViewModel.handleDebateCreation(
+                            text, imageUri, currentUser.uid, context, onCreationSuccess = toDebateView
+                        )
+                    }
                 }
             }
+
+
         }
     }
 }
@@ -207,7 +228,9 @@ fun viewWithImage(
         ) {
             ElevatedButton(
                 onClick = onSendClick ,
-                modifier = Modifier.fillMaxWidth(0.8f).height(48.dp)) {
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .height(48.dp)) {
                 Text(text = "送信する")
             }
         }

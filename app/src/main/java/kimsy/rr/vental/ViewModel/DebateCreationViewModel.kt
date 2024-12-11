@@ -6,76 +6,55 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kimsy.rr.vental.UseCase.AddDebatingSwipeCardUseCase
-import kimsy.rr.vental.UseCase.CreateDebatesWithUsersUseCase
 import kimsy.rr.vental.UseCase.DebateCreationUseCase
 import kimsy.rr.vental.UseCase.DebateValidationUseCase
-import kimsy.rr.vental.UseCase.GetDebateInfoUseCase
 import kimsy.rr.vental.UseCase.GetRelatedDebatesUseCase
-import kimsy.rr.vental.UseCase.SaveNotificationDataUseCase
-import kimsy.rr.vental.UseCase.SendAndSaveNotificationUseCase
+import kimsy.rr.vental.UseCase.SaveImageUseCase
+import kimsy.rr.vental.UseCase.SaveNotificationUseCase
 import kimsy.rr.vental.data.DebateSharedModel
 import kimsy.rr.vental.data.DebateWithUsers
-import kimsy.rr.vental.data.NotificationData
-import kimsy.rr.vental.data.NotificationType
-import kimsy.rr.vental.data.User
-import kimsy.rr.vental.data.repository.ImageRepository
+import kimsy.rr.vental.data.NetworkUtils
+import kimsy.rr.vental.data.Resource
+import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.VentCardWithUser
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
 class DebateCreationViewModel @Inject constructor(
     private val getRelatedDebatesUseCase: GetRelatedDebatesUseCase,
-    private val createDebatesWithUsersUseCase: CreateDebatesWithUsersUseCase,
     private val debateCreationUseCase: DebateCreationUseCase,
     private val debateValidationUseCase: DebateValidationUseCase,
     private val addDebatingSwipeCardUseCase: AddDebatingSwipeCardUseCase,
-    private val getDebateInfoUseCase: GetDebateInfoUseCase,
-    private val saveNotificationDataUseCase: SaveNotificationDataUseCase,
-    private val sendAndSaveNotificationUseCase: SendAndSaveNotificationUseCase,
-    private val imageRepository: ImageRepository
+    private val saveNotificationUseCase: SaveNotificationUseCase,
+    private val saveImageUseCase: SaveImageUseCase,
+    private val networkUtils: NetworkUtils
 ): ViewModel() {
 
-    var isLoading = mutableStateOf(true)
-        private set
+    private val _fetchRelatedDebateState = MutableStateFlow<Resource<List<DebateWithUsers>>>(Resource.idle())
+    val fetchRelatedDebateState: StateFlow<Resource<List<DebateWithUsers>>> get() = _fetchRelatedDebateState
 
-    private val _relatedDebates = MutableLiveData<List<DebateWithUsers>>()
-    val relatedDebates: LiveData<List<DebateWithUsers>> get() = _relatedDebates
+    private val _debateCreationState = MutableStateFlow<Resource<DebateWithUsers>>(Resource.idle())
+    val debateCreationState: StateFlow<Resource<DebateWithUsers>> get() = _debateCreationState
 
-    private val _errorState = MutableLiveData<String>()
-    val errorState: LiveData<String> get() = _errorState
-
-    private val _createdDebateWithUsers = MutableLiveData<Result<DebateWithUsers>>()
-    val createdDebateWithUsers: LiveData<Result<DebateWithUsers>> get() = _createdDebateWithUsers
     var ventCardWithUser by mutableStateOf<VentCardWithUser?>(null)
 
     init {
         Log.d("DCVM", "initialized")
     }
 
+
     fun getRelatedDebates(ventCardWithUser: VentCardWithUser) {
         viewModelScope.launch {
-            try {
-                isLoading.value = true
-                //TODO １つのUseCaseに
-                val debates = getRelatedDebatesUseCase.execute(ventCardWithUser).getOrThrow()
-                val debatesWithUsers = createDebatesWithUsersUseCase.execute(debates)
-                _relatedDebates.value = debatesWithUsers
-                Log.d("DebateViewModel", "Fetched related debates: $debatesWithUsers")
-            } catch (e: IOException) {
-                handleNetworkError(e)
-            } catch (e: Exception) {
-                handleUnexpectedError(e)
-            } finally {
-                isLoading.value = false
-            }
+            _fetchRelatedDebateState.value = Resource.loading()
+            _fetchRelatedDebateState.value = getRelatedDebatesUseCase.execute(ventCardWithUser)
+
         }
     }
 
@@ -85,78 +64,66 @@ class DebateCreationViewModel @Inject constructor(
                              context: Context,
                              onCreationSuccess: () -> Unit = {}) {
         viewModelScope.launch {
-            try {
-                isLoading.value = true
-                val ventCard = ventCardWithUser ?: throw IllegalStateException("No vent card available")
 
-                // バリデーション実行
-                val isValid = debateValidationUseCase.execute(ventCard.posterId, ventCard.swipeCardId).getOrThrow()
-                if (!isValid) {
-                    _createdDebateWithUsers.value = Result.failure(Exception("Validation failed"))
-                    return@launch
+            if (!networkUtils.isOnline()) {
+                _debateCreationState.value = Resource.failure("インターネットの接続を確認してください")
+                return@launch
+            }
+
+            _debateCreationState.value = Resource.loading()
+            val ventCard = ventCardWithUser ?: throw IllegalStateException("No vent card available")
+
+            debateValidationUseCase.execute(ventCard.posterId, ventCard.swipeCardId)
+                .onSuccess { isValid->
+                    if (!isValid) {
+                        _debateCreationState.value = Resource.failure("バリデーションエラー。入力を確認してください。")
+                        return@launch
+                    }
+                }
+                .onFailure {
+                    _debateCreationState.value = Resource.failure("エラー。インターネットを確認してください。")
+
                 }
 
-                // 画像アップロード（必要な場合）
-                val imageUrl = if (imageUri != null) {
-                    imageRepository.saveImageToStorage(imageUri, context).getOrThrow()
-                } else null
+            val imageUrl = imageUri?.let { uri ->
+                val imageURLState =saveImageUseCase.execute(imageUri, context)
+                if (imageURLState.status == Status.SUCCESS) imageURLState.data else null
+            }
 
-                // 討論作成UseCaseの実行
-                //TODO １つのUseCaseに
-                val createdDebate = debateCreationUseCase.execute(text, ventCard, debaterId, imageUrl).getOrThrow()
-                val createdDebateWithUsersInfo = getDebateInfoUseCase.execute(createdDebate).getOrThrow()
-                //これでviewから触れる
-//                _createdDebateWithUsers.value = getDebateInfoUseCase.execute(createdDebate)
-
-                // スワイプカードIDを保存
-                addDebatingSwipeCardUseCase.execute(debaterId, ventCard.swipeCardId)
-                DebateSharedModel.setDebate(createdDebateWithUsersInfo)
-                handleNotification(debaterId, ventCard.posterId, createdDebate.debateId, text)
-
-                onCreationSuccess()
-            } catch (e: IOException) {
-                handleNetworkError(e)
-            } catch (e: Exception) {
-                handleUnexpectedError(e)
-            } finally {
-                isLoading.value = false
+            val createdDebate = debateCreationUseCase.execute(text, ventCard, debaterId, imageUrl)
+            when (createdDebate.status) {
+                Status.SUCCESS ->{
+                    addDebatingSwipeCardUseCase.execute(debaterId, ventCard.swipeCardId)
+                    createdDebate.data?.let { DebateSharedModel.setDebate(it) }
+                    createdDebate.data?.let { handleNotification(debaterId, ventCard.posterId, it.debateId, text) }
+                    onCreationSuccess()
+                    resetDebateCreationState()
+                    resetFetchRelatedDebateState()
+                }
+                Status.FAILURE -> {
+                    _debateCreationState.value = Resource.failure(createdDebate.message)
+                }
+                else -> {}
             }
         }
     }
 
     fun handleNotification(
-//        fromUser: User,
-//        toUser: User,
         fromUserId: String,
         toUserId: String,
         debateId: String,
-        body: String,
-
+        body: String
         ){
         viewModelScope.launch {
-            try {
-                sendAndSaveNotificationUseCase(fromUserId, toUserId, debateId, body)
-                    .onSuccess {
-                        Log.d("DebateCreationViewModel", "sent notification")
-                    }
-                    .onFailure {
-                        Log.e("DebateCreationViewModel", "send notification fail")
-                    }
-            } catch (e: IOException) {
-                handleNetworkError(e)
-            } catch (e: Exception) {
-                handleUnexpectedError(e)
-            }
+            saveNotificationUseCase.execute(fromUserId, toUserId, debateId, body)
         }
     }
 
-    private fun handleNetworkError(error: IOException) {
-        _errorState.value = "ネットワーク接続に問題があります。" // UI向けメッセージ
-        Log.e("DCVM", "Network error occurred", error)
+    fun resetDebateCreationState() {
+        _debateCreationState.value = Resource.idle()
     }
 
-    private fun handleUnexpectedError(error: Exception) {
-        _errorState.value = "予期しないエラーが発生しました。" // UI向けメッセージ
-        Log.e("DCVM", "Unexpected error occurred", error)
+    fun resetFetchRelatedDebateState() {
+        _fetchRelatedDebateState.value = Resource.idle()
     }
 }

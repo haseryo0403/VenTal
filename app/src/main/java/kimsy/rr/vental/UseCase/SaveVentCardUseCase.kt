@@ -2,6 +2,7 @@ package kimsy.rr.vental.UseCase
 
 import android.content.Context
 import android.net.Uri
+import kimsy.rr.vental.data.NetworkUtils
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.VentCard
@@ -10,7 +11,8 @@ import javax.inject.Inject
 
 class SaveVentCardUseCase @Inject constructor(
     private val saveImageUseCase: SaveImageUseCase,
-    private val ventCardRepository: VentCardRepository
+    private val ventCardRepository: VentCardRepository,
+    private val networkUtils: NetworkUtils
 ) {
     suspend fun execute(
         posterId: String,
@@ -20,6 +22,11 @@ class SaveVentCardUseCase @Inject constructor(
         context: Context
     ): Resource<Unit> {
         return try {
+
+            if (!networkUtils.isOnline()) {
+                return Resource.failure("インターネットの接続を確認してください")
+            }
+
             if (selectedImageUri == null) {
                 saveVentCardWithoutImage(posterId, content, tags)
             } else {

@@ -14,5 +14,10 @@ data class Debate(
     val debateReportFlag: Boolean = false,
     val debateDeletionRequestFlag: Boolean = false,
     val debateCreatedDatetime: Any = FieldValue.serverTimestamp(),
-
-)
+){
+//    companion object {
+//        fun createDebate(
+//
+//        )
+//    }
+}

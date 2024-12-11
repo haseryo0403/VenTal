@@ -2,14 +2,15 @@ package kimsy.rr.vental.ui
 
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,166 +30,71 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
 import kimsy.rr.vental.ViewModel.DebateViewModel
-import kimsy.rr.vental.ViewModel.VentCardsViewModel
 import kimsy.rr.vental.data.DebateWithUsers
 import kimsy.rr.vental.data.Message
+import kimsy.rr.vental.data.Status
+import kimsy.rr.vental.data.UserType
 import kimsy.rr.vental.data.VentCard
 import kimsy.rr.vental.ui.CommonComposable.formatTimeDifference
-import java.net.URL
-import java.sql.Timestamp
 import java.util.Date
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DebateView(
-    debateViewModel: DebateViewModel = hiltViewModel(),
+    debateViewModel: DebateViewModel = hiltViewModel()
     ){
 
+    val context = LocalContext.current// is this Right?
+
     val debateWithUsers = debateViewModel.debateWithUsers.value
-    val ventCard = debateViewModel.ventCard.value
-    val isLoading by debateViewModel.isLoading
-    val errorMessage by debateViewModel.errorState.observeAsState()
+    val fetchVentCardState by debateViewModel.fetchVentCardState.collectAsState()
+    val fetchMessageState by debateViewModel.fetchMessageState.collectAsState()
 
     LaunchedEffect(Unit) {
         debateViewModel.loadDebate()
     }
 
-    when {
-        isLoading-> LoadingView()
-        errorMessage != null -> ErrorDialog(errorMessage) { debateViewModel.clearErrorState() }
-        debateWithUsers != null && ventCard != null -> DebateContent(debateWithUsers, ventCard)
-
-    }
-}
-
-@Composable
-fun LoadingView() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        CircularProgressIndicator()
-    }
-}
-
-@Composable
-fun ErrorDialog(errorMessage: String?, onDismiss: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = { /* TODO: 実装 */ },
-        title = { Text(text = "エラー") },
-        text = { Text(text = errorMessage ?: "不明なエラーが発生しました") }
-    )
-}
-
-@Composable
-fun DebateContent(debateWithUsers: DebateWithUsers, ventCard: VentCard) {
-    val heartIcon = painterResource(id = R.drawable.baseline_favorite_24)
-    Log.d("DV", "$debateWithUsers, $ventCard")
     LazyColumn(
 
-    ) {
+    ){
         item {
             Column(
                 modifier = Modifier.padding(8.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth()
-                ){
-                    AccountIcon(imageUrl = debateWithUsers.posterImageURL)
-
-                    Column(
-                        modifier = Modifier
-                            .weight(5f)
-                            .fillMaxWidth()
-                    ) {
-                        Row(modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(text = debateWithUsers.posterName)
-                            Text(text = debateWithUsers.debateCreatedDatetime?.let { formatTimeDifference(it) }?: "日付不明")
+                when {
+                    fetchVentCardState.status == Status.SUCCESS -> {
+                        if (debateWithUsers != null) {
+                            fetchVentCardState.data?.let { DebateContent(debateWithUsers, it) }
+                        } else {
+                            Toast.makeText(context, "読み込みに失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
                         }
-
-                        Text(text = ventCard.swipeCardContent)
-                        ventCard.tags.forEach { tag->
-                            Text(text = tag, color = MaterialTheme.colorScheme.onSurfaceVariant)
-
-                        }
-                        Image(
-                            painter = rememberAsyncImagePainter(debateWithUsers.swipeCardImageURL),
-                            contentDescription = "ventCardImage",
-                            modifier = Modifier.clip(RoundedCornerShape(16.dp)),
-                            contentScale = ContentScale.FillWidth
-                        )
-                    }
-                }
-
-                Row(modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween) {
-
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .weight(2f)
-                    ) {
-                        AccountIcon(imageUrl = debateWithUsers.debaterImageURL)
-
-                        Text(text = debateWithUsers.debaterName)
                     }
 
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .weight(1f)
-                    ) {
-                        Icon(painter = heartIcon,
-                            contentDescription = "haert")
-                        Text(text = debateWithUsers.debaterLikeCount.toString())
+                    debateWithUsers == null || fetchVentCardState.status == Status.LOADING -> { showLoadingIndicator() }
+
+                    fetchVentCardState.status == Status.FAILURE -> {
+                        Toast.makeText(context, "読み込みに失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
+                        debateViewModel.resetState()
                     }
-
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .weight(1f)
-                    ) {
-                        Icon(painter = heartIcon,
-                            contentDescription = "haert")
-                        Text(text = debateWithUsers.posterLikeCount.toString())
-                    }
-
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .weight(2f)
-                    ) {
-                        AccountIcon(imageUrl = debateWithUsers.posterImageURL)
-
-                        Text(text = debateWithUsers.posterName)
+                    //TODO　debateWithUsersが無い場合のエラーハンドリングが必要
+                    else -> {
                     }
                 }
 
@@ -210,198 +116,109 @@ fun DebateContent(debateWithUsers: DebateWithUsers, ventCard: VentCard) {
 
                 Divider()
 
-
-
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Surface(
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .widthIn(max = 250.dp),
-                        shape = MaterialTheme.shapes.medium,
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        tonalElevation = 4.dp
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(12.dp)
-                        ) {
-                            Text(
-                                text = "基礎みたいなもんだろ",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
+                when(fetchMessageState.status) {
+                    Status.LOADING -> { showLoadingIndicator() }
+                    Status.SUCCESS -> {
+                        if (fetchMessageState.data != null) {
+                            ChatMessageItem(messages = fetchMessageState.data!!)
+                        } else {
+                            Text(text = "どうやらメッセージが無いようです。")
                         }
                     }
-                }
-                Text(text = "2024/07/29 12:00")
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Surface(
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .widthIn(max = 250.dp),
-                        shape = MaterialTheme.shapes.medium,
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        tonalElevation = 4.dp
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(12.dp)
-                        ) {
-                            Text(
-                                text = "基礎みたいなもんだろ",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                        }
+                    Status.FAILURE -> {
+                        Toast.makeText(context, "読み込みに失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
+                        debateViewModel.resetState()
                     }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Surface(
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .widthIn(max = 250.dp),
-                        shape = MaterialTheme.shapes.medium,
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        tonalElevation = 4.dp
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(12.dp)
-                        ) {
-                            Text(
-                                text = "基礎みたいなもんだろ",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                        }
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Surface(
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .widthIn(max = 250.dp),
-                        shape = MaterialTheme.shapes.medium,
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        tonalElevation = 4.dp
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(12.dp)
-                        ) {
-                            Text(
-                                text = "基礎みたいなもんだろ",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                        }
-                    }
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Surface(
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .widthIn(max = 250.dp),
-                        shape = MaterialTheme.shapes.medium,
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        tonalElevation = 4.dp
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(12.dp)
-                        ) {
-                            Text(
-                                text = "基礎みたいなもんだろ",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                        }
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Surface(
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .widthIn(max = 250.dp),
-                        shape = MaterialTheme.shapes.medium,
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        tonalElevation = 4.dp
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(12.dp)
-                        ) {
-                            Text(
-                                text = "基礎みたいなもんだろ",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                        }
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Surface(
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .widthIn(max = 250.dp),
-                        shape = MaterialTheme.shapes.medium,
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        tonalElevation = 4.dp
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(12.dp)
-                        ) {
-                            Text(
-                                text = "基礎みたいなもんだろ",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                        }
-                    }
+                    else -> {}
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun DebateContent(debateWithUsers: DebateWithUsers, ventCard: VentCard) {
+    val heartIcon = painterResource(id = R.drawable.baseline_favorite_24)
+    Log.d("DV", "$debateWithUsers, $ventCard")
+    Row(
+        modifier = Modifier.fillMaxWidth()
+    ){
+        AccountIcon(imageUrl = debateWithUsers.posterImageURL)
+
+        Column(
+            modifier = Modifier
+                .weight(5f)
+                .fillMaxWidth()
+        ) {
+            Row(modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(text = debateWithUsers.posterName)
+                Text(text = debateWithUsers.debateCreatedDatetime?.let { formatTimeDifference(it) }?: "日付不明")
+            }
+
+            Text(text = ventCard.swipeCardContent)
+            ventCard.tags.forEach { tag->
+                Text(text = tag, color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+            }
+            Image(
+                painter = rememberAsyncImagePainter(debateWithUsers.swipeCardImageURL),
+                contentDescription = "ventCardImage",
+                modifier = Modifier.clip(RoundedCornerShape(16.dp)),
+                contentScale = ContentScale.FillWidth
+            )
+        }
+    }
+
+    Row(modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween) {
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .padding(4.dp)
+                .weight(2f)
+        ) {
+            AccountIcon(imageUrl = debateWithUsers.debaterImageURL)
+
+            Text(text = debateWithUsers.debaterName)
+        }
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .padding(4.dp)
+                .weight(1f)
+        ) {
+            Icon(painter = heartIcon,
+                contentDescription = "haert")
+            Text(text = debateWithUsers.debaterLikeCount.toString())
+        }
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .padding(4.dp)
+                .weight(1f)
+        ) {
+            Icon(painter = heartIcon,
+                contentDescription = "haert")
+            Text(text = debateWithUsers.posterLikeCount.toString())
+        }
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .padding(4.dp)
+                .weight(2f)
+        ) {
+            AccountIcon(imageUrl = debateWithUsers.posterImageURL)
+
+            Text(text = debateWithUsers.posterName)
         }
     }
 }
@@ -420,46 +237,57 @@ fun AccountIcon(imageUrl: String) {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ChatMessageItem(message: Message) {
+fun ChatMessageItem(messages: List<Message>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        horizontalAlignment = Alignment.Start
-//        horizontalAlignment = if (message.isSentByCurrentUser) Alignment.End else Alignment.Start
+            .padding(8.dp)
     ) {
-        Box(
-            modifier = Modifier
-//                .background(
-//                    if (message.isSentByCurrentUser) colorResource(id = R.color.purple_700) else Color.Gray,
-//                    shape = RoundedCornerShape(8.dp)
-//                )
-                .padding(8.dp)
-        ) {
-            Text(
-                text = message.text,
-                color = Color.White,
-                style = TextStyle(fontSize = 16.sp)
-            )
+        messages.forEach { message ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp),
+                horizontalArrangement = if (message.userType == UserType.DEBATER) Arrangement.Start else Arrangement.End
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .widthIn(max = 250.dp),
+                    shape = MaterialTheme.shapes.medium,
+                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    tonalElevation = 4.dp
+                ) {
+                    Column(
+                        modifier = Modifier.padding(12.dp)
+                    ) {
+                        Text(
+                            text = message.text,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
+                }
+            }
+            Text(text = message.sentDatetime.toString())
         }
-        Spacer(modifier = Modifier.height(4.dp))
-//        Text(
-//            text = message.senderFirstName,
-//            style = TextStyle(
-//                fontSize = 12.sp,
-//                color = Color.Gray
-//            )
-//        )
-//        Text(
-//            text = formatTimestamp(message.timestamp), // Replace with actual timestamp logic
-//            style = TextStyle(
-//                fontSize = 12.sp,
-//                color = Color.Gray
-//            )
-//        )
     }
 }
-//
+
+@Composable
+fun showLoadingIndicator() {
+    Column(
+        modifier = Modifier.fillMaxHeight(0.4f)
+    ) {
+        Box(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        }
+    }
+}
+
 @Preview(
     device = Devices.PIXEL_7,
     showSystemUi = true,

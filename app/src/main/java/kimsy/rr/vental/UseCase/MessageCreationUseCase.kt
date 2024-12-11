@@ -3,9 +3,8 @@ package kimsy.rr.vental.UseCase
 import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.DebateWithUsers
 import kimsy.rr.vental.data.Message
-import kimsy.rr.vental.data.repository.MessageRepository
 import kimsy.rr.vental.data.UserType
-import kimsy.rr.vental.data.VentCardWithUser
+import kimsy.rr.vental.data.repository.MessageRepository
 import javax.inject.Inject
 
 class MessageCreationUseCase @Inject constructor(
@@ -36,7 +35,6 @@ class MessageCreationUseCase @Inject constructor(
             Result.failure(e)
         }
     }
-
 
     private fun createMessageInstance(text: String, messageImageURL: String?, userType: UserType) :Message{
         return Message(

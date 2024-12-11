@@ -1,7 +1,6 @@
 package kimsy.rr.vental.ViewModel
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -16,13 +15,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.messaging.ktx.messaging
-import kimsy.rr.vental.MainActivity
 import kimsy.rr.vental.UseCase.FinishMainActivityUseCase
 import kimsy.rr.vental.UseCase.LoadCurrentUserUseCase
 import kimsy.rr.vental.UseCase.SaveDeviceTokenUseCase
@@ -31,8 +23,6 @@ import kimsy.rr.vental.UseCase.SignInAndFetchUserUseCase
 import kimsy.rr.vental.UseCase.SignOutUseCase
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.data.repository.UserRepository
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

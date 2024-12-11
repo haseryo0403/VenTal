@@ -1,7 +1,5 @@
 package kimsy.rr.vental.ui
 
-import android.app.Activity
-import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +21,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -32,11 +29,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
-import kimsy.rr.vental.MainActivity
 import kimsy.rr.vental.R
 import kimsy.rr.vental.ViewModel.AuthViewModel
 import kimsy.rr.vental.ViewModel.MyPageViewModel
@@ -310,15 +304,5 @@ fun MyPageView(
             Divider()
         }
     }
-}
-
-@Preview(
-    device = Devices.PIXEL_7,
-    showSystemUi = true,
-    showBackground = true,
-)
-@Composable
-fun MyPagePrev(){
-//    MyPageView()
 }
 

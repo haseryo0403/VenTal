@@ -7,6 +7,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.DebateWithUsers
+import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.VentCardWithUser
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
@@ -18,8 +19,9 @@ class DebateRepository @Inject constructor(
     private val db: FirebaseFirestore,
 ) {
 
-    suspend fun fetchRelatedDebates(ventCardWithUser: VentCardWithUser): Result<List<Debate>> {
+    suspend fun fetchRelatedDebates(ventCardWithUser: VentCardWithUser): Resource<List<Debate>> {
         return try {
+            Log.d("DR", "fetchRD was called")
             withTimeout(10000L) {
                 val query = db
                     .collection("users")
@@ -29,15 +31,19 @@ class DebateRepository @Inject constructor(
                     .collection("debates")
 
                 val querySnapshot = query.get().await()
-                val debates = querySnapshot.documents.map { document->
-                    document.toObject(Debate::class.java)!!
+                val debates = querySnapshot.documents.mapNotNull { document->
+                    document.toObject(Debate::class.java)
                 }
-                Result.success(debates)
+                if (debates.isEmpty()) {
+                    Resource.success(emptyList())
+                } else {
+                    Resource.success(debates)
+                }
             }
         } catch (e: IOException) {
-            Result.failure(e)
+            Resource.failure(e.message)
         } catch (e: Exception) {
-            Result.failure(e)
+            Resource.failure(e.message)
         }
     }
     suspend fun getRelatedDebatesCount(posterId: String, swipeCardId: String):Result<Int>{
@@ -107,31 +113,4 @@ class DebateRepository @Inject constructor(
 
         docRef.set(data).await()
     }
-
-//    suspend fun fetchDebate(debaterId: String)Result<Debate> {
-//        return try {
-//            withTimeout(10000L) {
-//                val docRef = db
-//                    .collection("users")
-//                    .document(ventCardWithUser.posterId)
-//                    .collection("swipeCards")
-//                    .document(ventCardWithUser.swipeCardId)
-//                    .collection("debates")
-//
-//                val querySnapshot = query.get().await()
-//                val debates = querySnapshot.documents.map { document->
-//                    document.toObject(Debate::class.java)!!
-//                }
-//                Result.success(debates)
-//            }
-//        } catch (e: IOException) {
-//            Result.failure(e)
-//        } catch (e: Exception) {
-//            Result.failure(e)
-//        }
-//    }
-
-
-
-
 }

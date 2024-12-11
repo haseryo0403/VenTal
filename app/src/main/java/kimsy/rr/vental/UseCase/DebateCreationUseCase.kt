@@ -1,29 +1,26 @@
 package kimsy.rr.vental.UseCase
 
-import android.net.Uri
-import android.util.Log
 import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.DebateWithUsers
-import kimsy.rr.vental.data.repository.DebateRepository
-import kimsy.rr.vental.data.VentCard
+import kimsy.rr.vental.data.NetworkUtils
+import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.VentCardWithUser
-import java.net.URL
+import kimsy.rr.vental.data.repository.DebateRepository
 import javax.inject.Inject
 
 class DebateCreationUseCase @Inject constructor(
     private val debateRepository: DebateRepository,
-    private val messageCreationUseCase: MessageCreationUseCase
+    private val messageCreationUseCase: MessageCreationUseCase,
+    private val getUserDetailsUseCase: GetUserDetailsUseCase,
+    private val networkUtils: NetworkUtils
 ) {
-    suspend fun executes(debate: Debate): Result<Unit> {
+        suspend fun execute(text: String, ventCard: VentCardWithUser, debaterId: String, firstMessageImageURL: String?): Resource<DebateWithUsers> {
         return try {
-            debateRepository.createDebate(debate)
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-    suspend fun execute(text: String, ventCard: VentCardWithUser, debaterId: String, firstMessageImageURL: String?): Result<DebateWithUsers> {
-        return try {
+
+            if (!networkUtils.isOnline()) {
+                return Resource.failure("インターネットの接続を確認してください")
+            }
+
             val debate = createDebateInstance(text, ventCard, debaterId, firstMessageImageURL)
             val createdDebateWithUsers = debateRepository.createDebate(debate).getOrThrow()
             messageCreationUseCase.execute(
@@ -34,9 +31,25 @@ class DebateCreationUseCase @Inject constructor(
                 text = text,
                 messageImageURL = firstMessageImageURL
                 )
-            Result.success(createdDebateWithUsers)
+            getDebateInfo(createdDebateWithUsers)
         } catch (e: Exception) {
-            Result.failure(e)
+            Resource.failure(e.message)
+        }
+    }
+
+    suspend fun getDebateInfo(debateWithUsers: DebateWithUsers): Resource<DebateWithUsers> {
+        return try {
+            val debater = getUserDetailsUseCase.execute(debateWithUsers.debaterId).getOrThrow()
+            val poster = getUserDetailsUseCase.execute(debateWithUsers.posterId).getOrThrow()
+            val result = debateWithUsers.copy(
+                debaterName = debater.name,
+                debaterImageURL = debater.photoURL,
+                posterName = poster.name,
+                posterImageURL = poster.photoURL
+            )
+            Resource.success(result)
+        } catch (e: Exception) {
+            Resource.failure(e.message)
         }
     }
 

@@ -1,16 +1,22 @@
 package kimsy.rr.vental.UseCase
 
-import android.util.Log
+import kimsy.rr.vental.data.NetworkUtils
 import kimsy.rr.vental.data.repository.NotificationSettingsRepository
 import kimsy.rr.vental.data.repository.UserRepository
 import javax.inject.Inject
 
 class SaveUserUseCase @Inject constructor(
     private val userRepository: UserRepository,
-    private val notificationSettingsRepository: NotificationSettingsRepository
+    private val notificationSettingsRepository: NotificationSettingsRepository,
+    private val networkUtils: NetworkUtils
 ) {
     suspend fun execute(): Result<Unit> {
         return try {
+
+            if (!networkUtils.isOnline()) {
+                return Result.failure(Exception("インターネット接続エラー"))
+            }
+
             userRepository.saveUserToFirestore().fold(
                 onSuccess = { newUserId ->
                     saveNotificationSettings(newUserId)

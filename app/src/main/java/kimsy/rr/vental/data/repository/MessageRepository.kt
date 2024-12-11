@@ -3,6 +3,7 @@ package kimsy.rr.vental.data.repository
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import kimsy.rr.vental.data.Message
+import kimsy.rr.vental.data.Resource
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
 import java.io.IOException
@@ -35,7 +36,7 @@ class MessageRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchMessages (posterId: String, swipeCardId: String, debateId: String):Result<List<Message>> {
+    suspend fun fetchMessages (posterId: String, swipeCardId: String, debateId: String): Resource<List<Message>> {
         return try {
             withTimeout(10000L) {
                 val docRef = db
@@ -51,12 +52,12 @@ class MessageRepository @Inject constructor(
                 val messages = querySnapshot.documents.map {document->
                     document.toObject(Message::class.java)!!
                 }
-                Result.success(messages)
+                Resource.success(messages)
             }
         } catch (e: IOException) {
-            Result.failure(e)
+            Resource.failure(e.message)
         } catch (e: Exception) {
-            Result.failure(e)
+            Resource.failure(e.message)
         }
     }
 }
