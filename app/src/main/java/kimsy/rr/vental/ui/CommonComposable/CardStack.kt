@@ -4,32 +4,31 @@ package kimsy.rr.vental.ui.CommonComposable
 import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ThumbUp
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.*
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
@@ -114,7 +113,8 @@ fun CardStack(modifier : Modifier = Modifier,
                     backgroundColor = Color.White,
                     elevation = FloatingActionButtonDefaults.elevation(5.dp)
                 ) {
-                    Icon(Icons.Filled.Warning, contentDescription = "", tint = Color.Red)
+                    Icon(Icons.Outlined.Close, contentDescription = "", tint = Color.Green
+                    )
                 }
                 Spacer( modifier = Modifier.width(70.dp))
                 FloatingActionButton(
@@ -122,7 +122,7 @@ fun CardStack(modifier : Modifier = Modifier,
                     backgroundColor = Color.White,
                     elevation = FloatingActionButtonDefaults.elevation(5.dp)
                 ) {
-                    Icon(Icons.Filled.ThumbUp,contentDescription = "", tint = Color.Green)
+                    Icon(Icons.Outlined.Favorite,contentDescription = "", tint = Color.Red)
                 }
             }
         }
@@ -201,7 +201,7 @@ fun Card(
                         }
                         androidx.compose.material3.Text(text = item.swipeCardContent)
                         item.tags.forEach {tag ->
-                            androidx.compose.material3.Text(text = tag, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(text = tag, color = MaterialTheme.colorScheme.primary)
                         }
                         //TODO color choose
                         Image(painter = rememberAsyncImagePainter(item.swipeCardImageURL),

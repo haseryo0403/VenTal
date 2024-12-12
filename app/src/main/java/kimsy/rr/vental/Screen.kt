@@ -5,13 +5,13 @@ import androidx.annotation.DrawableRes
 sealed class Screen(val title: String, val route: String) {
 
     sealed class BottomScreen(
-        val bottomTitle: String, val bottomRoute: String, @DrawableRes val icon: Int
+        val bottomTitle: String, val bottomRoute: String, @DrawableRes val icon: Int, val label: String
     ): Screen(bottomTitle, bottomRoute){
-        object TimeLine: BottomScreen("タイムライン", "timeline", R.drawable.baseline_home_24)
-        object VentCards: BottomScreen("VentCards", "ventcards", R.drawable.baseline_view_array_24)
-        object VentCardCreation: BottomScreen("VCC", "ventcardcreationscreen", R.drawable.baseline_add_24)
-        object Follows: BottomScreen("フォロー中", "follows", R.drawable.baseline_people_24)
-        object MyPage: BottomScreen("マイページ", "mypage", R.drawable.baseline_account_circle_24)
+        object TimeLine: BottomScreen("タイムライン", "timeline", R.drawable.baseline_home_24, "ホーム")
+        object VentCards: BottomScreen("VentCards", "ventcards", R.drawable.baseline_view_array_24, "カード")
+        object VentCardCreation: BottomScreen("VCC", "ventcardcreationscreen", R.drawable.baseline_add_24, "カード作成")
+        object Follows: BottomScreen("フォロー中", "follows", R.drawable.baseline_people_24,"フォロー")
+        object MyPage: BottomScreen("マイページ", "mypage", R.drawable.baseline_account_circle_24,"プロフィール")
     }
 
     object SignupScreen:Screen("signup","signupscreen")

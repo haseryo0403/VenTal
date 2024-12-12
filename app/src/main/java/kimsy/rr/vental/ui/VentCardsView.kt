@@ -78,6 +78,10 @@ fun SwipeCardsView(
             else -> {
                 // ここに共通のCardStackを配置
                 if (ventCards.isNotEmpty()) {
+                    Log.d("ventcardview", "ventCard is not empty")
+                    Log.d("ventcardview", "${ventCards}")
+
+
                     CardStack(
                         modifier = Modifier,
                         enableButtons = true,
@@ -102,6 +106,8 @@ fun SwipeCardsView(
                             ventCardsViewModel.loadVentCards(user.uid)
                         }
                     )
+                } else {
+                    Log.d("ventcardview", "ventCard is empty")
                 }
             }
         }

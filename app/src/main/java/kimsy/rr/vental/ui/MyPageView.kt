@@ -2,6 +2,7 @@ package kimsy.rr.vental.ui
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,7 +48,7 @@ fun MyPageView(
     val user by authViewModel.currentUser.observeAsState()
 
     LazyColumn(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().background(color = MaterialTheme.colorScheme.background),
     ){
         item {
             Row(
@@ -90,17 +91,23 @@ fun MyPageView(
                             Text(text = "フォロワー")
                         }
                     }
-                    Button(onClick = { /*TODO*/ }) {
+                    Button(onClick = { /*TODO*/ },
+//                        colors = ButtonDefaults.buttonColors(
+//                            containerColor = MaterialTheme.colorScheme.primaryContainer, // 背景色をprimaryContainerに設定
+//                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer      // テキスト色をonPrimaryContainerに設定
+//                        )
+                    ) {
                         Text(text = "プロフィールを編集")
                     }
-                    Button(onClick = {
-//                        authViewModel.signOut(){
-//                            val intent = Intent(context, MainActivity::class.java)
-//                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-//                            context.startActivity(intent)
-//                        }
-                        authViewModel.signOut(context)
-                    }) {
+                    Button(
+                        onClick = {
+                            authViewModel.signOut(context)
+                        },
+//                        colors = ButtonDefaults.buttonColors(
+//                            containerColor = MaterialTheme.colorScheme.primaryContainer, // 背景色をprimaryContainerに設定
+//                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer      // テキスト色をonPrimaryContainerに設定
+//                        )
+                    ) {
                         Text(text = "ログアウト")
                     }
                 }
