@@ -1,6 +1,5 @@
 package kimsy.rr.vental.ViewModel
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -9,7 +8,6 @@ import kimsy.rr.vental.UseCase.GetSwipeCardUseCase
 import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.DebateItemSharedModel
-import kimsy.rr.vental.data.DebateWithUsers
 import kimsy.rr.vental.data.Message
 import kimsy.rr.vental.data.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,8 +20,6 @@ class DebateViewModel @Inject constructor(
     private val getSwipeCardUseCase: GetSwipeCardUseCase,
     private val getMessageUseCase: GetMessageUseCase
 ): ViewModel() {
-// 共有モデルから討論データを取得
-var debateWithUsers = mutableStateOf<DebateWithUsers?>(null)
 
 private val _getDebateItemState = MutableStateFlow<Resource<DebateItem>>(Resource.idle())
     val getDebateItemState: StateFlow<Resource<DebateItem>> get() = _getDebateItemState
@@ -45,22 +41,7 @@ private val _fetchMessageState = MutableStateFlow<Resource<List<Message>>>(Resou
             _getDebateItemState.value = Resource.failure("表示する討論が見つかりません。")
         }
     }
-////TODO どっちがいいかな？
-//    private fun getVentCard(posterId: String, ventCardId: String) {
-//        viewModelScope.launch {
-//            _fetchVentCardState.value = getSwipeCardUseCase.execute(posterId, ventCardId)
-//        }
-//    }
-//
-//    private fun getMessages(debateWithUsers: DebateWithUsers) {
-//        viewModelScope.launch {
-//            _fetchMessageState.value = getMessageUseCase.execute(
-//                debateWithUsers.posterId,
-//                debateWithUsers.swipeCardId,
-//                debateWithUsers.debateId
-//            )
-//        }
-//    }
+
     private fun getMessages(debate: Debate) {
         viewModelScope.launch {
             _fetchMessageState.value = getMessageUseCase.execute(

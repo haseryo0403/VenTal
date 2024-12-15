@@ -92,7 +92,9 @@ class DebateRepository @Inject constructor(
             Log.d("TAG", "ventCards: $querySnapshot size: ${querySnapshot.size()}")
 
             val debates = querySnapshot.documents.mapNotNull { document->
-                document.toObject(Debate::class.java)
+                document.toObject(Debate::class.java)!!.copy(
+                    debateId = document.id
+                )
             }
             Resource.success(Pair(debates, newLastVisible))
         } catch (e: Exception) {

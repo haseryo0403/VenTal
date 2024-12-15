@@ -85,6 +85,7 @@ fun DebateView(
                         }
                     }
                     Status.FAILURE -> {
+                        Log.e("getDIState", "error : ${getDebateItemState.message}")
                         Toast.makeText(context, "読み込みに失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
                     }
                     Status.LOADING -> {

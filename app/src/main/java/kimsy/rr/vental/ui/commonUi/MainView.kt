@@ -202,7 +202,12 @@ fun Navigation(
             )
         }
         composable(Screen.BottomScreen.TimeLine.bottomRoute) {
-            TimeLineView()
+            TimeLineView(
+                toDebateView = {
+                    Log.d("MV", "to DebateScreen")
+                    navController.navigate(Screen.DebateScreen.route)
+                }
+            )
         }
         composable(Screen.BottomScreen.Follows.bottomRoute) {
             Log.d("Navigation", "to Follows")

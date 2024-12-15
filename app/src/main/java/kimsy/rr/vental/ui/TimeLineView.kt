@@ -28,20 +28,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
 import kimsy.rr.vental.ViewModel.TimeLineViewModel
-import kimsy.rr.vental.data.Debate
-import kimsy.rr.vental.data.User
-import kimsy.rr.vental.data.VentCard
+import kimsy.rr.vental.data.DebateItem
 
 @Composable
 fun TimeLineView(
-    timeLineViewModel: TimeLineViewModel = hiltViewModel()
+    timeLineViewModel: TimeLineViewModel = hiltViewModel(),
+    toDebateView: () -> Unit
 ){
     val timeLineItems = timeLineViewModel.timelineItems
 
@@ -56,12 +53,7 @@ fun TimeLineView(
         timeLineItems.isNotEmpty() -> {
             LazyColumn(){
                 items(timeLineItems) {item->
-                    timeLineItem(
-                        debate = item.debate,
-                        ventCard = item.ventCard,
-                        poster = item.poster,
-                        debater = item.debater
-                    )
+                    timeLineItem(timeLineViewModel, toDebateView, item)
                 }
                 if (!hasFinishedLoadingAllItems) {
                     item { LoadingIndicator(timeLineViewModel) }
@@ -85,11 +77,21 @@ fun LoadingIndicator(timeLineViewModel: TimeLineViewModel) {
 }
 
 @Composable
-fun timeLineItem(debate: Debate, ventCard: VentCard, poster: User, debater: User) {
+fun timeLineItem(
+    timeLineViewModel: TimeLineViewModel,
+    toDebateView: () -> Unit,
+    debateItem: DebateItem
+) {
+    val debate = debateItem.debate
+    val ventCard = debateItem.ventCard
+    val poster = debateItem.poster
+    val debater = debateItem.debater
         Column(
             modifier = Modifier
                 .clickable {
                     //TODO go to detail
+                    timeLineViewModel.setDebateItemToModel(debateItem)
+                    toDebateView()
                 }
                 .padding(8.dp)
         ) {
@@ -166,7 +168,7 @@ fun timeLineItem(debate: Debate, ventCard: VentCard, poster: User, debater: User
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Icon(painter = painterResource(id = R.drawable.baseline_heart_broken_24),
-                        contentDescription = "haert")
+                        contentDescription = "heart")
                     Text(text = debate.debaterLikeCount.toString())
                 }
                 Column(
@@ -174,7 +176,7 @@ fun timeLineItem(debate: Debate, ventCard: VentCard, poster: User, debater: User
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Icon(painter = painterResource(id = R.drawable.baseline_heart_broken_24),
-                        contentDescription = "haert")
+                        contentDescription = "heart")
                     Text(text = debate.posterLikeCount.toString())
                 }
                 Column(
@@ -231,12 +233,12 @@ fun timeLineItem(debate: Debate, ventCard: VentCard, poster: User, debater: User
         Divider()
 }
 
-@Preview(
-    device = Devices.PIXEL_7,
-    showSystemUi = true,
-    showBackground = true,
-)
-@Composable
-fun TimeLinePrev(){
-    TimeLineView()
-}
+//@Preview(
+//    device = Devices.PIXEL_7,
+//    showSystemUi = true,
+//    showBackground = true,
+//)
+//@Composable
+//fun TimeLinePrev(){
+//    TimeLineView()
+//}

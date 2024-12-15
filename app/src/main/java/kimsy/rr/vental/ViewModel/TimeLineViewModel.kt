@@ -11,6 +11,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kimsy.rr.vental.UseCase.GetTimeLineItemsUseCase
 import kimsy.rr.vental.data.DebateItem
+import kimsy.rr.vental.data.DebateItemSharedModel
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,7 +59,8 @@ class TimeLineViewModel @Inject constructor(
                 else -> {}
             }
         }
-
     }
-
+    fun setDebateItemToModel(debateItem: DebateItem) {
+        DebateItemSharedModel.setDebateItem(debateItem)
+    }
 }
