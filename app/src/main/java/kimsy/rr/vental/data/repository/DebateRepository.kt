@@ -7,7 +7,6 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kimsy.rr.vental.data.Debate
-import kimsy.rr.vental.data.DebateWithUsers
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.VentCardWithUser
 import kotlinx.coroutines.tasks.await
@@ -102,7 +101,7 @@ class DebateRepository @Inject constructor(
         }
     }
 
-    suspend fun createDebate(debate: Debate): Result<DebateWithUsers>{
+    suspend fun createDebate(debate: Debate): Resource<Debate>{
         Log.d("DR", "createDebate called")
         return try{
             withTimeout(10000L) {
@@ -122,16 +121,17 @@ class DebateRepository @Inject constructor(
                     .await()
 
                 val createdDebateSnapshot = debateDocRef.get().await()
-                val createdDebate = createdDebateSnapshot.toObject(DebateWithUsers::class.java)
+
+                val createdDebate = createdDebateSnapshot.toObject(Debate::class.java)
                     ?.copy(debateId = debateDocRef.id,
                         //TODO dateに変換？
                         )
                     ?: throw IllegalStateException("Failed to convert document to Debate")
 
-                Result.success(createdDebate)
+                Resource.success(createdDebate)
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Resource.failure(e.message)
         }
     }
 

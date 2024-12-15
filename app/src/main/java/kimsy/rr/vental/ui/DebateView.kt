@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,7 +21,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.IconButton
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -32,7 +30,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,6 +43,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
 import kimsy.rr.vental.ViewModel.DebateViewModel
+import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.DebateWithUsers
 import kimsy.rr.vental.data.Message
 import kimsy.rr.vental.data.Status
@@ -62,13 +60,11 @@ fun DebateView(
     ){
 
     val context = LocalContext.current// is this Right?
-
-    val debateWithUsers = debateViewModel.debateWithUsers.value
-    val fetchVentCardState by debateViewModel.fetchVentCardState.collectAsState()
     val fetchMessageState by debateViewModel.fetchMessageState.collectAsState()
+    val getDebateItemState by debateViewModel.getDebateItemState.collectAsState()
 
     LaunchedEffect(Unit) {
-        debateViewModel.loadDebate()
+        debateViewModel.loadDebateItem()
     }
 
     LazyColumn(
@@ -78,24 +74,23 @@ fun DebateView(
             Column(
                 modifier = Modifier.padding(8.dp)
             ) {
-                when {
-                    fetchVentCardState.status == Status.SUCCESS -> {
-                        if (debateWithUsers != null) {
-                            fetchVentCardState.data?.let { DebateContent(debateWithUsers, it) }
+
+                when (getDebateItemState.status) {
+                    Status.SUCCESS -> {
+                        val debateItem = getDebateItemState.data
+                        if (debateItem != null) {
+                            DebateContents(debateItem)
                         } else {
-                            Toast.makeText(context, "読み込みに失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
+                            //show not found debateItem
                         }
                     }
-
-                    debateWithUsers == null || fetchVentCardState.status == Status.LOADING -> { showLoadingIndicator() }
-
-                    fetchVentCardState.status == Status.FAILURE -> {
+                    Status.FAILURE -> {
                         Toast.makeText(context, "読み込みに失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
-                        debateViewModel.resetState()
                     }
-                    //TODO　debateWithUsersが無い場合のエラーハンドリングが必要
-                    else -> {
+                    Status.LOADING -> {
+                        showLoadingIndicator()
                     }
+                    else ->{}
                 }
 
                 Divider()
@@ -219,6 +214,98 @@ fun DebateContent(debateWithUsers: DebateWithUsers, ventCard: VentCard) {
             AccountIcon(imageUrl = debateWithUsers.posterImageURL)
 
             Text(text = debateWithUsers.posterName)
+        }
+    }
+}
+
+@Composable
+fun DebateContents(debateItem: DebateItem) {
+    val debate = debateItem.debate
+    val ventCard = debateItem.ventCard
+    val debater = debateItem.debater
+    val poster = debateItem.poster
+    val heartIcon = painterResource(id = R.drawable.baseline_favorite_24)
+    Log.d("DV", "$debateItem, $ventCard")
+    Row(
+        modifier = Modifier.fillMaxWidth()
+    ){
+        AccountIcon(imageUrl = poster.photoURL)
+
+        Column(
+            modifier = Modifier
+                .weight(5f)
+                .fillMaxWidth()
+        ) {
+            Row(modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(text = poster.name)
+//                Text(text = debate.debateCreatedDatetime.let { formatTimeDifference(it) } ?: "日付不明")
+                Text(text = debate.debateCreatedDatetime.toString())
+            }
+
+            Text(text = ventCard.swipeCardContent)
+            ventCard.tags.forEach { tag->
+                Text(text = tag, color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+            }
+            Image(
+                painter = rememberAsyncImagePainter(ventCard.swipeCardImageURL),
+                contentDescription = "ventCardImage",
+                modifier = Modifier.clip(RoundedCornerShape(16.dp)),
+                contentScale = ContentScale.FillWidth
+            )
+        }
+    }
+
+    Row(modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween) {
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .padding(4.dp)
+                .weight(2f)
+        ) {
+            AccountIcon(imageUrl = debater.photoURL)
+
+            Text(text = debater.name)
+        }
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .padding(4.dp)
+                .weight(1f)
+        ) {
+            Icon(painter = heartIcon,
+                contentDescription = "haert")
+            Text(text = debate.debaterLikeCount.toString())
+        }
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .padding(4.dp)
+                .weight(1f)
+        ) {
+            Icon(painter = heartIcon,
+                contentDescription = "haert")
+            Text(text = debate.posterLikeCount.toString())
+        }
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .padding(4.dp)
+                .weight(2f)
+        ) {
+            AccountIcon(imageUrl = poster.photoURL)
+
+            Text(text = poster.name)
         }
     }
 }

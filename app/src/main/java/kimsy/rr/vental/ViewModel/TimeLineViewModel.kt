@@ -10,9 +10,9 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.DocumentSnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kimsy.rr.vental.UseCase.GetTimeLineItemsUseCase
+import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
-import kimsy.rr.vental.data.TimeLineItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -23,11 +23,11 @@ class TimeLineViewModel @Inject constructor(
     private val getTimeLineItemsUseCase: GetTimeLineItemsUseCase
 ): ViewModel() {
 
-    private val _getDebatesWithVentCardState = MutableStateFlow<Resource<Pair<List<TimeLineItem>, DocumentSnapshot?>>>(Resource.idle())
-    val getDebatesWithVentCardState: StateFlow<Resource<Pair<List<TimeLineItem>, DocumentSnapshot?>>> get() = _getDebatesWithVentCardState
+    private val _getDebatesWithVentCardState = MutableStateFlow<Resource<Pair<List<DebateItem>, DocumentSnapshot?>>>(Resource.idle())
+    val getDebatesWithVentCardState: StateFlow<Resource<Pair<List<DebateItem>, DocumentSnapshot?>>> get() = _getDebatesWithVentCardState
 
-    private val _timelineItems = mutableStateListOf<TimeLineItem>()
-    val timelineItems: List<TimeLineItem> get() = _timelineItems
+    private val _timelineItems = mutableStateListOf<DebateItem>()
+    val timelineItems: List<DebateItem> get() = _timelineItems
 
     private var lastVisible: DocumentSnapshot? = null
 

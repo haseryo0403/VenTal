@@ -2,33 +2,32 @@ package kimsy.rr.vental.data
 
 import android.util.Log
 
-data class TimeLineItem(
-//    val debateId: String = "",
+data class DebateItem(
     val debate: Debate,
     val ventCard: VentCard,
     val poster: User,
     val debater: User
-)object TimeLineItemSharedModel {
+)object DebateItemSharedModel {
     //一気に登録用
-    private var currentTimeLineItem: TimeLineItem? = null
+    private var currentDebateItem: DebateItem? = null
     //個別用
     private var currentDebate: Debate? = null
     private var currentVentCard: VentCard? = null
     private var currentPoster: User? = null
     private var currentDebater: User? = null
 
-    fun setTimeLineItem(timeLineItem: TimeLineItem) {
-        Log.d("TLI", "timeLineItem set")
-        currentTimeLineItem = timeLineItem
+    fun setDebateItem(debateItem: DebateItem) {
+        Log.d("TLI", "debateItem set")
+        currentDebateItem = debateItem
     }
 
-    fun getTimeLineItem(): TimeLineItem? {
-        Log.d("TLI", "timeLineItem get")
-        return currentTimeLineItem
+    fun getDebateItem(): DebateItem? {
+        Log.d("TLI", "debateItem get")
+        return currentDebateItem
     }
 
-    fun clearTimeLineItem() {
-        currentTimeLineItem = null
+    fun clearDebateItem() {
+        currentDebateItem = null
     }
 
     fun setDebate(debate: Debate) {
