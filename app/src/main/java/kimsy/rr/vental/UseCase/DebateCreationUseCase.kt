@@ -1,9 +1,11 @@
 package kimsy.rr.vental.UseCase
 
+import android.util.Log
 import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.DebateWithUsers
 import kimsy.rr.vental.data.NetworkUtils
 import kimsy.rr.vental.data.Resource
+import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.VentCardWithUser
 import kimsy.rr.vental.data.repository.DebateRepository
 import javax.inject.Inject
@@ -39,16 +41,28 @@ class DebateCreationUseCase @Inject constructor(
 
     suspend fun getDebateInfo(debateWithUsers: DebateWithUsers): Resource<DebateWithUsers> {
         return try {
-            val debater = getUserDetailsUseCase.execute(debateWithUsers.debaterId).getOrThrow()
-            val poster = getUserDetailsUseCase.execute(debateWithUsers.posterId).getOrThrow()
-            val result = debateWithUsers.copy(
-                debaterName = debater.name,
-                debaterImageURL = debater.photoURL,
-                posterName = poster.name,
-                posterImageURL = poster.photoURL
-            )
-            Resource.success(result)
+            val debaterState = getUserDetailsUseCase.execute(debateWithUsers.debaterId)
+            val posterState = getUserDetailsUseCase.execute(debateWithUsers.posterId)
+            when {
+                debaterState.status == Status.SUCCESS && posterState.status == Status.SUCCESS -> {
+                    if (debaterState.data != null && posterState.data != null) {
+                        val result = debateWithUsers.copy(
+                            debaterName = debaterState.data.name,
+                            debaterImageURL = debaterState.data.photoURL,
+                            posterName = posterState.data.name,
+                            posterImageURL = posterState.data.photoURL
+                        )
+                        Resource.success(result)
+                    } else {
+                        Resource.failure("ユーザーの情報の取得に失敗しました。")
+                    }
+                }
+                else -> {
+                    Resource.failure("ユーザーの情報の取得に失敗しました。")
+                }
+            }
         } catch (e: Exception) {
+            Log.e("DCUC", "${e.message}")
             Resource.failure(e.message)
         }
     }

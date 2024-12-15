@@ -3,21 +3,13 @@ package kimsy.rr.vental.data.repository
 
 import android.content.Intent
 import android.util.Log
-import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
-import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
-import kimsy.rr.vental.R
-import kimsy.rr.vental.data.NotificationSettings
+import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.User
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
@@ -147,7 +139,8 @@ class UserRepository @Inject constructor(
 
     suspend fun getCurrentUser(): Result<User?> {
         Log.e("UR", "getcurrentUser called")
-        val uid = auth.currentUser?.uid ?: return Result.failure(Exception("User not signed in"))
+//        val uid = auth.currentUser?.uid ?: return Result.failure(Exception("User not signed in"))
+        val uid = auth.currentUser?.uid ?: return Result.success(null)
         return try {
             val userDoc = db.collection("users")
                 .document(uid)
@@ -248,7 +241,7 @@ class UserRepository @Inject constructor(
 
     suspend fun fetchUserInformation(
         uid: String
-    ): Result<User>{
+    ): Resource<User> {
         return try {
             withTimeout(10000L){
                 val query = db
@@ -258,13 +251,13 @@ class UserRepository @Inject constructor(
                 val querySnapshot = query.get().await()
                 val user = querySnapshot.toObjects(User::class.java).firstOrNull()
                 if (user != null) {
-                    Result.success(user)
+                    Resource.success(user)
                 } else {
-                    Result.failure(Exception("User data not found"))
+                    Resource.failure("User data not found")
                 }
             }
         } catch (e: Exception) {
-            Result.failure(e)
+            Resource.failure(e.message)
         }
     }
 }

@@ -66,7 +66,7 @@ import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
 import kimsy.rr.vental.ViewModel.AuthViewModel
 import kimsy.rr.vental.ViewModel.DebateCreationViewModel
-import kimsy.rr.vental.ViewModel.DebateViewModel
+//import kimsy.rr.vental.ViewModel.DebateViewModel
 import kimsy.rr.vental.data.DebateWithUsers
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.VentCardWithUser

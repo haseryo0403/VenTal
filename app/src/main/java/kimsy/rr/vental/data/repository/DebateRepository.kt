@@ -2,18 +2,19 @@ package kimsy.rr.vental.data.repository
 
 import android.util.Log
 import com.google.firebase.firestore.AggregateSource
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.toObject
+import com.google.firebase.firestore.Query
 import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.DebateWithUsers
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.VentCardWithUser
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
-import java.io.IOError
 import java.io.IOException
 import javax.inject.Inject
+
 
 class DebateRepository @Inject constructor(
     private val db: FirebaseFirestore,
@@ -34,11 +35,7 @@ class DebateRepository @Inject constructor(
                 val debates = querySnapshot.documents.mapNotNull { document->
                     document.toObject(Debate::class.java)
                 }
-                if (debates.isEmpty()) {
-                    Resource.success(emptyList())
-                } else {
-                    Resource.success(debates)
-                }
+                Resource.success(debates)
             }
         } catch (e: IOException) {
             Resource.failure(e.message)
@@ -66,6 +63,42 @@ class DebateRepository @Inject constructor(
         } catch (e: Exception){
             Log.e("DRgRDC", "error: ${e.message}")
             Result.failure(e)
+        }
+    }
+
+    //TODO グループコレクションで討論取得、時間で並び替え、10けんくらいを都度取得。
+    //スクロールにて取得タイミングを管理。調べないと？
+    suspend fun fetch10Debates(
+        lastVisible: DocumentSnapshot? = null
+    ): Resource<Pair<List<Debate>, DocumentSnapshot?>> {
+        return try {
+            Log.d("DR", "fetchD was called")
+            val query = db
+                .collectionGroup("debates")
+                .orderBy("debateCreatedDatetime", Query.Direction.DESCENDING)
+
+            val querySnapshot = if (lastVisible == null) {
+                query.limit(10).get().await()
+            } else {
+                query.startAfter(lastVisible).limit(10).get().await()
+            }
+
+            if (querySnapshot.isEmpty) {
+                // データがない場合、空リストとnullを返す
+                return Resource.success(Pair(emptyList(), null))
+            }
+
+            val newLastVisible = querySnapshot.documents.lastOrNull()
+
+            Log.d("TAG", "ventCards: $querySnapshot size: ${querySnapshot.size()}")
+
+            val debates = querySnapshot.documents.mapNotNull { document->
+                document.toObject(Debate::class.java)
+            }
+            Resource.success(Pair(debates, newLastVisible))
+        } catch (e: Exception) {
+            Log.e("DR" , "error : ${e.message}")
+            Resource.failure(e.message)
         }
     }
 

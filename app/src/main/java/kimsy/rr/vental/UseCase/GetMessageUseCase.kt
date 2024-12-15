@@ -1,6 +1,5 @@
 package kimsy.rr.vental.UseCase
 
-import kimsy.rr.vental.data.DebateWithUsers
 import kimsy.rr.vental.data.Message
 import kimsy.rr.vental.data.NetworkUtils
 import kimsy.rr.vental.data.Resource
@@ -11,10 +10,10 @@ class GetMessageUseCase @Inject constructor(
     private val messageRepository: MessageRepository,
     private val networkUtils: NetworkUtils
 ) {
-    suspend fun execute(debateWithUsers: DebateWithUsers): Resource<List<Message>> {
+    suspend fun execute(posterId: String, ventCardId: String, debateId: String): Resource<List<Message>> {
         if (!networkUtils.isOnline()) {
             return Resource.failure("インターネットの接続を確認してください")
         }
-        return messageRepository.fetchMessages(debateWithUsers.posterId, debateWithUsers.swipeCardId, debateWithUsers.debateId)
+        return messageRepository.fetchMessages(posterId, ventCardId, debateId)
     }
 }

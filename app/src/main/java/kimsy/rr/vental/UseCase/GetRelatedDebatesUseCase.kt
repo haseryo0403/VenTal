@@ -42,13 +42,36 @@ class GetRelatedDebatesUseCase @Inject constructor(
         }
     }
 
+//    private suspend fun getDebateUsers(debates: List<Debate>): List<DebateWithUsers> {
+//        return debates.map { debate ->
+//            val debater = getUserDetailsUseCase.execute(debate.debaterId).getOrThrow()
+//            val poster = getUserDetailsUseCase.execute(debate.posterId).getOrThrow()
+//            createDebateWithUsersInstance(debate, debater, poster)
+//        }
+//    }
+
+
     private suspend fun getDebateUsers(debates: List<Debate>): List<DebateWithUsers> {
-        return debates.map { debate ->
-            val debater = getUserDetailsUseCase.execute(debate.debaterId).getOrThrow()
-            val poster = getUserDetailsUseCase.execute(debate.posterId).getOrThrow()
-            createDebateWithUsersInstance(debate, debater, poster)
+        return debates.mapNotNull { debate ->
+            val debaterState = getUserDetailsUseCase.execute(debate.debaterId)
+            val posterState = getUserDetailsUseCase.execute(debate.posterId)
+
+            if (debaterState.status == Status.SUCCESS && posterState.status == Status.SUCCESS) {
+                val debater = debaterState.data
+                val poster = posterState.data
+
+                if (debater != null && poster != null) {
+                    createDebateWithUsersInstance(debate, debater, poster)
+                } else {
+                    null // データが null の場合はスキップ
+                }
+            } else {
+                null // ステータスが成功でない場合はスキップ
+            }
         }
     }
+
+
 
     private fun createDebateWithUsersInstance(debate: Debate, debater: User, poster: User): DebateWithUsers {
         return DebateWithUsers(
