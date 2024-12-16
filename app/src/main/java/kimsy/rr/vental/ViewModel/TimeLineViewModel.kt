@@ -24,8 +24,8 @@ class TimeLineViewModel @Inject constructor(
     private val getTimeLineItemsUseCase: GetTimeLineItemsUseCase
 ): ViewModel() {
 
-    private val _getDebatesWithVentCardState = MutableStateFlow<Resource<Pair<List<DebateItem>, DocumentSnapshot?>>>(Resource.idle())
-    val getDebatesWithVentCardState: StateFlow<Resource<Pair<List<DebateItem>, DocumentSnapshot?>>> get() = _getDebatesWithVentCardState
+    private val _getDebateItemsState = MutableStateFlow<Resource<Pair<List<DebateItem>, DocumentSnapshot?>>>(Resource.idle())
+    val getDebateItemsState: StateFlow<Resource<Pair<List<DebateItem>, DocumentSnapshot?>>> get() = _getDebateItemsState
 
     private val _timelineItems = mutableStateListOf<DebateItem>()
     val timelineItems: List<DebateItem> get() = _timelineItems
@@ -35,17 +35,20 @@ class TimeLineViewModel @Inject constructor(
     var hasFinishedLoadingAllItems by mutableStateOf(false)
         private set
 
+    private val _likeState = MutableStateFlow<Resource<Unit>>(Resource.idle())
+    val likeState: StateFlow<Resource<Unit>> get() = _likeState
+
     suspend fun getTimeLineItems () {
         Log.d("TLVM", "getTLT called")
         viewModelScope.launch {
             if (timelineItems.isEmpty()) {
-                _getDebatesWithVentCardState.value = Resource.loading()
+                _getDebateItemsState.value = Resource.loading()
             }
-            _getDebatesWithVentCardState.value = getTimeLineItemsUseCase.execute(lastVisible)
-            when(_getDebatesWithVentCardState.value.status) {
+            _getDebateItemsState.value = getTimeLineItemsUseCase.execute(lastVisible)
+            when(_getDebateItemsState.value.status) {
                 Status.SUCCESS -> {
                     Log.d("TLVM", "success")
-                    _getDebatesWithVentCardState.value.data?.let {(timelineItems, newLasVisible)->
+                    _getDebateItemsState.value.data?.let {(timelineItems, newLasVisible)->
                         if (timelineItems.isEmpty()) {
                             hasFinishedLoadingAllItems = true
                         }
@@ -60,7 +63,15 @@ class TimeLineViewModel @Inject constructor(
             }
         }
     }
+
     fun setDebateItemToModel(debateItem: DebateItem) {
         DebateItemSharedModel.setDebateItem(debateItem)
     }
+
+    fun handleLikeAction(userId: String, posterId: String, ventCardId: String) {
+        viewModelScope.launch {
+            _likeState.value  = handleLikeActionUseCase.execute(userId, posterId, ventCardId)
+        }
+    }
+    fun handleLikePosterAc
 }

@@ -243,6 +243,9 @@ suspend fun getVentCardsWithUser(
                 val ventCardSnapshot = docRef.get().await()
 
                 val ventCard = ventCardSnapshot.toObject(VentCard::class.java)
+                    ?.copy(
+                    swipeCardCreatedDateTime = ventCardSnapshot.getTimestamp("swipeCardCreatedDateTime")!!.toDate()
+                )
                 if (ventCard != null) {
                     Resource.success(ventCard)
                 } else {

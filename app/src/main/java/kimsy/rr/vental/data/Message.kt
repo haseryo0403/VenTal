@@ -1,12 +1,14 @@
 package kimsy.rr.vental.data
 
-import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.ServerTimestamp
+import java.util.Date
 
 data class Message(
     val userType: UserType = UserType.DEBATER,
     val text: String = "",
     val imageURL: String? = "",
-    val sentDatetime: Any = FieldValue.serverTimestamp(),
+    @ServerTimestamp
+    val sentDatetime: Date? = null,
 )
 
 enum class UserType(val type: String) {

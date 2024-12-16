@@ -36,8 +36,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.rememberAsyncImagePainter
@@ -50,7 +48,6 @@ import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.UserType
 import kimsy.rr.vental.data.VentCard
 import kimsy.rr.vental.ui.CommonComposable.formatTimeDifference
-import java.util.Date
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -240,8 +237,11 @@ fun DebateContents(debateItem: DebateItem) {
             Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(text = poster.name)
-//                Text(text = debate.debateCreatedDatetime.let { formatTimeDifference(it) } ?: "日付不明")
-                Text(text = debate.debateCreatedDatetime.toString())
+                Text(
+                    text = ventCard.swipeCardCreatedDateTime?.let {
+                        formatTimeDifference(it)
+                    } ?: "日付不明",
+                )
             }
 
             Text(text = ventCard.swipeCardContent)
@@ -317,7 +317,7 @@ fun AccountIcon(imageUrl: String) {
         painter = rememberAsyncImagePainter(imageUrl),
         contentDescription = null,
         modifier = Modifier
-            .size(48.dp)
+            .size(40.dp)
             .clip(CircleShape),
         contentScale = ContentScale.Crop
     )
@@ -358,7 +358,11 @@ fun ChatMessageItem(messages: List<Message>) {
                     }
                 }
             }
-            Text(text = message.sentDatetime.toString())
+            Text(
+                text = message.sentDatetime?.let {
+                    formatTimeDifference(it)
+                } ?: "日付不明",
+            )
         }
     }
 }
@@ -376,47 +380,47 @@ fun showLoadingIndicator() {
     }
 }
 
-@Preview(
-    device = Devices.PIXEL_7,
-    showSystemUi = true,
-    showBackground = true,
-)
-@Composable
-fun DebatePrev(){
-    DebateContent(
-        debateWithUsers = DebateWithUsers(
-            debateId = "n9Ztc16AYFBbDoN7zNWR",
-            swipeCardImageURL = "https://firebasestorage.googleapis.com/v0/b/vental-4eb3c.firebasestorage.app/o/images%2F03a046fd-8db3-4f9d-aa2e-b3b7fffb283a_IMG_20240807_003726.jpg?alt=media&token=aa622168-f205-495f-94a7-c4bcd7015f5d",
-            swipeCardId = "RknZdyxaOk6x1p85LSAK",
-            posterId = "ILJTOzQXkCPMY1UBACO0b0O4pIz2",
-            posterName = "hasegawa",
-            posterImageURL = "https://lh3.googleusercontent.com/a/ACg8ocJKcXHgamc1Bo5pD6d36LlCssxdHNPrS2ys3l8bVZai9TqZS_U=s96-c",
-            posterLikeCount = 0,
-            debaterId = "Xv2IvOYtkMe4m7TEOGGEgu9IkaE3",
-            debaterName = "Teacher Haku",
-            debaterImageURL = "https://lh3.googleusercontent.com/a/ACg8ocLlS-gC1-5j54LZ9Q45b9PNX97ocT_JNzIMy4Rhop8W_uBFGwI=s96-c",
-            debaterLikeCount = 0,
-            firstMessage = "これて",
-            firstMessageImageURL = "https://firebasestorage.googleapis.com/v0/b/vental-4eb3c.firebasestorage.app/o/images%2F12bb1dd7-5ee7-4e36-9c3b-16540b52373f_DSC_0002.JPG?alt=media&token=75c24714-3642-4bc8-9a21-36316fe184cb",
-            debateReportFlag = false,
-            debateDeletionRequestFlag = false,
-            debateCreatedDatetime = Date(1731385711000)
-        ),
-
-     ventCard = VentCard(
-        posterId = "ILJTOzQXkCPMY1UBACO0b0O4pIz2",
-        swipeCardContent = "これかひとつめえこ",
-        swipeCardImageURL = "https://firebasestorage.googleapis.com/v0/b/vental-4eb3c.firebasestorage.app/o/images%2F03a046fd-8db3-4f9d-aa2e-b3b7fffb283a_IMG_20240807_003726.jpg?alt=media&token=aa622168-f205-495f-94a7-c4bcd7015f5d",
-        likeCount = 6,
-        tags = listOf("31"),
-        swipeCardReportFlag = false,
-        swipeCardDeletionRequestFlag = false,
-        debateCount = 1,
-        swipeCardCreatedDateTime = com.google.firebase.Timestamp(
-            seconds = 1731385840,
-            nanoseconds = 239000000
-        )
-    )
-    )
-}
+//@Preview(
+//    device = Devices.PIXEL_7,
+//    showSystemUi = true,
+//    showBackground = true,
+//)
+//@Composable
+//fun DebatePrev(){
+//    DebateContent(
+//        debateWithUsers = DebateWithUsers(
+//            debateId = "n9Ztc16AYFBbDoN7zNWR",
+//            swipeCardImageURL = "https://firebasestorage.googleapis.com/v0/b/vental-4eb3c.firebasestorage.app/o/images%2F03a046fd-8db3-4f9d-aa2e-b3b7fffb283a_IMG_20240807_003726.jpg?alt=media&token=aa622168-f205-495f-94a7-c4bcd7015f5d",
+//            swipeCardId = "RknZdyxaOk6x1p85LSAK",
+//            posterId = "ILJTOzQXkCPMY1UBACO0b0O4pIz2",
+//            posterName = "hasegawa",
+//            posterImageURL = "https://lh3.googleusercontent.com/a/ACg8ocJKcXHgamc1Bo5pD6d36LlCssxdHNPrS2ys3l8bVZai9TqZS_U=s96-c",
+//            posterLikeCount = 0,
+//            debaterId = "Xv2IvOYtkMe4m7TEOGGEgu9IkaE3",
+//            debaterName = "Teacher Haku",
+//            debaterImageURL = "https://lh3.googleusercontent.com/a/ACg8ocLlS-gC1-5j54LZ9Q45b9PNX97ocT_JNzIMy4Rhop8W_uBFGwI=s96-c",
+//            debaterLikeCount = 0,
+//            firstMessage = "これて",
+//            firstMessageImageURL = "https://firebasestorage.googleapis.com/v0/b/vental-4eb3c.firebasestorage.app/o/images%2F12bb1dd7-5ee7-4e36-9c3b-16540b52373f_DSC_0002.JPG?alt=media&token=75c24714-3642-4bc8-9a21-36316fe184cb",
+//            debateReportFlag = false,
+//            debateDeletionRequestFlag = false,
+//            debateCreatedDatetime = Date(1731385711000)
+//        ),
+//
+//     ventCard = VentCard(
+//        posterId = "ILJTOzQXkCPMY1UBACO0b0O4pIz2",
+//        swipeCardContent = "これかひとつめえこ",
+//        swipeCardImageURL = "https://firebasestorage.googleapis.com/v0/b/vental-4eb3c.firebasestorage.app/o/images%2F03a046fd-8db3-4f9d-aa2e-b3b7fffb283a_IMG_20240807_003726.jpg?alt=media&token=aa622168-f205-495f-94a7-c4bcd7015f5d",
+//        likeCount = 6,
+//        tags = listOf("31"),
+//        swipeCardReportFlag = false,
+//        swipeCardDeletionRequestFlag = false,
+//        debateCount = 1,
+//        swipeCardCreatedDateTime = com.google.firebase.Timestamp(
+//            seconds = 1731385840,
+//            nanoseconds = 239000000
+//        )
+//    )
+//    )
+//}
 

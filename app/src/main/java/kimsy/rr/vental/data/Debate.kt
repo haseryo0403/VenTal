@@ -1,7 +1,8 @@
 package kimsy.rr.vental.data
 
 import com.google.firebase.firestore.Exclude
-import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.ServerTimestamp
+import java.util.Date
 
 data class Debate(
     @get:Exclude val debateId: String = "",
@@ -14,8 +15,9 @@ data class Debate(
     val firstMessage: String = "",
     val firstMessageImageURL: String? = "",
     val debateReportFlag: Boolean = false,
-    val debateDeletionRequestFlag: Boolean = false,
-    val debateCreatedDatetime: Any = FieldValue.serverTimestamp(),
+    val debateDeletionRequestFlag: Boolean   = false,
+    @ServerTimestamp
+    val debateCreatedDatetime: Date? = null
 ){
 //    companion object {
 //        fun createDebate(
@@ -23,3 +25,10 @@ data class Debate(
 //        )
 //    }
 }
+
+enum class LikeStatus {
+    LIKE_NOT_EXIST,
+    LIKED_DEBATER,
+    LIKED_POSTER
+}
+

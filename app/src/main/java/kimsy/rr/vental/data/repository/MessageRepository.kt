@@ -1,7 +1,6 @@
 package kimsy.rr.vental.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.toObject
 import kimsy.rr.vental.data.Message
 import kimsy.rr.vental.data.Resource
 import kotlinx.coroutines.tasks.await
@@ -50,7 +49,9 @@ class MessageRepository @Inject constructor(
 
                 val querySnapshot = docRef.get().await()
                 val messages = querySnapshot.documents.map {document->
-                    document.toObject(Message::class.java)!!
+                    document.toObject(Message::class.java)!!.copy(
+                        sentDatetime = document.getTimestamp("sentDatetime")!!.toDate()
+                    )
                 }
                 Resource.success(messages)
             }

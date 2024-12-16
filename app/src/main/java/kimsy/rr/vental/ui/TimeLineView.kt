@@ -3,9 +3,11 @@ package kimsy.rr.vental.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
+import androidx.compose.material.IconButton
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +26,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +39,8 @@ import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
 import kimsy.rr.vental.ViewModel.TimeLineViewModel
 import kimsy.rr.vental.data.DebateItem
+import kimsy.rr.vental.data.Status
+import kimsy.rr.vental.ui.CommonComposable.formatTimeDifference
 
 @Composable
 fun TimeLineView(
@@ -44,11 +51,29 @@ fun TimeLineView(
 
     val hasFinishedLoadingAllItems = timeLineViewModel.hasFinishedLoadingAllItems
 
+    val getDebateItemState by timeLineViewModel.getDebateItemsState.collectAsState()
+
     LaunchedEffect(Unit) {
         timeLineViewModel.getTimeLineItems()
     }
 
     //とりあえずこれ。 TODO resource分岐追加
+
+//    when {
+//        timeLineItems.isNotEmpty() -> {
+//            LazyColumn(){
+//                items(timeLineItems) {item->
+//                    timeLineItem(timeLineViewModel, toDebateView, item)
+//                }
+//                if (!hasFinishedLoadingAllItems) {
+//                    item { LoadingIndicator(timeLineViewModel) }
+//                }
+//            }
+//        }
+//        else -> {
+//            Text(text = "items are null")
+//        }
+//    }
     when {
         timeLineItems.isNotEmpty() -> {
             LazyColumn(){
@@ -61,14 +86,30 @@ fun TimeLineView(
             }
         }
         else -> {
-            Text(text = "items are null")
+            when (getDebateItemState.status){
+                Status.LOADING -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+                }
+                Status.FAILURE -> Text(text = "討論の取得に失敗しまいた。")
+                else -> {}
+            }
+
         }
     }
 
 }
+
 @Composable
 fun LoadingIndicator(timeLineViewModel: TimeLineViewModel) {
-    CircularProgressIndicator()
+    Box(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        CircularProgressIndicator(modifier = Modifier.align(Alignment.BottomCenter))
+    }
 
     LaunchedEffect(Unit) {
         // 要素の追加読み込み
@@ -102,7 +143,7 @@ fun timeLineItem(
                     painter = rememberAsyncImagePainter(poster.photoURL),
                     contentDescription = "AccountIcon",
                     modifier = Modifier
-                        .size(48.dp)
+                        .size(40.dp)
                         .clip(CircleShape)
                         .clickable {
                             //TODO go to user
@@ -122,7 +163,6 @@ fun timeLineItem(
                                     //TODO go to user
                                 }
                         )
-                        Text(text = ventCard.swipeCardCreatedDateTime.toString())
                     }
                     Text(text = ventCard.swipeCardContent)
                     ventCard.tags.forEach { tag->
@@ -136,8 +176,12 @@ fun timeLineItem(
                         contentScale = ContentScale.FillWidth
                     )
 
+                    Divider()
+
                 }
             }
+
+            // ここ2つアイコンのライン
             Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween) {
                 Column(
@@ -167,16 +211,21 @@ fun timeLineItem(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(8.dp)
                 ) {
-                    Icon(painter = painterResource(id = R.drawable.baseline_heart_broken_24),
-                        contentDescription = "heart")
+                    IconButton(onClick = { /*TODO*/ }) {
+                        Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
+                            contentDescription = "heart")
+                    }
                     Text(text = debate.debaterLikeCount.toString())
                 }
+
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(8.dp)
                 ) {
-                    Icon(painter = painterResource(id = R.drawable.baseline_heart_broken_24),
-                        contentDescription = "heart")
+                    IconButton(onClick = { /*TODO*/ }) {
+                        Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
+                            contentDescription = "heart")
+                    }
                     Text(text = debate.posterLikeCount.toString())
                 }
                 Column(
@@ -207,7 +256,8 @@ fun timeLineItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(4.dp),
-                horizontalArrangement = Arrangement.Start
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom
             ) {
                 Surface(
                     modifier = Modifier
@@ -228,6 +278,13 @@ fun timeLineItem(
                         Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
+
+                Text(
+                    text = debate.debateCreatedDatetime?.let {
+                        formatTimeDifference(it)
+                    } ?: "日付不明",
+                )
+
             }
         }
         Divider()

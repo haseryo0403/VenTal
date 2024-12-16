@@ -1,6 +1,7 @@
 package kimsy.rr.vental.data
 
-import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.ServerTimestamp
+import java.util.Date
 
 data class VentCard(
     val posterId: String = "",
@@ -11,7 +12,10 @@ data class VentCard(
     val swipeCardReportFlag: Boolean = false,
     val swipeCardDeletionRequestFlag: Boolean = false,
     val debateCount: Int = 0,
-    val swipeCardCreatedDateTime: Any = FieldValue.serverTimestamp()
+
+    @ServerTimestamp
+    val swipeCardCreatedDateTime: Date? = null
+//    val swipeCardCreatedDateTime: Any = FieldValue.serverTimestamp()
     ){
     companion object {
         fun createVentCard(

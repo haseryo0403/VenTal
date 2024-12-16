@@ -8,6 +8,39 @@ import java.util.concurrent.TimeUnit
 
 @SuppressLint("SimpleDateFormat")
 
+fun timestampToDate(seconds: Long, nanoseconds: Int): Date {
+    // 秒数をミリ秒に変換し、ナノ秒をミリ秒に変換して加算
+    val milliseconds = seconds * 1000 + nanoseconds / 1_000_000
+    return Date(milliseconds)
+}
+
+//@SuppressLint("SimpleDateFormat")
+//fun formatTime(date: Date): String {
+//    val now = Date()
+//
+//    val calendarNow = Calendar.getInstance()
+//    calendarNow.time = now
+//
+//    val calendarCreated = Calendar.getInstance()
+//    calendarCreated.time = date
+//
+//    return when {
+//        // 同日の日付
+//        calendarNow.get(Calendar.YEAR) == calendarCreated.get(Calendar.YEAR) &&
+//                calendarNow.get(Calendar.DAY_OF_YEAR) == calendarCreated.get(Calendar.DAY_OF_YEAR) -> {
+//            val dateFormat = SimpleDateFormat("hh:mm")
+//            dateFormat.format(date)
+//        }
+//
+//        // 同年の日付
+//        calendarNow.get(Calendar.YEAR) == calendarCreated.get(Calendar.YEAR) -> {
+//            val dateFormat = SimpleDateFormat("M月d日hh")
+//            dateFormat.format(date)
+//        }
+//    }
+//
+//}
+
 fun formatTimeDifference(postedDate: Date): String {
     val now = Date()
     val diffInMillis = now.time - postedDate.time
