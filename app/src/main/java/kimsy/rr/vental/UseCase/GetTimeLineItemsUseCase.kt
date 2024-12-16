@@ -4,9 +4,11 @@ import android.util.Log
 import com.google.firebase.firestore.DocumentSnapshot
 import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.DebateItem
+import kimsy.rr.vental.data.LikeStatus
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
+import kimsy.rr.vental.data.UserType
 import kimsy.rr.vental.data.VentCard
 import kimsy.rr.vental.data.repository.DebateRepository
 import kotlinx.coroutines.withTimeout
@@ -17,7 +19,10 @@ class GetTimeLineItemsUseCase @Inject constructor(
     private val getUserDetailsUseCase: GetUserDetailsUseCase,
     private val getSwipeCardUseCase: GetSwipeCardUseCase
 ) {
-    suspend fun execute(lastVisible: DocumentSnapshot?): Resource<Pair<List<DebateItem>, DocumentSnapshot?>>  {
+    suspend fun execute(
+        lastVisible: DocumentSnapshot?,
+        currentUser: User
+    ): Resource<Pair<List<DebateItem>, DocumentSnapshot?>>  {
         return try {
             withTimeout(10000L) {
                 val debatesState = debateRepository.fetch10Debates(lastVisible)
@@ -29,9 +34,15 @@ class GetTimeLineItemsUseCase @Inject constructor(
                             val ventCard = getVentCard(debate)
                             val poster = getPosterInfo(debate)
                             val debater = getDebaterInfo(debate)
+                            val likeState = debateRepository.fetchLikeState(currentUser.uid, debate.debateId)
+                            val likeUserType = when (likeState.status) {
+                                Status.SUCCESS -> likeState.data?.let { handleSuccess(it) }
+                                Status.FAILURE -> null
+                                else -> null
+                            }
 
                             if (ventCard != null && poster != null && debater != null) {
-                                DebateItem(debate, ventCard, poster, debater)
+                                DebateItem(debate, ventCard, poster, debater, likeUserType)
                             } else {
                                 null // 失敗した場合はスキップ
                             }
@@ -55,7 +66,13 @@ class GetTimeLineItemsUseCase @Inject constructor(
         }
     }
 
-
+    private fun handleSuccess(likeStatus: LikeStatus): UserType? {
+        return when (likeStatus) {
+            LikeStatus.LIKED_POSTER -> UserType.POSTER
+            LikeStatus.LIKED_DEBATER -> UserType.DEBATER
+            LikeStatus.LIKE_NOT_EXIST -> null
+        }
+    }
 
     private suspend fun getVentCard(debate: Debate): VentCard? {
         val ventCardResource = getSwipeCardUseCase.execute(debate.posterId, debate.swipeCardId)

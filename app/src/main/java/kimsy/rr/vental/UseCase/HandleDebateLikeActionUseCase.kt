@@ -1,11 +1,11 @@
 package kimsy.rr.vental.UseCase
 
-import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresExtension
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Transaction
+import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.DebateLikeData
 import kimsy.rr.vental.data.LikeStatus
 import kimsy.rr.vental.data.NetworkUtils
@@ -22,11 +22,8 @@ class HandleDebateLikeActionUseCase @Inject constructor(
 ) {
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     suspend fun execute(
-        context: Context,
         fromUserId: String,
-        posterId: String,
-        debateId: String,
-        ventCardId: String,
+        debateItem: DebateItem,
         userType: UserType
     ): Resource<Unit> {
         return try {
@@ -37,14 +34,15 @@ class HandleDebateLikeActionUseCase @Inject constructor(
 
                 val likeState = debateRepository
                     .fetchLikeState(
-                        debateId = debateId,
+                        debateId = debateItem.debate.debateId,
                         fromUserId = fromUserId
                     )
 
-                val debateContext = DebateContext(fromUserId, posterId, debateId, userType, ventCardId)
+                val debateContext =
+                    likeState.data?.let { DebateContext(fromUserId, it, debateItem, userType) }
 
                 return@withTimeout when (likeState.status) {
-                    Status.SUCCESS -> likeState.data?.let { handleSuccess(it, debateContext) }
+                    Status.SUCCESS -> debateContext?.let { handleSuccess(it) }
                     Status.FAILURE -> Resource.failure(likeState.message)
                     else -> Resource.failure("無効なステータスが返されました")
                 }
@@ -59,27 +57,15 @@ class HandleDebateLikeActionUseCase @Inject constructor(
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     private suspend fun handleSuccess(
-        likeStatus: LikeStatus,
         debateContext: DebateContext
     ): Resource<Unit> {
         val debateLikeData = DebateLikeData(userType = debateContext.userType)
         return try {
             FirebaseFirestore.getInstance().runTransaction { transaction ->
-                when (likeStatus) {
-                    LikeStatus.LIKE_NOT_EXIST -> {
-                        // LIKE_NOT_EXISTの場合は、いいねを追加
-                        handleLikeNotExist(debateContext, debateLikeData, transaction)
-                    }
-
-                    LikeStatus.LIKED_POSTER -> {
-                        // LIKED_POSTERの場合の処理
-//                        handleLikedPoster(debateContext, transaction)
-                    }
-
-                    LikeStatus.LIKED_DEBATER -> {
-                        // LIKED_DEBATERの場合の処理
-//                        handleLikedDebater(debateContext, transaction)
-                    }
+                when (debateContext.likeStatus) {
+                    LikeStatus.LIKE_NOT_EXIST -> handleLikeNotExist(debateContext, debateLikeData, transaction)
+                    LikeStatus.LIKED_POSTER -> handleLikeChange(debateContext, debateLikeData, transaction, UserType.DEBATER, UserType.POSTER)
+                    LikeStatus.LIKED_DEBATER -> handleLikeChange(debateContext, debateLikeData, transaction, UserType.POSTER, UserType.DEBATER)
                 }
             }
             // トランザクションが成功した場合
@@ -93,34 +79,37 @@ class HandleDebateLikeActionUseCase @Inject constructor(
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     private fun handleLikeNotExist(
-        context: DebateContext,
+        debateContext: DebateContext,
         debateLikeData: DebateLikeData,
         transaction: Transaction
     ) {
-        debateRepository.setLikeDebateToUser(context.fromUserId, context.debateId, debateLikeData, transaction)
-        debateRepository.likeCountUp(context.posterId, context.ventCardId, context.debateId, context.userType, transaction)
+        debateRepository.setLikeDebateToUser(debateContext.fromUserId, debateContext.debateItem.debate.debateId, debateLikeData, transaction)
+        debateRepository.likeCountUp(debateContext.debateItem.debate.posterId, debateContext.debateItem.debate.swipeCardId, debateContext.debateItem.debate.debateId, debateContext.userType, transaction)
     }
 
-//    private fun handleLikedPoster(
-//
-//    ):Resource<Unit> {
-//        // check usertype if its same dislike, if not add like, countup, count down
-//    }
-//
-//    private fun handleLikedDebater():Resource<Unit> {
-//        // check usertype if its same dislike, if not add like, countup, count down
-//
-//    }
-
-
+    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
+    private fun handleLikeChange(
+        debateContext: DebateContext,
+        debateLikeData: DebateLikeData,
+        transaction: Transaction,
+        likeableUserType: UserType,
+        dislikeableUserType: UserType
+    ) {
+        if (debateContext.userType == dislikeableUserType) {
+            // いいねしようとしているユーザータイプが同じなのでdislike
+            debateRepository.deleteLikeDebateFromUser(debateContext.fromUserId, debateContext.debateItem.debate.debateId, transaction)
+            debateRepository.likeCountDown(debateContext.debateItem.debate.posterId, debateContext.debateItem.debate.swipeCardId, debateContext.debateItem.debate.debateId, dislikeableUserType, transaction)
+        } else {
+            debateRepository.setLikeDebateToUser(debateContext.fromUserId, debateContext.debateItem.debate.debateId, debateLikeData, transaction)
+            debateRepository.likeCountUp(debateContext.debateItem.debate.posterId, debateContext.debateItem.debate.swipeCardId, debateContext.debateItem.debate.debateId, likeableUserType, transaction)
+            debateRepository.likeCountDown(debateContext.debateItem.debate.posterId, debateContext.debateItem.debate.swipeCardId, debateContext.debateItem.debate.debateId, dislikeableUserType, transaction)
+        }
+    }
 }
-
 
 data class DebateContext(
     val fromUserId: String,
-    val posterId: String,
-    val debateId: String,
+    val likeStatus: LikeStatus,
+    val debateItem: DebateItem,
     val userType: UserType,
-    val ventCardId: String
 )
-

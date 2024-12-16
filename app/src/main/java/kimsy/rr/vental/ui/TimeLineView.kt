@@ -1,5 +1,7 @@
 package kimsy.rr.vental.ui
 
+import android.os.Build
+import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,9 +30,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -40,8 +45,10 @@ import kimsy.rr.vental.R
 import kimsy.rr.vental.ViewModel.TimeLineViewModel
 import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.Status
+import kimsy.rr.vental.data.UserType
 import kimsy.rr.vental.ui.CommonComposable.formatTimeDifference
 
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun TimeLineView(
     timeLineViewModel: TimeLineViewModel = hiltViewModel(),
@@ -57,23 +64,6 @@ fun TimeLineView(
         timeLineViewModel.getTimeLineItems()
     }
 
-    //とりあえずこれ。 TODO resource分岐追加
-
-//    when {
-//        timeLineItems.isNotEmpty() -> {
-//            LazyColumn(){
-//                items(timeLineItems) {item->
-//                    timeLineItem(timeLineViewModel, toDebateView, item)
-//                }
-//                if (!hasFinishedLoadingAllItems) {
-//                    item { LoadingIndicator(timeLineViewModel) }
-//                }
-//            }
-//        }
-//        else -> {
-//            Text(text = "items are null")
-//        }
-//    }
     when {
         timeLineItems.isNotEmpty() -> {
             LazyColumn(){
@@ -117,6 +107,7 @@ fun LoadingIndicator(timeLineViewModel: TimeLineViewModel) {
     }
 }
 
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun timeLineItem(
     timeLineViewModel: TimeLineViewModel,
@@ -127,11 +118,26 @@ fun timeLineItem(
     val ventCard = debateItem.ventCard
     val poster = debateItem.poster
     val debater = debateItem.debater
-        Column(
+    val posterLikeCount = remember { mutableStateOf(debate.posterLikeCount)}
+    val debaterLikeCount = remember { mutableStateOf(debate.debaterLikeCount)}
+    val likedUserType = remember { mutableStateOf(debateItem.likedUserType) }
+    val likeState by timeLineViewModel.likeState.collectAsState()
+
+    //TODO when likeState Resource
+
+
+
+    Column(
             modifier = Modifier
                 .clickable {
-                    //TODO go to detail
-                    timeLineViewModel.setDebateItemToModel(debateItem)
+                    timeLineViewModel.setDebateItemToModel(
+                        debateItem.copy(
+                            debate = debate.copy(
+                                posterLikeCount = posterLikeCount.value,
+                                debaterLikeCount = debaterLikeCount.value
+                            ), likedUserType = likedUserType.value
+                        )
+                    )
                     toDebateView()
                 }
                 .padding(8.dp)
@@ -207,26 +213,66 @@ fun timeLineItem(
                             }
                     )
                 }
+                // ひだりいいね debater
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(8.dp)
                 ) {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = {
+                        timeLineViewModel.handleLikeDebaterAction(debateItem)
+                        when (likedUserType.value) {
+                            UserType.DEBATER -> {
+                                likedUserType.value = null
+                                debaterLikeCount.value -= 1
+                            }
+                            UserType.POSTER -> {
+                                likedUserType.value = UserType.DEBATER
+                                debaterLikeCount.value += 1
+                                posterLikeCount.value -= 1
+                            }
+                            null -> {
+                                likedUserType.value = UserType.DEBATER
+                                debaterLikeCount.value += 1
+                            }
+                        }
+                    }) {
                         Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
-                            contentDescription = "heart")
+                            contentDescription = "heart",
+                            tint = if (likedUserType.value == UserType.DEBATER) Color.Red else Color.Gray
+                            )
                     }
-                    Text(text = debate.debaterLikeCount.toString())
+                    Text(text = debaterLikeCount.value.toString())
                 }
-
+                // みぎいいね poster
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(8.dp)
                 ) {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = {
+                        timeLineViewModel.handleLikePosterAction(debateItem)
+                        when (likedUserType.value) {
+                            UserType.POSTER -> {
+                                likedUserType.value = null
+                                posterLikeCount.value -= 1
+                            }
+                            UserType.DEBATER -> {
+                                likedUserType.value = UserType.POSTER
+                                posterLikeCount.value += 1
+                                debaterLikeCount.value -= 1
+                            }
+                            null -> {
+                                likedUserType.value = UserType.POSTER
+                                posterLikeCount.value += 1
+                            }
+                        }
+                    }) {
                         Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
-                            contentDescription = "heart")
+                            contentDescription = "heart",
+                            tint = if (likedUserType.value == UserType.POSTER) Color.Red else Color.Gray
+
+                        )
                     }
-                    Text(text = debate.posterLikeCount.toString())
+                    Text(text = posterLikeCount.value.toString())
                 }
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,

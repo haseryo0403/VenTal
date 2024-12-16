@@ -113,7 +113,7 @@ class DebateCreationViewModel @Inject constructor(
 
                     if (createdDebate != null && debater != null && poster != null && ventCard2 != null) {
                         DebateItemSharedModel.setDebateItem(
-                            DebateItem(createdDebate, ventCard2, poster, debater)
+                            DebateItem(createdDebate, ventCard2, poster, debater, null)
                         )
                         onCreationSuccess()
                         handleNotification(

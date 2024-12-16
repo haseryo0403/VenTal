@@ -18,6 +18,21 @@ data class User(
                 photoURL = photoURL
             )
         }
+    } object CurrentUserShareModel {
+        private var currentUser: User? = null
+
+        fun setCurrentUserToModel(user: User) {
+            currentUser = user
+        }
+
+        fun getCurrentUserFromModel():User? {
+            return currentUser
+        }
+
+        fun resetCurrentUserOnModel() {
+            currentUser = null
+        }
+
     }
 }
 

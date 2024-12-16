@@ -1,6 +1,8 @@
 package kimsy.rr.vental.ViewModel
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresExtension
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -10,10 +12,13 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.DocumentSnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kimsy.rr.vental.UseCase.GetTimeLineItemsUseCase
+import kimsy.rr.vental.UseCase.HandleDebateLikeActionUseCase
 import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.DebateItemSharedModel
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
+import kimsy.rr.vental.data.User
+import kimsy.rr.vental.data.UserType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -21,8 +26,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TimeLineViewModel @Inject constructor(
-    private val getTimeLineItemsUseCase: GetTimeLineItemsUseCase
+    private val getTimeLineItemsUseCase: GetTimeLineItemsUseCase,
+    private val handleDebateLikeActionUseCase: HandleDebateLikeActionUseCase,
 ): ViewModel() {
+
+    val currentUser = User.CurrentUserShareModel.getCurrentUserFromModel()
 
     private val _getDebateItemsState = MutableStateFlow<Resource<Pair<List<DebateItem>, DocumentSnapshot?>>>(Resource.idle())
     val getDebateItemsState: StateFlow<Resource<Pair<List<DebateItem>, DocumentSnapshot?>>> get() = _getDebateItemsState
@@ -44,7 +52,8 @@ class TimeLineViewModel @Inject constructor(
             if (timelineItems.isEmpty()) {
                 _getDebateItemsState.value = Resource.loading()
             }
-            _getDebateItemsState.value = getTimeLineItemsUseCase.execute(lastVisible)
+            _getDebateItemsState.value =
+                currentUser?.let { getTimeLineItemsUseCase.execute(lastVisible, it) }!!
             when(_getDebateItemsState.value.status) {
                 Status.SUCCESS -> {
                     Log.d("TLVM", "success")
@@ -68,10 +77,22 @@ class TimeLineViewModel @Inject constructor(
         DebateItemSharedModel.setDebateItem(debateItem)
     }
 
-    fun handleLikeAction(userId: String, posterId: String, ventCardId: String) {
+    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
+    fun handleLikePosterAction(
+        debateItem: DebateItem
+    ) {
         viewModelScope.launch {
-            _likeState.value  = handleLikeActionUseCase.execute(userId, posterId, ventCardId)
+            _likeState.value = currentUser?.let { handleDebateLikeActionUseCase.execute(fromUserId = it.uid, debateItem, UserType.POSTER ) }!!
         }
     }
-    fun handleLikePosterAc
+
+    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
+    fun handleLikeDebaterAction(
+        debateItem: DebateItem
+    ) {
+        viewModelScope.launch {
+            _likeState.value = currentUser?.let { handleDebateLikeActionUseCase.execute(fromUserId = it.uid, debateItem, UserType.DEBATER ) }!!
+        }
+    }
+
 }

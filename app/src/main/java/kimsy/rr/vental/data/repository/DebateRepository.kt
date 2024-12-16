@@ -170,52 +170,24 @@ class DebateRepository @Inject constructor(
                 .collection("likedDebate")
                 .document(debateId)
 
-            //TODO　すでにある場合更新されるかチェック。されないならoption追加
+        //すでにいいねしてあるなら上書きされる
         transaction.set(docRef, likeData)
-//            docRefOnUser.set(likeData)
 
     }
-//
-//    suspend fun addLikeDebateToUser(
-//        fromUserId: String,
-//        debateId: String,
-//        likeData: DebateLikeData
-//    ): Resource<Unit>{
-//        return try {
-//            val docRefOnUser = db
-//                .collection("users")
-//                .document(fromUserId)
-//                .collection("likedDebate")
-//                .document(debateId)
-//
-//            //TODO　すでにある場合更新されるかチェック。されないならoption追加
-//            docRefOnUser.set(likeData).await()
-//
-//            Resource.success(Unit)
-//        } catch (e: Exception) {
-//            Resource.failure(e.message)
-//        }
-//    }
 
-    suspend fun deleteLikeDebateFromUser(
+    fun deleteLikeDebateFromUser(
         fromUserId: String,
-        debateId: String
-    ):Resource<Unit> {
-        return try {
-            val docRefOnUser = db
-                .collection("users")
-                .document(fromUserId)
-                .collection("likedDebate")
-                .document(debateId)
+        debateId: String,
+        transaction: Transaction
+    ){
+        val docRef = db
+            .collection("users")
+            .document(fromUserId)
+            .collection("likedDebate")
+            .document(debateId)
 
-            //TODO　すでにある場合更新されるかチェック。されないならoption追加
-            docRefOnUser.delete()
-
-            Resource.success(Unit)
-        } catch (e: Exception) {
-            Resource.failure(e.message)
+        transaction.delete(docRef)
         }
-    }
 
     fun likeCountUp(
         posterId: String,
@@ -234,78 +206,39 @@ class DebateRepository @Inject constructor(
 
         when (userType) {
             UserType.POSTER -> {
-                docRef.update("posterLikeCount", FieldValue.increment(1))
+                transaction.update(docRef, "posterLikeCount", FieldValue.increment(1))
             }
             UserType.DEBATER -> {
-                docRef.update("debaterLikeCount", FieldValue.increment(1))
+                transaction.update(docRef, "debaterLikeCount", FieldValue.increment(1))
             }
         }
     }
 
-
-//    suspend fun likeCountUp(
-//        posterId: String,
-//        ventCardId: String,
-//        debateId: String,
-//        userType: UserType
-//    ): Resource<Unit> {
-//        return try {
-//            val docRef= db
-//                .collection("users")
-//                .document(posterId)
-//                .collection("swipeCards")
-//                .document(ventCardId)
-//                .collection("debates")
-//                .document(debateId)
-//
-//            when (userType) {
-//                UserType.POSTER -> {
-//                    docRef.update("posterLikeCount", FieldValue.increment(1)).await()
-//                }
-//                UserType.DEBATER -> {
-//                    docRef.update("debaterLikeCount", FieldValue.increment(1)).await()
-//                }
-//            }
-//
-//            Resource.success(Unit)
-//        } catch (e: Exception) {
-//            Resource.failure(e.message)
-//        }
-//    }
-
-    suspend fun likeCountDown(
+    fun likeCountDown(
         posterId: String,
         ventCardId: String,
         debateId: String,
-        userType: UserType
-    ): Resource<Unit> {
-        return try {
-            val docRef= db
-                .collection("users")
-                .document(posterId)
-                .collection("swipeCards")
-                .document(ventCardId)
-                .collection("debates")
-                .document(debateId)
+        userType: UserType,
+        transaction: Transaction
+    ){
+        val docRef= db
+            .collection("users")
+            .document(posterId)
+            .collection("swipeCards")
+            .document(ventCardId)
+            .collection("debates")
+            .document(debateId)
 
-            when (userType) {
-                UserType.POSTER -> {
-                    docRef.update("posterLikeCount", FieldValue.increment(-1)).await()
-                }
-                UserType.DEBATER -> {
-                    docRef.update("debaterLikeCount", FieldValue.increment(-1)).await()
-                }
+        when (userType) {
+            UserType.POSTER -> {
+                transaction.update(docRef, "posterLikeCount", FieldValue.increment(-1))
             }
-
-            Resource.success(Unit)
-        } catch (e: Exception) {
-            Resource.failure(e.message)
+            UserType.DEBATER -> {
+                transaction.update(docRef, "debaterLikeCount", FieldValue.increment(-1))
+            }
         }
     }
 
-    // likestate -> not exist -> like
-    // exist -> usertype same -> dislike count -1
-    // exist -> usertype not same -> update usertypelike count + 1 , opponentUserTypecount -1
     suspend fun fetchLikeState(
         fromUserId: String,
         debateId: String,
@@ -336,76 +269,4 @@ class DebateRepository @Inject constructor(
         }
     }
 
-    suspend fun likeDebater(fromUserId: String, posterId: String, ventCardId: String, debateId: String): Resource<Unit>{
-        return try {
-            Log.d("VCR", "likeVentCard called")
-
-            val likeData = mapOf(
-                "debateId" to debateId,
-                "likedDate" to FieldValue.serverTimestamp(),
-                "userType" to UserType.DEBATER
-            )
-            val docRefOnUser = db
-                .collection("users")
-                .document(fromUserId)
-                .collection("likedDebate")
-                .document(debateId)
-
-            val docRefOnDebate= db
-                .collection("users")
-                .document(posterId)
-                .collection("swipeCards")
-                .document(ventCardId)
-                .collection("debates")
-                .document(debateId)
-
-            docRefOnUser
-                .set(likeData)
-                .await()
-
-            //TODO debaterとposterでいいね数のバランスをとる、一人1回までってこと。片方プラス、片方マイナス
-            docRefOnDebate
-                .update("debaterLikeCount", FieldValue.increment(1)).await()
-
-            Resource.success(Unit)
-        } catch (e: Exception) {
-            Resource.failure(e.message)
-        }
-    }
-    suspend fun likePoster(fromUserId: String, posterId: String, ventCardId: String, debateId: String): Resource<Unit>{
-        return try {
-            Log.d("VCR", "likeVentCard called")
-
-            val likeData = mapOf(
-                "debateId" to debateId,
-                "likedDate" to FieldValue.serverTimestamp(),
-                "userType" to UserType.POSTER
-            )
-            val docRefOnUser = db
-                .collection("users")
-                .document(fromUserId)
-                .collection("likedDebate")
-                .document(debateId)
-
-            val docRefOnDebate= db
-                .collection("users")
-                .document(posterId)
-                .collection("swipeCards")
-                .document(ventCardId)
-                .collection("debates")
-                .document(debateId)
-
-            docRefOnUser
-                .set(likeData)
-                .await()
-
-            //TODO debaterとposterでいいね数のバランスをとる、一人1回までってこと。片方プラス、片方マイナス
-            docRefOnDebate
-                .update("posterLikeCount", FieldValue.increment(1)).await()
-
-            Resource.success(Unit)
-        } catch (e: Exception) {
-            Resource.failure(e.message)
-        }
-    }
 }

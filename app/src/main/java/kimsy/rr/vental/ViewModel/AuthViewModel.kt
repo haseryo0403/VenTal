@@ -138,6 +138,7 @@ class AuthViewModel @Inject constructor(
                     Log.e("AVM", "loadUser Onsuccess")
                     if (user != null) {
                         _currentUser.value = user
+                        User.CurrentUserShareModel.setCurrentUserToModel(user)
                         saveDeviceToken()
                     }
                 }.onFailure {exception->

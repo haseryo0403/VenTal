@@ -6,7 +6,8 @@ data class DebateItem(
     val debate: Debate,
     val ventCard: VentCard,
     val poster: User,
-    val debater: User
+    val debater: User,
+    val likedUserType: UserType?
 )object DebateItemSharedModel {
     //一気に登録用
     private var currentDebateItem: DebateItem? = null
