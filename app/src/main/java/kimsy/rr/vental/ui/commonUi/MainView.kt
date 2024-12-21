@@ -5,6 +5,7 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
@@ -40,6 +41,7 @@ import kimsy.rr.vental.Screen
 import kimsy.rr.vental.ViewModel.AuthViewModel
 import kimsy.rr.vental.ViewModel.DebateCreationViewModel
 import kimsy.rr.vental.ViewModel.MyPageViewModel
+import kimsy.rr.vental.ViewModel.SharedDebateViewModel
 import kimsy.rr.vental.ViewModel.VentCardCreationViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.otherScreen
@@ -53,12 +55,14 @@ import kimsy.rr.vental.ui.SwipeCardsView
 import kimsy.rr.vental.ui.TimeLineView
 import kimsy.rr.vental.ui.VentCardCreationView
 
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainView(
     authViewModel: AuthViewModel,
     ventCardCreationViewModel: VentCardCreationViewModel = hiltViewModel(),
+    sharedDebateViewModel: SharedDebateViewModel = hiltViewModel()
 ){
 
     Log.e("View", "Main called")
@@ -153,6 +157,7 @@ fun MainView(
             navController = controller,
             authViewModel = authViewModel,
             ventCardCreationViewModel = ventCardCreationViewModel,
+            sharedDebateViewModel = sharedDebateViewModel,
             context = context,
             pd = it)
     }
@@ -175,12 +180,14 @@ fun MainView(
 
 }
 
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun Navigation(
     navController: NavController,
     authViewModel: AuthViewModel,
     ventCardCreationViewModel: VentCardCreationViewModel,
+    sharedDebateViewModel: SharedDebateViewModel,
     debateCreationViewModel: DebateCreationViewModel = hiltViewModel(),
     context: Context,
     pd:PaddingValues){
@@ -206,7 +213,8 @@ fun Navigation(
                 toDebateView = {
                     Log.d("MV", "to DebateScreen")
                     navController.navigate(Screen.DebateScreen.route)
-                }
+                },
+                sharedDebateViewModel = sharedDebateViewModel
             )
         }
         composable(Screen.BottomScreen.Follows.bottomRoute) {
@@ -239,7 +247,9 @@ fun Navigation(
             )
         }
         composable(Screen.DebateScreen.route) {
-            DebateView()
+            DebateView(
+                sharedDebateViewModel = sharedDebateViewModel
+            )
         }
 
     }

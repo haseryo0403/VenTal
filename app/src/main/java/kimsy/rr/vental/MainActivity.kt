@@ -11,6 +11,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +34,7 @@ import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import kimsy.rr.vental.ViewModel.AuthViewModel
+import kimsy.rr.vental.ViewModel.SharedDebateViewModel
 import kimsy.rr.vental.data.repository.UserRepository
 import kimsy.rr.vental.ui.SignInScreen
 import kimsy.rr.vental.ui.commonUi.MainView
@@ -192,6 +194,7 @@ class MainActivity : ComponentActivity() {
 //    }
 }
 
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun NavigationGraph(

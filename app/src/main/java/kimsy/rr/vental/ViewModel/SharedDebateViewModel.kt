@@ -24,69 +24,61 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TimeLineViewModel @Inject constructor(
+class SharedDebateViewModel @Inject constructor(
     private val getTimeLineItemsUseCase: GetTimeLineItemsUseCase,
     private val handleDebateLikeActionUseCase: HandleDebateLikeActionUseCase,
 ): ViewModel() {
 
     val currentUser = User.CurrentUserShareModel.getCurrentUserFromModel()
 
-    private val _getDebateItemsState = MutableStateFlow<Resource<Pair<List<DebateItem>, DocumentSnapshot?>>>(Resource.idle())
+    private val _getDebateItemsState = MutableStateFlow<Resource<Pair<List<DebateItem>, DocumentSnapshot?>>>(
+        Resource.idle())
     val getDebateItemsState: StateFlow<Resource<Pair<List<DebateItem>, DocumentSnapshot?>>> get() = _getDebateItemsState
 
-//変更前
-//    private val _timelineItems = mutableStateListOf<DebateItem>()
-//    val timelineItems: List<DebateItem> get() = _timelineItems
-
-    // 変更: StateFlowを使用してtimelineItemsを管理
     private val _timelineItems = MutableStateFlow<List<DebateItem>>(emptyList())
-    val timelineItems: StateFlow<List<DebateItem>> get() = _timelineItems
+        val timelineItems: StateFlow<List<DebateItem>> get() = _timelineItems
 
-//    private val _timelineItems = MutableStateFlow<List<DebateItem>>(emptyList())
-//    val timelineItems: StateFlow<List<DebateItem>> get() = _timelineItems
-
-
-
-//    val timelineItems: StateFlow<List<DebateItem>> = DebateItemSharedModel.timelineItems
+    private val _currentDebateItem = MutableStateFlow<DebateItem?>(null)
+        val currentDebateItem: StateFlow<DebateItem?> get() = _currentDebateItem
 
     private var lastVisible: DocumentSnapshot? = null
 
     var hasFinishedLoadingAllItems by mutableStateOf(false)
-        private set
+    private set
 
-    // likeStateをMapに変更して、各DebateItemごとに管理
-    private val _likeStateMap = mutableMapOf<DebateItem, MutableStateFlow<Resource<DebateItem>>>()
+            // likeStateをMapに変更して、各DebateItemごとに管理
+            private val _likeStateMap = mutableMapOf<DebateItem, MutableStateFlow<Resource<DebateItem>>>()
     val likeStateMap: Map<DebateItem, StateFlow<Resource<DebateItem>>> get() = _likeStateMap
 
-    suspend fun getTimeLineItems() {
-        Log.d("TLVM", "getTLT called")
-        viewModelScope.launch {
-            if (_timelineItems.value.isEmpty()) {
-                _getDebateItemsState.value = Resource.loading()
-            }
-            _getDebateItemsState.value =
-                currentUser?.let { getTimeLineItemsUseCase.execute(lastVisible, it) }!!
-            when (_getDebateItemsState.value.status) {
-                Status.SUCCESS -> {
-                    Log.d("TLVM", "success")
-                    _getDebateItemsState.value.data?.let { (timelineItems, newLastVisible) ->
-                        if (timelineItems.isEmpty()) {
-                            hasFinishedLoadingAllItems = true
+        suspend fun getTimeLineItems() {
+            Log.d("TLVM", "getTLT called")
+            viewModelScope.launch {
+                if (_timelineItems.value.isEmpty()) {
+                    _getDebateItemsState.value = Resource.loading()
+                }
+                _getDebateItemsState.value =
+                    currentUser?.let { getTimeLineItemsUseCase.execute(lastVisible, it) }!!
+                when (_getDebateItemsState.value.status) {
+                    Status.SUCCESS -> {
+                        Log.d("TLVM", "success")
+                        _getDebateItemsState.value.data?.let { (timelineItems, newLastVisible) ->
+                            if (timelineItems.isEmpty()) {
+                                hasFinishedLoadingAllItems = true
+                            }
+                            _timelineItems.value = _timelineItems.value + timelineItems
+                            lastVisible = newLastVisible
                         }
-                        _timelineItems.value = _timelineItems.value + timelineItems
-                        lastVisible = newLastVisible
                     }
+                    Status.FAILURE -> {
+                        Log.d("TLVM", "failure")
+                    }
+                    else -> {}
                 }
-                Status.FAILURE -> {
-                    Log.d("TLVM", "failure")
-                }
-                else -> {}
             }
         }
-    }
 
 
-    //変更前
+        //変更前
 //    suspend fun getTimeLineItems () {
 //        Log.d("TLVM", "getTLT called")
 //        viewModelScope.launch {
@@ -114,36 +106,36 @@ class TimeLineViewModel @Inject constructor(
 //        }
 //    }
 
-    fun setDebateItemToModel(debateItem: DebateItem) {
-        DebateItemSharedModel.setDebateItem(debateItem)
-    }
+        fun setDebateItemToModel(debateItem: DebateItem) {
+            DebateItemSharedModel.setDebateItem(debateItem)
+        }
 
-    //変更
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
-    fun handleLikeAction(
-        debateItem: DebateItem,
-        userType: UserType
-    ) {
-        viewModelScope.launch {
-            initializeLikeStateForDebateItem(debateItem)
-            _likeStateMap[debateItem]?.value = currentUser?.let {
-                handleDebateLikeActionUseCase.execute(fromUserId = it.uid, debateItem, userType)
-            }!!
+        //変更
+        @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
+        fun handleLikeAction(
+            debateItem: DebateItem,
+            userType: UserType
+        ) {
+            viewModelScope.launch {
+                initializeLikeStateForDebateItem(debateItem)
+                _likeStateMap[debateItem]?.value = currentUser?.let {
+                    handleDebateLikeActionUseCase.execute(fromUserId = it.uid, debateItem, userType)
+                }!!
 
-            if (_likeStateMap[debateItem]?.value?.status == Status.SUCCESS) {
-                val index = _timelineItems.value.indexOfFirst { it.debate.debateId == debateItem.debate.debateId }
-                if (index != -1) {
-                    // 変更: _timelineItemsのStateFlowを更新
-                    _timelineItems.value = _timelineItems.value.toMutableList().apply {
-                        this[index] = _likeStateMap[debateItem]?.value?.data!!
+                if (_likeStateMap[debateItem]?.value?.status == Status.SUCCESS) {
+                    val index = _timelineItems.value.indexOfFirst { it.debate.debateId == debateItem.debate.debateId }
+                    if (index != -1) {
+                        // 変更: _timelineItemsのStateFlowを更新
+                        _timelineItems.value = _timelineItems.value.toMutableList().apply {
+                            this[index] = _likeStateMap[debateItem]?.value?.data!!
+                        }
                     }
                 }
             }
         }
-    }
 
 
-    //変更前
+        //変更前
 //    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 //    fun handleLikeAction(
 //        debateItem: DebateItem,
@@ -186,15 +178,15 @@ class TimeLineViewModel @Inject constructor(
 //        }
 //    }
 
-    // DebateItemに対応するStateFlowを初期化する
-    private fun initializeLikeStateForDebateItem(debateItem: DebateItem) {
-        if (_likeStateMap[debateItem] == null) {
-            _likeStateMap[debateItem] = MutableStateFlow(Resource.idle()) // 初期化
+        // DebateItemに対応するStateFlowを初期化する
+        private fun initializeLikeStateForDebateItem(debateItem: DebateItem) {
+            if (_likeStateMap[debateItem] == null) {
+                _likeStateMap[debateItem] = MutableStateFlow(Resource.idle()) // 初期化
+            }
         }
-    }
 
-    private fun resetLikeStateMap(debateItem: DebateItem) {
-        _likeStateMap[debateItem]?.value = Resource.idle()
-    }
+        private fun resetLikeStateMap(debateItem: DebateItem) {
+            _likeStateMap[debateItem]?.value = Resource.idle()
+        }
 
-}
+    }

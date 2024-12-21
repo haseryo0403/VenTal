@@ -4,6 +4,7 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,6 +34,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -41,6 +43,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
 import kimsy.rr.vental.ViewModel.DebateViewModel
+import kimsy.rr.vental.ViewModel.SharedDebateViewModel
 import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.DebateWithUsers
 import kimsy.rr.vental.data.Message
@@ -50,15 +53,19 @@ import kimsy.rr.vental.data.VentCard
 import kimsy.rr.vental.ui.CommonComposable.formatTimeDifference
 
 
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DebateView(
-    debateViewModel: DebateViewModel = hiltViewModel()
+    debateViewModel: DebateViewModel = hiltViewModel(),
+    sharedDebateViewModel: SharedDebateViewModel
     ){
 
     val context = LocalContext.current// is this Right?
     val fetchMessageState by debateViewModel.fetchMessageState.collectAsState()
     val getDebateItemState by debateViewModel.getDebateItemState.collectAsState()
+//    val debateItem by DebateItemSharedModel.currentnDebateItem.collectAsState()
+    val debateItem by debateViewModel.currentDebateItem.collectAsState()
 
     LaunchedEffect(Unit) {
         debateViewModel.loadDebateItem()
@@ -76,7 +83,7 @@ fun DebateView(
                     Status.SUCCESS -> {
                         val debateItem = getDebateItemState.data
                         if (debateItem != null) {
-                            DebateContents(debateItem)
+                            DebateContent(debateItem, debateViewModel)
                         } else {
                             //show not found debateItem
                         }
@@ -90,6 +97,9 @@ fun DebateView(
                     }
                     else ->{}
                 }
+//                if (debateItem != null) {
+//                    DebateContent(debateItem = debateItem!!, debateViewModel = debateViewModel)
+//                }
 
                 Divider()
 
@@ -130,7 +140,7 @@ fun DebateView(
 }
 
 @Composable
-fun DebateContent(debateWithUsers: DebateWithUsers, ventCard: VentCard) {
+fun DebateContents(debateWithUsers: DebateWithUsers, ventCard: VentCard) {
     val heartIcon = painterResource(id = R.drawable.baseline_favorite_24)
     Log.d("DV", "$debateWithUsers, $ventCard")
     Row(
@@ -216,8 +226,12 @@ fun DebateContent(debateWithUsers: DebateWithUsers, ventCard: VentCard) {
     }
 }
 
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
-fun DebateContents(debateItem: DebateItem) {
+fun DebateContent(
+    debateItem: DebateItem,
+    debateViewModel: DebateViewModel
+                  ) {
     val debate = debateItem.debate
     val ventCard = debateItem.ventCard
     val debater = debateItem.debater
@@ -272,30 +286,39 @@ fun DebateContents(debateItem: DebateItem) {
 
             Text(text = debater.name)
         }
-
+        // ひだりいいね debater
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier
-                .padding(4.dp)
-                .weight(1f)
+            modifier = Modifier.padding(8.dp)
         ) {
-            Icon(painter = heartIcon,
-                contentDescription = "haert")
+            IconButton(onClick = {
+                debateViewModel.handleLikeAction(debateItem, UserType.DEBATER)
+            }) {
+                Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
+                    contentDescription = "heart",
+                    tint = if (debateItem.likedUserType == UserType.DEBATER) Color.Red else Color.Gray
+                )
+            }
             Text(text = debate.debaterLikeCount.toString())
         }
-
+        // みぎいいね poster
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier
-                .padding(4.dp)
-                .weight(1f)
+            modifier = Modifier.padding(8.dp)
         ) {
-            Icon(painter = heartIcon,
-                contentDescription = "haert")
+            IconButton(onClick = {
+                debateViewModel.handleLikeAction(debateItem, UserType.POSTER)
+            }) {
+                Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
+                    contentDescription = "heart",
+                    tint = if (debateItem.likedUserType == UserType.POSTER) Color.Red else Color.Gray
+
+                )
+            }
             Text(text = debate.posterLikeCount.toString())
         }
+
+
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

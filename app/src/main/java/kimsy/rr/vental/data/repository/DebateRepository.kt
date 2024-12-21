@@ -15,6 +15,9 @@ import kimsy.rr.vental.data.LikeStatus
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.UserType
 import kimsy.rr.vental.data.VentCardWithUser
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
 import java.io.IOException
@@ -109,6 +112,76 @@ class DebateRepository @Inject constructor(
             Resource.failure(e.message)
         }
     }
+
+
+//　使わないけどメッセージの際に参考にするので残しておく
+    fun observeDebate(lastVisible: DocumentSnapshot?): Flow<Pair<List<Debate>, DocumentSnapshot?>> = callbackFlow {
+        val query = db.collectionGroup("debates")
+            .orderBy("debateCreatedDatetime", Query.Direction.DESCENDING)
+
+        val queryWithLimit = if (lastVisible == null) {
+            query.limit(10)
+        } else {
+            query.startAfter(lastVisible).limit(10)
+        }
+
+        val subscription = queryWithLimit.addSnapshotListener { querySnapshot, exception ->
+            if (exception != null) {
+                close(exception) // Flowを終了
+                return@addSnapshotListener
+            }
+
+            if (querySnapshot != null && !querySnapshot.isEmpty) {
+                val debates = querySnapshot.documents.mapNotNull { document ->
+                    document.toObject(Debate::class.java)!!.copy(
+                        debateId = document.id,
+                        debateCreatedDatetime = document.getTimestamp("debateCreatedDatetime")!!.toDate()
+                    )
+                }
+                val newLastVisible = querySnapshot.documents.lastOrNull()
+                trySend(Pair(debates, newLastVisible))
+            } else {
+                trySend(Pair(emptyList(), null))
+            }
+        }
+
+        awaitClose { subscription.remove() }
+    }
+
+
+    fun observeDebates(lastVisible: DocumentSnapshot?): Flow<Resource<Pair<List<Debate>, DocumentSnapshot?>>> = callbackFlow {
+        val query = db.collectionGroup("debates")
+            .orderBy("debateCreatedDatetime", Query.Direction.DESCENDING)
+
+        val queryWithLimit = if (lastVisible == null) {
+            query.limit(10)
+        } else {
+            query.startAfter(lastVisible).limit(10)
+        }
+
+        val subscription = queryWithLimit.addSnapshotListener { querySnapshot, exception ->
+            if (exception != null) {
+                trySend(Resource.failure("Error fetching debates: ${exception.message}")).isSuccess
+                return@addSnapshotListener
+            }
+
+            if (querySnapshot != null && !querySnapshot.isEmpty) {
+                val debates = querySnapshot.documents.mapNotNull { document ->
+                    document.toObject(Debate::class.java)!!.copy(
+                        debateId = document.id,
+                        debateCreatedDatetime = document.getTimestamp("debateCreatedDatetime")!!.toDate()
+                    )
+                }
+                val newLastVisible = querySnapshot.documents.lastOrNull()
+                trySend(Resource.success(Pair(debates, newLastVisible))).isSuccess
+            } else {
+                trySend(Resource.success(Pair(emptyList(), null))).isSuccess
+            }
+        }
+
+        awaitClose { subscription.remove() }
+    }
+
 
     suspend fun createDebate(debate: Debate): Resource<Debate>{
         Log.d("DR", "createDebate called")

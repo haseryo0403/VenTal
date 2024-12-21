@@ -2,23 +2,16 @@ package kimsy.rr.vental.data.repository
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
-import com.bumptech.glide.Glide
-import com.google.android.gms.auth.api.signin.internal.Storage
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import kimsy.rr.vental.MainActivity
 import kimsy.rr.vental.data.Resource
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
-import java.io.File
-import java.io.FileNotFoundException
 import java.io.IOException
-import java.io.InputStream
 import java.util.UUID
 import java.util.concurrent.TimeoutException
 import javax.inject.Inject

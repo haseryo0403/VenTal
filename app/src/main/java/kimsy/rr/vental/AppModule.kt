@@ -14,7 +14,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.NetworkUtils
 import kimsy.rr.vental.data.repository.DebateRepository
 import kimsy.rr.vental.data.repository.ImageRepository
@@ -95,6 +94,12 @@ object AppModule {
     fun provideNetworkUtils(@ApplicationContext context: Context): NetworkUtils {
         return NetworkUtils(context)
     }
+
+//    @Provides
+//    @Singleton
+//    fun provideBaseUseCase(networkUtils: NetworkUtils, loadCurrentUserUseCase: LoadCurrentUserUseCase): BaseUseCase {
+//        return BaseUseCase(networkUtils, loadCurrentUserUseCase)
+//    }
 
 
 
