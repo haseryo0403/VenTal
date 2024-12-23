@@ -2,4 +2,5 @@
 
 <resources>
     <string name="get_debate_fail">討論の取得に失敗しました。</string>
+    <string name="like_fail">いいねに失敗しました。しばらく時間を置いて、再度お試しください。</string>
 </resources>

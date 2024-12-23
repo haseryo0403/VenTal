@@ -42,6 +42,7 @@ import kimsy.rr.vental.ViewModel.AuthViewModel
 import kimsy.rr.vental.ViewModel.DebateCreationViewModel
 import kimsy.rr.vental.ViewModel.MyPageViewModel
 import kimsy.rr.vental.ViewModel.SharedDebateViewModel
+import kimsy.rr.vental.ViewModel.TimeLineViewModel
 import kimsy.rr.vental.ViewModel.VentCardCreationViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.otherScreen
@@ -189,6 +190,7 @@ fun Navigation(
     ventCardCreationViewModel: VentCardCreationViewModel,
     sharedDebateViewModel: SharedDebateViewModel,
     debateCreationViewModel: DebateCreationViewModel = hiltViewModel(),
+    timeLineViewModel: TimeLineViewModel = hiltViewModel(),
     context: Context,
     pd:PaddingValues){
 
@@ -214,6 +216,7 @@ fun Navigation(
                     Log.d("MV", "to DebateScreen")
                     navController.navigate(Screen.DebateScreen.route)
                 },
+                timeLineViewModel = timeLineViewModel,
                 sharedDebateViewModel = sharedDebateViewModel
             )
         }
@@ -240,6 +243,7 @@ fun Navigation(
                 context = context,
                 authViewModel = authViewModel,
                 debateCreationViewModel = debateCreationViewModel,
+                sharedDebateViewModel = sharedDebateViewModel,
                 toDebateView = {
                     Log.d("MV", "to DebateScreen")
                     navController.navigate(Screen.DebateScreen.route)

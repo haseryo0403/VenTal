@@ -20,7 +20,6 @@ import kimsy.rr.vental.UseCase.SaveImageUseCase
 import kimsy.rr.vental.UseCase.SaveNotificationUseCase
 import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.DebateItem
-import kimsy.rr.vental.data.DebateItemSharedModel
 import kimsy.rr.vental.data.DebateWithUsers
 import kimsy.rr.vental.data.NetworkUtils
 import kimsy.rr.vental.data.Resource
@@ -71,7 +70,8 @@ class DebateCreationViewModel @Inject constructor(
                              imageUri: Uri?,
                              debaterId: String,
                              context: Context,
-                             onCreationSuccess: () -> Unit = {}) {
+                             onCreationSuccess: (DebateItem) -> Unit
+    ) {
         viewModelScope.launch {
 
             if (!networkUtils.isOnline()) {
@@ -112,10 +112,8 @@ class DebateCreationViewModel @Inject constructor(
                         getSwipeCardUseCase.execute(ventCard.posterId, ventCard.swipeCardId).data
 
                     if (createdDebate != null && debater != null && poster != null && ventCard2 != null) {
-                        DebateItemSharedModel.setDebateItem(
-                            DebateItem(createdDebate, ventCard2, poster, debater, null)
-                        )
-                        onCreationSuccess()
+                        val createdDebateItem = DebateItem(createdDebate, ventCard2, poster, debater, null)
+                        onCreationSuccess(createdDebateItem)
                         handleNotification(
                             debaterId,
                             ventCard.posterId,
@@ -134,17 +132,10 @@ class DebateCreationViewModel @Inject constructor(
 
     //TODO FIX to ventCard without user
     private suspend fun debateValidate(ventCard: VentCardWithUser): Boolean {
-        return try {
-            val isValid = debateValidationUseCase.execute(ventCard.posterId, ventCard.swipeCardId).getOrThrow()
-            if (!isValid) {
-                _debateCreationState.value = Resource.failure("バリデーションエラー。入力を確認してください。")
-                false
-            } else {
-                true
-            }
-        } catch (e: Exception) {
-            _debateCreationState.value = Resource.failure("エラー。インターネットを確認してください。")
-            false
+        val validationResult = debateValidationUseCase.execute(ventCard.posterId, ventCard.swipeCardId)
+        return when (validationResult.status) {
+            Status.SUCCESS -> validationResult.data?: false
+            else -> false
         }
     }
 

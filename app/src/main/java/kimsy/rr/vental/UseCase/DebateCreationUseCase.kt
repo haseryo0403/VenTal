@@ -5,21 +5,21 @@ import kimsy.rr.vental.data.NetworkUtils
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.VentCardWithUser
 import kimsy.rr.vental.data.repository.DebateRepository
+import kimsy.rr.vental.data.repository.LogRepository
 import javax.inject.Inject
 
 class DebateCreationUseCase @Inject constructor(
     private val debateRepository: DebateRepository,
-    private val networkUtils: NetworkUtils
-) {
-        suspend fun execute(text: String, ventCard: VentCardWithUser, debaterId: String, firstMessageImageURL: String?): Resource<Debate> {
+    networkUtils: NetworkUtils,
+    logRepository: LogRepository
+): BaseUseCase(networkUtils, logRepository) {
+    suspend fun execute(text: String, ventCard: VentCardWithUser, debaterId: String, firstMessageImageURL: String?): Resource<Debate> {
 
-            return if (!networkUtils.isOnline()) {
-                Resource.failure("インターネットの接続を確認してください")
-            } else {
-                val debate = createDebateInstance(text, ventCard, debaterId, firstMessageImageURL)
+        return executeWithLoggingAndNetworkCheck {
+            val debate = createDebateInstance(text, ventCard, debaterId, firstMessageImageURL)
 
-                debateRepository.createDebate(debate)
-            }
+            debateRepository.createDebate(debate)
+        }
     }
 
     private fun createDebateInstance(text: String, ventCard: VentCardWithUser, debaterId: String, firstMessageImageURL: String?): Debate {

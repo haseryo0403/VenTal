@@ -6,12 +6,14 @@ import kimsy.rr.vental.R
 import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.LikeStatus
+import kimsy.rr.vental.data.NetworkUtils
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.data.UserType
 import kimsy.rr.vental.data.VentCard
 import kimsy.rr.vental.data.repository.DebateRepository
+import kimsy.rr.vental.data.repository.LogRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withTimeout
@@ -20,13 +22,15 @@ import javax.inject.Inject
 class GetTimeLineItemsUseCase @Inject constructor(
     private val debateRepository: DebateRepository,
     private val getUserDetailsUseCase: GetUserDetailsUseCase,
-    private val getSwipeCardUseCase: GetSwipeCardUseCase
-) {
+    private val getSwipeCardUseCase: GetSwipeCardUseCase,
+    networkUtils: NetworkUtils,
+    logRepository: LogRepository
+    ): BaseUseCase(networkUtils, logRepository) {
     suspend fun execute(
         lastVisible: DocumentSnapshot?,
         currentUser: User
     ): Resource<Pair<List<DebateItem>, DocumentSnapshot?>> {
-        return try {
+        return executeWithLoggingAndNetworkCheck {
             withTimeout(10000L) {
                 val debatesState = debateRepository.fetch10Debates(lastVisible)
 
@@ -67,13 +71,10 @@ class GetTimeLineItemsUseCase @Inject constructor(
                     }
                 }
             }
-        } catch (e: Exception) {
-            Log.e("GTLIUC", "exception: ${e.message}")
-            Resource.failure("討論の取得に失敗しました。：${e.message}")
         }
     }
 
-//TODO try catchの共通処理の使用検討、ログに残したい
+//TODO　 try catchの共通処理の使用検討、ログに残したい
     //使わないけどメッセージの表示の際に参考にしたいので残しておく
     suspend fun executes(
         lastVisible: DocumentSnapshot?,

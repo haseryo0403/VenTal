@@ -63,12 +63,24 @@ fun DebateView(
 
     val context = LocalContext.current// is this Right?
     val fetchMessageState by debateViewModel.fetchMessageState.collectAsState()
-    val getDebateItemState by debateViewModel.getDebateItemState.collectAsState()
-//    val debateItem by DebateItemSharedModel.currentnDebateItem.collectAsState()
-    val debateItem by debateViewModel.currentDebateItem.collectAsState()
+    val currentDebateItem by sharedDebateViewModel.currentDebateItem.collectAsState()
+
+    val likeState by sharedDebateViewModel.likeState.collectAsState()
+
+    when (likeState[currentDebateItem]?.status) {
+        Status.SUCCESS -> {
+            //TODO もし必要なUIの処理があれば。
+        }
+        Status.FAILURE -> {
+            sharedDebateViewModel.showLikeFailedToast(LocalContext.current)
+            currentDebateItem?.let { sharedDebateViewModel.resetLikeState(it) }
+        }
+        else -> {}
+    }
+
 
     LaunchedEffect(Unit) {
-        debateViewModel.loadDebateItem()
+        currentDebateItem?.let { debateViewModel.getMessages(it.debate) }
     }
 
     LazyColumn(
@@ -79,27 +91,11 @@ fun DebateView(
                 modifier = Modifier.padding(8.dp)
             ) {
 
-                when (getDebateItemState.status) {
-                    Status.SUCCESS -> {
-                        val debateItem = getDebateItemState.data
-                        if (debateItem != null) {
-                            DebateContent(debateItem, debateViewModel)
-                        } else {
-                            //show not found debateItem
-                        }
-                    }
-                    Status.FAILURE -> {
-                        Log.e("getDIState", "error : ${getDebateItemState.message}")
-                        Toast.makeText(context, "読み込みに失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
-                    }
-                    Status.LOADING -> {
-                        showLoadingIndicator()
-                    }
-                    else ->{}
+                if (currentDebateItem != null) {
+                    DebateContent(debateItem = currentDebateItem!!, sharedDebateViewModel = sharedDebateViewModel)
+                } else {
+                    Toast.makeText(context, "読み込みに失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
                 }
-//                if (debateItem != null) {
-//                    DebateContent(debateItem = debateItem!!, debateViewModel = debateViewModel)
-//                }
 
                 Divider()
 
@@ -230,7 +226,7 @@ fun DebateContents(debateWithUsers: DebateWithUsers, ventCard: VentCard) {
 @Composable
 fun DebateContent(
     debateItem: DebateItem,
-    debateViewModel: DebateViewModel
+    sharedDebateViewModel: SharedDebateViewModel
                   ) {
     val debate = debateItem.debate
     val ventCard = debateItem.ventCard
@@ -292,7 +288,9 @@ fun DebateContent(
             modifier = Modifier.padding(8.dp)
         ) {
             IconButton(onClick = {
-                debateViewModel.handleLikeAction(debateItem, UserType.DEBATER)
+//                debateViewModel.handleLikeAction(debateItem, UserType.DEBATER)
+                sharedDebateViewModel.handleLikeAction(debateItem, UserType.DEBATER)
+
             }) {
                 Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
                     contentDescription = "heart",
@@ -307,7 +305,8 @@ fun DebateContent(
             modifier = Modifier.padding(8.dp)
         ) {
             IconButton(onClick = {
-                debateViewModel.handleLikeAction(debateItem, UserType.POSTER)
+//                debateViewModel.handleLikeAction(debateItem, UserType.POSTER)
+                sharedDebateViewModel.handleLikeAction(debateItem, UserType.POSTER)
             }) {
                 Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
                     contentDescription = "heart",

@@ -2,7 +2,6 @@ package kimsy.rr.vental.ui
 
 import android.os.Build
 import android.util.Log
-import android.widget.Toast
 import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -19,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
@@ -32,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,7 +41,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
 import kimsy.rr.vental.ViewModel.SharedDebateViewModel
@@ -53,31 +53,42 @@ import kimsy.rr.vental.ui.CommonComposable.formatTimeDifference
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun TimeLineView(
-    timeLineViewModel: TimeLineViewModel = hiltViewModel(),
+    timeLineViewModel: TimeLineViewModel,
     sharedDebateViewModel: SharedDebateViewModel,
     toDebateView: () -> Unit
 ){
-    //変更前
-//    val timeLineItems = timeLineViewModel.timelineItems
-    //変更
-    val timeLineItems by timeLineViewModel.timelineItems.collectAsState()
+    val timeLineItems by sharedDebateViewModel.timelineItems.collectAsState()
 
-    val hasFinishedLoadingAllItems = timeLineViewModel.hasFinishedLoadingAllItems
+    val scrollState = rememberLazyListState()
 
-    val getDebateItemState by timeLineViewModel.getDebateItemsState.collectAsState()
+    val hasFinishedLoadingAllItems = sharedDebateViewModel.hasFinishedLoadingAllItems
+
+    val getDebateItemState by sharedDebateViewModel.getDebateItemsState.collectAsState()
 
     LaunchedEffect(Unit) {
-        timeLineViewModel.getTimeLineItems()
+        sharedDebateViewModel.getTimeLineItems()
+        scrollState.scrollToItem(
+            timeLineViewModel.savedScrollIndex,
+            timeLineViewModel.savedScrollOffset
+        )
+    }
+
+    // スクロール位置を保存
+    LaunchedEffect(scrollState) {
+        snapshotFlow { scrollState.firstVisibleItemIndex to scrollState.firstVisibleItemScrollOffset }
+            .collect { (index, offset) ->
+                timeLineViewModel.setScrollState(index, offset)
+            }
     }
 
     when {
         timeLineItems.isNotEmpty() -> {
-            LazyColumn(){
+            LazyColumn(state = scrollState){
                 items(timeLineItems) {item->
-                    timeLineItem(timeLineViewModel, toDebateView, item)
+                    timeLineItem(sharedDebateViewModel, toDebateView, item)
                 }
                 if (!hasFinishedLoadingAllItems) {
-                    item { LoadingIndicator(timeLineViewModel) }
+                    item { LoadingIndicator(sharedDebateViewModel) }
                 }
             }
         }
@@ -100,16 +111,27 @@ fun TimeLineView(
 }
 
 @Composable
-fun LoadingIndicator(timeLineViewModel: TimeLineViewModel) {
+fun LoadingIndicator(sharedDebateViewModel: SharedDebateViewModel) {
+    val getDebateItemState by sharedDebateViewModel.getDebateItemsState.collectAsState()
     Box(
         modifier = Modifier.fillMaxWidth()
     ) {
-        CircularProgressIndicator(modifier = Modifier.align(Alignment.BottomCenter))
+        when (getDebateItemState.status){
+            Status.LOADING -> {
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+            }
+            Status.FAILURE -> Text(text = "討論の追加の取得に失敗しまいた。")
+            else -> {}
+        }
     }
 
     LaunchedEffect(Unit) {
         // 要素の追加読み込み
-        timeLineViewModel.getTimeLineItems()
+        sharedDebateViewModel.getTimeLineItems()
         Log.d("CUDUC", "LE")
     }
 }
@@ -117,7 +139,7 @@ fun LoadingIndicator(timeLineViewModel: TimeLineViewModel) {
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun timeLineItem(
-    timeLineViewModel: TimeLineViewModel,
+    sharedDebateViewModel: SharedDebateViewModel,
     toDebateView: () -> Unit,
     debateItem: DebateItem
 ) {
@@ -126,18 +148,15 @@ fun timeLineItem(
     val poster = debateItem.poster
     val debater = debateItem.debater
 
-    val likeState = timeLineViewModel.likeStateMap[debateItem]?.collectAsState()
+    val likeState by sharedDebateViewModel.likeState.collectAsState()
 
-    //TODO ロールバック用の何か必要？かそもそものdebateItemを再代入かな？
-
-    when (likeState?.value?.status) {
+    when (likeState[debateItem]?.status) {
         Status.SUCCESS -> {
-
-            Toast.makeText(LocalContext.current, "like success", Toast.LENGTH_SHORT).show()
-            Log.d("TLView", "like success")
+            //TODO もし必要なUIの処理があれば。
         }
         Status.FAILURE -> {
-
+            sharedDebateViewModel.showLikeFailedToast(LocalContext.current)
+            sharedDebateViewModel.resetLikeState(debateItem)
         }
         else -> {}
     }
@@ -147,7 +166,7 @@ fun timeLineItem(
     Column(
             modifier = Modifier
                 .clickable {
-                    timeLineViewModel.setDebateItemToModel(debateItem)
+                    sharedDebateViewModel.setCurrentDebateItem(debateItem)
                     toDebateView()
                 }
                 .padding(8.dp)
@@ -230,7 +249,7 @@ fun timeLineItem(
                 ) {
                     IconButton(onClick = {
 //                        timeLineViewModel.handleLikeDebaterAction(debateItem)
-                        timeLineViewModel.handleLikeAction(debateItem, UserType.DEBATER)
+                        sharedDebateViewModel.handleLikeAction(debateItem, UserType.DEBATER)
                     }) {
                         Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
                             contentDescription = "heart",
@@ -246,7 +265,7 @@ fun timeLineItem(
                 ) {
                     IconButton(onClick = {
 //                        timeLineViewModel.handleLikePosterAction(debateItem)
-                        timeLineViewModel.handleLikeAction(debateItem, UserType.POSTER)
+                        sharedDebateViewModel.handleLikeAction(debateItem, UserType.POSTER)
                     }) {
                         Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
                             contentDescription = "heart",

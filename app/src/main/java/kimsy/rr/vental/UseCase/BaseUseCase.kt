@@ -13,7 +13,7 @@ open class BaseUseCase @Inject constructor(
     private val logRepository: LogRepository
 ) {
 
-    suspend fun <T> executeWithLogging(action: suspend () -> Resource<T>): Resource<T> {
+    suspend fun <T> executeWithLoggingAndNetworkCheck(action: suspend () -> Resource<T>): Resource<T> {
         return try {
             val netWorkState = checkNetwork()
             when (netWorkState.status) {
@@ -31,6 +31,19 @@ open class BaseUseCase @Inject constructor(
             Resource.failure(e.message)
         }
     }
+
+    suspend fun <T> executeWithLoggingWithoutNetworkCheck(action: suspend () -> Resource<T>): Resource<T> {
+        return try {
+            action()
+        } catch (e: Exception) {
+            //TODO 開発中はあまり使いたくないのでコメントに
+//            saveErrorLog(e)
+            Log.e(this::class.simpleName, "Error occurred: ${e.message}", e)
+            Resource.failure(e.message)
+        }
+    }
+
+
 
     private fun checkNetwork(): Resource<Unit> {
         return if (!networkUtils.isOnline()) {

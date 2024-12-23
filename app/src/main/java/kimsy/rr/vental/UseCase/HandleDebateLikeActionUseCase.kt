@@ -28,7 +28,7 @@ class HandleDebateLikeActionUseCase @Inject constructor(
         debateItem: DebateItem,
         userType: UserType
     ): Resource<DebateItem> {
-        return executeWithLogging {
+        return executeWithLoggingAndNetworkCheck {
             withTimeout(10000L) {
 
                 val likeState = debateRepository
@@ -48,35 +48,6 @@ class HandleDebateLikeActionUseCase @Inject constructor(
             }
 
         }
-
-
-//        return try {
-//            if (!networkUtils.isOnline()) {
-//                return Resource.failure("インターネットの接続を確認してください")
-//            }
-//            withTimeout(10000L) {
-//
-//                val likeState = debateRepository
-//                    .fetchLikeState(
-//                        debateId = debateItem.debate.debateId,
-//                        fromUserId = fromUserId
-//                    )
-//
-//                val debateContext =
-//                    likeState.data?.let { DebateContext(fromUserId, it, debateItem, userType) }
-//
-//                when (likeState.status) {
-//                    Status.SUCCESS -> debateContext?.let { handleSuccess(it) } ?: Resource.failure("無効なデータ")
-//                    Status.FAILURE -> Resource.failure(likeState.message)
-//                    else -> Resource.failure("無効なステータスが返されました")
-//                }
-//            }
-//        } catch (e: Exception) {
-//            Log.e("HandleLikeActionUseCase", "Error handling like action: $e")
-//            Resource.failure(e.message)
-//        }
-
-
     }
 
 
@@ -95,7 +66,6 @@ class HandleDebateLikeActionUseCase @Inject constructor(
             }
             val updatedDebateItem = createUpdatedDebateItem(debateContext.debateItem, debateContext.userType)
             // トランザクションが成功した場合
-//            Resource.success(Unit)
             Resource.success(updatedDebateItem)
         } catch (e: Exception) {
             // エラーが発生した場合

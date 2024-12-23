@@ -51,26 +51,20 @@ class DebateRepository @Inject constructor(
             Resource.failure(e.message)
         }
     }
-    suspend fun getRelatedDebatesCount(posterId: String, swipeCardId: String):Result<Int>{
-        Log.d("DR", "getRelatedDC called")
-        return try {
-            withTimeout(10000L) {
-                val query = db
-                    .collection("users")
-                    .document(posterId)
-                    .collection("swipeCards")
-                    .document(swipeCardId)
-                    .collection("debates")
+    suspend fun getRelatedDebatesCount(posterId: String, swipeCardId: String): Int{
+        return withTimeout(10000L) {
+            val query = db
+                .collection("users")
+                .document(posterId)
+                .collection("swipeCards")
+                .document(swipeCardId)
+                .collection("debates")
 
-                val querySnapshot = query.count().get(AggregateSource.SERVER).await()
+            val querySnapshot = query.count().get(AggregateSource.SERVER).await()
 
-                val count = querySnapshot.count.toInt()
+            val count = querySnapshot.count.toInt()
 
-                Result.success(count)
-            }
-        } catch (e: Exception){
-            Log.e("DRgRDC", "error: ${e.message}")
-            Result.failure(e)
+            count
         }
     }
 

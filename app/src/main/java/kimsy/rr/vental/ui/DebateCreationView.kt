@@ -1,10 +1,9 @@
 package kimsy.rr.vental.ui
 
-import android.content.ClipData.Item
+//import kimsy.rr.vental.ViewModel.DebateViewModel
 import android.content.Context
 import android.net.Uri
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -13,9 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,12 +22,10 @@ import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.CircularProgressIndicator
@@ -39,12 +34,9 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -57,19 +49,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
 import kimsy.rr.vental.ViewModel.AuthViewModel
 import kimsy.rr.vental.ViewModel.DebateCreationViewModel
-//import kimsy.rr.vental.ViewModel.DebateViewModel
+import kimsy.rr.vental.ViewModel.SharedDebateViewModel
 import kimsy.rr.vental.data.DebateWithUsers
 import kimsy.rr.vental.data.Status
-import kimsy.rr.vental.data.VentCardWithUser
 import kimsy.rr.vental.ui.CommonComposable.ImagePermissionAndSelection
 import kimsy.rr.vental.ui.CommonComposable.MaxLengthOutlinedTextField
 import kimsy.rr.vental.ui.CommonComposable.MaxLengthTextField
@@ -81,6 +68,7 @@ fun DebateCreationView(
     context: Context,
     authViewModel: AuthViewModel,
     debateCreationViewModel: DebateCreationViewModel,
+    sharedDebateViewModel: SharedDebateViewModel,
     toDebateView: () -> Unit
 ){
     val user by authViewModel.currentUser.observeAsState()
@@ -121,7 +109,11 @@ fun DebateCreationView(
                     ) {
                         user?.let { currentUser ->
                             debateCreationViewModel.handleDebateCreation(
-                                text, imageUri, currentUser.uid, context, onCreationSuccess = toDebateView
+                                text, imageUri, currentUser.uid, context,
+                                onCreationSuccess = { createdDebateItem->
+                                    sharedDebateViewModel.setCurrentDebateItem(createdDebateItem)
+                                    toDebateView()
+                                }
                             )
                         }
                     }
@@ -136,7 +128,11 @@ fun DebateCreationView(
                 ) {
                     user?.let { currentUser ->
                         debateCreationViewModel.handleDebateCreation(
-                            text, imageUri, currentUser.uid, context, onCreationSuccess = toDebateView
+                            text, imageUri, currentUser.uid, context,
+                            onCreationSuccess = { createdDebateItem->
+                                sharedDebateViewModel.setCurrentDebateItem(createdDebateItem)
+                                toDebateView()
+                            }
                         )
                     }
                 }
