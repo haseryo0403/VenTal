@@ -10,6 +10,8 @@ class SignOutUseCase @Inject constructor(
         return userRepository.signOutFromFirebaseAuth()
             .onSuccess {
                 userRepository.signOutFromGoogle()
+                //TODO FIX
+//                User.CurrentUserShareModel.resetCurrentUserOnModel()
             }
     }
 }

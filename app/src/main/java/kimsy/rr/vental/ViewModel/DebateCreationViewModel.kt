@@ -22,6 +22,7 @@ import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.DebateWithUsers
 import kimsy.rr.vental.data.NetworkUtils
+import kimsy.rr.vental.data.NotificationType
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
@@ -179,7 +180,7 @@ class DebateCreationViewModel @Inject constructor(
         body: String
         ){
         viewModelScope.launch {
-            saveNotificationUseCase.execute(fromUserId, toUserId, debateId, body)
+            saveNotificationUseCase.execute(fromUserId, toUserId, debateId, NotificationType.DEBATESTART, body)
         }
     }
 

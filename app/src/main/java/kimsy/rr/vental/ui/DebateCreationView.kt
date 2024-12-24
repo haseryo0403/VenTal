@@ -1,6 +1,5 @@
 package kimsy.rr.vental.ui
 
-//import kimsy.rr.vental.ViewModel.DebateViewModel
 import android.content.Context
 import android.net.Uri
 import android.os.Build

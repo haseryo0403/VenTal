@@ -34,7 +34,6 @@ import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import kimsy.rr.vental.ViewModel.AuthViewModel
-import kimsy.rr.vental.ViewModel.SharedDebateViewModel
 import kimsy.rr.vental.data.repository.UserRepository
 import kimsy.rr.vental.ui.SignInScreen
 import kimsy.rr.vental.ui.commonUi.MainView
@@ -51,6 +50,7 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var authViewModel: AuthViewModel
 
+    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -175,7 +175,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-//
+
 //    private fun updateFCMToken() {
 //        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
 //            if (!task.isSuccessful) {

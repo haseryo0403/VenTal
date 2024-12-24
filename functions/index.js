@@ -7,10 +7,15 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
+// [START sd_logging_import]
+// const {Logging} = require("@google-cloud/logging");
+// [END sd_logging_import]
+// const functions = require('firebase-functions');
 // const {onRequest} = require("firebase-functions/v2/https");
+// const functions = require("firebase-functions");
+
 const {onDocumentCreated} = require("firebase-functions/v2/firestore");
 const {getMessaging} = require("firebase-admin/messaging");
-// const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 
 admin.initializeApp();
@@ -23,7 +28,7 @@ exports.sendNotificationOnCreate = onDocumentCreated(
       // トリガーで取得したデータ
         const notificationData = event.data.data();
         const toUserId = event.params.userId;
-        const {body, fromUserId, type, targetId} = notificationData;
+        const {body, fromUserId, type, targetItemId} = notificationData;
         const notificationSettingsDoc = await admin.firestore()
             .doc("notificationSettings/"+toUserId).get();
         const fromUserDoc = await admin.firestore()
@@ -73,10 +78,11 @@ exports.sendNotificationOnCreate = onDocumentCreated(
             title: title,
             body: body,
             fromUserImageURL: fromUser.photoURL,
-            targetId: targetId,
+            targetItemId: targetItemId,
           },
         };
 
+        console.log("data", message.data);
         // メッセージ送信
         const response = await getMessaging().send(message);
         console.log("Successfully sent notification:", response);

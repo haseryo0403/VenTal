@@ -11,6 +11,7 @@ data class DebateItem(
     val debater: User,
     val likedUserType: UserType?
 )object DebateItemSharedModel {
+    // TODO Delete
     //一気に登録用
 //    private val _currentDebateItem = MutableStateFlow<DebateItem?>(null)
 //    val currentDebateItem: StateFlow<DebateItem?> get() = _currentDebateItem

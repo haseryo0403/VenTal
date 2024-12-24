@@ -1,44 +1,53 @@
 package kimsy.rr.vental.data
 
-import android.util.Log
 import com.google.firebase.firestore.FieldValue
 
 data class NotificationData(
     val fromUserId: String = "",
     val type: NotificationType = NotificationType.DEBATESTART,
-    val targetId: String = "",
+    val targetItemId: String = "",
     val body: String = "",
     val readFlag: Boolean = false,
     val notificationDatetime: Any = FieldValue.serverTimestamp(),
     ){
     companion object {
-        fun createForDebateStart(fromUserId: String, targetId: String, body: String): NotificationData {
-            Log.d("ND", "createForDebateStart called")
-            return NotificationData(
-                fromUserId = fromUserId,
-                type = NotificationType.DEBATESTART,
-                targetId = targetId,
-                body = body
-            )
-        }
 
-        fun createForDebateMessage(fromUserId: String, targetId: String, body: String): NotificationData {
+        fun createNotification(fromUserId: String, targetItemId: String, targetItemType: NotificationType, body: String): NotificationData {
             return NotificationData(
                 fromUserId = fromUserId,
-                type = NotificationType.DEBATEMESSAGE,
-                targetId = targetId,
+                type = targetItemType,
+                targetItemId = targetItemId,
                 body = body
             )
         }
-
-        fun createForDebateComment(fromUserId: String, targetId: String, body: String): NotificationData {
-            return NotificationData(
-                fromUserId = fromUserId,
-                type = NotificationType.DEBATECOMMENT,
-                targetId = targetId,
-                body = body
-            )
-        }
+//
+//        fun createForDebateStart(fromUserId: String, targetItemId: String, body: String): NotificationData {
+//            Log.d("ND", "createForDebateStart called")
+//            return NotificationData(
+//                fromUserId = fromUserId,
+//                type = NotificationType.DEBATESTART,
+//                targetItemId = targetItemId,
+//                body = body
+//            )
+//        }
+//
+//        fun createForDebateMessage(fromUserId: String, targetItemId: String, body: String): NotificationData {
+//            return NotificationData(
+//                fromUserId = fromUserId,
+//                type = NotificationType.DEBATEMESSAGE,
+//                targetItemId = targetItemId,
+//                body = body
+//            )
+//        }
+//
+//        fun createForDebateComment(fromUserId: String, targetItemId: String, body: String): NotificationData {
+//            return NotificationData(
+//                fromUserId = fromUserId,
+//                type = NotificationType.DEBATECOMMENT,
+//                targetItemId = targetItemId,
+//                body = body
+//            )
+//        }
     }
 }
 

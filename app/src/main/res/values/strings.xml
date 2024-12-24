@@ -1,5 +1,6 @@
 <resources>
     <string name="get_debate_fail">討論の取得に失敗しました。</string>
+    <string name="message_creation_fail">メッセージの送信に失敗しました。</string>
     <string name="app_name" translatable="false">Vental</string>
     <string name="like_fail">いいねに失敗しました。しばらく時間を置いて、再度お試しください。</string>
     <string name="default_web_client_id">480895274589-sca3ln83hfnh4odgegup9s7c7llms32o.apps.googleusercontent.com</string>
