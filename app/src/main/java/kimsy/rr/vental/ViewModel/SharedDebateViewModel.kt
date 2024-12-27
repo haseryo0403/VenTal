@@ -13,6 +13,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.DocumentSnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kimsy.rr.vental.R
+import kimsy.rr.vental.UseCase.GetDebatesRelatedUserUseCase
 import kimsy.rr.vental.UseCase.GetTimeLineItemsUseCase
 import kimsy.rr.vental.UseCase.HandleDebateLikeActionUseCase
 import kimsy.rr.vental.data.DebateItem
@@ -30,10 +31,12 @@ import javax.inject.Inject
 class SharedDebateViewModel @Inject constructor(
     private val getTimeLineItemsUseCase: GetTimeLineItemsUseCase,
     private val handleDebateLikeActionUseCase: HandleDebateLikeActionUseCase,
+    private val hetDebatesRelatedUserUseCase: GetDebatesRelatedUserUseCase
 ): ViewModel() {
 
     val currentUser = User.CurrentUserShareModel.getCurrentUserFromModel()
 
+    //TimelineView関連
     private val _getDebateItemsState = MutableStateFlow<Resource<Pair<List<DebateItem>, DocumentSnapshot?>>>(
         Resource.idle())
     val getDebateItemsState: StateFlow<Resource<Pair<List<DebateItem>, DocumentSnapshot?>>> get() = _getDebateItemsState
@@ -52,6 +55,16 @@ class SharedDebateViewModel @Inject constructor(
     private val _likeState = MutableStateFlow<Map<DebateItem, Resource<DebateItem>>>(emptyMap())
     val likeState: StateFlow<Map<DebateItem, Resource<DebateItem>>> get() = _likeState
 
+    //mypageView関連
+
+    private var lastVisibleForMyPage: DocumentSnapshot? = null
+
+    private val _myPageItems = MutableStateFlow<List<DebateItem>>(emptyList())
+    val myPageItems: StateFlow<List<DebateItem>> get() = _myPageItems
+
+    var hasFinishedLoadingAllMyPageItems by mutableStateOf(false)
+        private set
+
     suspend fun getTimeLineItems() {
         Log.d("TLVM", "getTLT called")
         viewModelScope.launch {
@@ -59,7 +72,7 @@ class SharedDebateViewModel @Inject constructor(
                 _getDebateItemsState.value = Resource.loading()
             }
             _getDebateItemsState.value =
-                currentUser?.let { getTimeLineItemsUseCase.execute(lastVisible, it) }!!
+                currentUser?.let { getTimeLineItemsUseCase.execute(lastVisible, it) }?: Resource.failure(R.string.no_user_found.toString())
             when (_getDebateItemsState.value.status) {
                 Status.SUCCESS -> {
                     Log.d("TLVM", "success")
@@ -69,6 +82,31 @@ class SharedDebateViewModel @Inject constructor(
                         }
                         _timelineItems.value = _timelineItems.value + timelineItems
                         lastVisible = newLastVisible
+                    }
+                }
+                Status.FAILURE -> {
+                    Log.d("TLVM", "failure")
+                }
+                else -> {}
+            }
+        }
+    }
+
+    suspend fun getMyPageDebateItems() {
+        //TODO 上のぱくり
+        viewModelScope.launch {
+            _getDebateItemsState.value = Resource.loading()
+            _getDebateItemsState.value =
+                currentUser?.let { hetDebatesRelatedUserUseCase.execute(lastVisibleForMyPage, it.uid) }?: Resource.failure(R.string.no_user_found.toString())
+            when (_getDebateItemsState.value.status) {
+                Status.SUCCESS -> {
+                    Log.d("TLVM", "success")
+                    _getDebateItemsState.value.data?.let { (myPageItems, newLastVisible) ->
+                        if(myPageItems.isEmpty()) {
+                            hasFinishedLoadingAllMyPageItems = true
+                        }
+                        _myPageItems.value = _myPageItems.value +myPageItems
+                        lastVisibleForMyPage = newLastVisible
                     }
                 }
                 Status.FAILURE -> {
@@ -125,6 +163,10 @@ class SharedDebateViewModel @Inject constructor(
         _likeState.value = _likeState.value.toMutableMap().apply {
             this[debateItem] = Resource.idle()
         }
+    }
+
+    fun resetGetDebateItemState() {
+        _getDebateItemsState.value = Resource.idle()
     }
 
 }

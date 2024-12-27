@@ -2,7 +2,6 @@ package kimsy.rr.vental.UseCase
 
 import android.util.Log
 import com.google.firebase.firestore.DocumentSnapshot
-import kimsy.rr.vental.R
 import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.LikeStatus
@@ -14,8 +13,6 @@ import kimsy.rr.vental.data.UserType
 import kimsy.rr.vental.data.VentCard
 import kimsy.rr.vental.data.repository.DebateRepository
 import kimsy.rr.vental.data.repository.LogRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
@@ -23,6 +20,7 @@ class GetTimeLineItemsUseCase @Inject constructor(
     private val debateRepository: DebateRepository,
     private val getUserDetailsUseCase: GetUserDetailsUseCase,
     private val getSwipeCardUseCase: GetSwipeCardUseCase,
+    private val generateDebateItemUseCase: GenerateDebateItemUseCase,
     networkUtils: NetworkUtils,
     logRepository: LogRepository
     ): BaseUseCase(networkUtils, logRepository) {
@@ -38,24 +36,30 @@ class GetTimeLineItemsUseCase @Inject constructor(
                     Status.SUCCESS -> {
                         val debates = debatesState.data?.first
                             ?: return@withTimeout Resource.failure("討論データが空です。")
-                        val timeLineItems = debates.mapNotNull { debate ->
-                            val ventCard = getVentCard(debate)
-                            val poster = getPosterInfo(debate)
-                            val debater = getDebaterInfo(debate)
-                            val likeState =
-                                debateRepository.fetchLikeState(currentUser.uid, debate.debateId)
-                            val likeUserType = when (likeState.status) {
-                                Status.SUCCESS -> likeState.data?.let { handleSuccess(it) }
-                                Status.FAILURE -> null
-                                else -> null
-                            }
 
-                            if (ventCard != null && poster != null && debater != null) {
-                                DebateItem(debate, ventCard, poster, debater, likeUserType)
-                            } else {
-                                null // 失敗した場合はスキップ
-                            }
+//                        val timeLineItems = debates.mapNotNull { debate ->
+//                            val ventCard = getVentCard(debate)
+//                            val poster = getPosterInfo(debate)
+//                            val debater = getDebaterInfo(debate)
+//                            val likeState =
+//                                debateRepository.fetchLikeState(currentUser.uid, debate.debateId)
+//                            val likeUserType = when (likeState.status) {
+//                                Status.SUCCESS -> likeState.data?.let { handleSuccess(it) }
+//                                Status.FAILURE -> null
+//                                else -> null
+//                            }
+//
+//                            if (ventCard != null && poster != null && debater != null) {
+//                                DebateItem(debate, ventCard, poster, debater, likeUserType)
+//                            } else {
+//                                null // 失敗した場合はスキップ
+//                            }
+//                        }
+
+                        val timeLineItems = debates.mapNotNull { debate ->
+                            generateDebateItemUseCase.execute(debate, currentUser.uid)
                         }
+
                         val newLastVisible = debatesState.data.second
                         Resource.success(Pair(timeLineItems, newLastVisible))
                     }
@@ -73,62 +77,6 @@ class GetTimeLineItemsUseCase @Inject constructor(
             }
         }
     }
-
-//TODO　 try catchの共通処理の使用検討、ログに残したい
-    //使わないけどメッセージの表示の際に参考にしたいので残しておく
-    suspend fun executes(
-        lastVisible: DocumentSnapshot?,
-        currentUser: User
-    ): Flow<Resource<Pair<List<DebateItem?>, DocumentSnapshot?>>> {
-        return flow {
-            try {
-                withTimeout(10000L) {
-                    debateRepository.observeDebates(lastVisible).collect { debatesState ->
-                        when (debatesState.status) {
-                            Status.SUCCESS -> {
-                                val debates = debatesState.data?.first ?: return@collect emit(Resource.failure(R.string.get_debate_fail.toString()))
-                                val timeLineItems = debates.map { debate ->
-                                    val ventCard = getVentCard(debate)
-                                    val poster = getPosterInfo(debate)
-                                    val debater = getDebaterInfo(debate)
-                                    val likeState =
-                                        debateRepository.fetchLikeState(currentUser.uid, debate.debateId)
-                                    val likeUserType = when (likeState.status) {
-                                        Status.SUCCESS -> likeState.data?.let { handleSuccess(it) }
-                                        Status.FAILURE -> null
-                                        else -> null
-                                    }
-
-                                    if (ventCard != null && poster != null && debater != null) {
-                                        DebateItem(debate, ventCard, poster, debater, likeUserType)
-                                    } else {
-                                        null // 失敗した場合はスキップ
-                                    }
-                                }
-                                val newLastVisible = debatesState.data.second
-                                emit(Resource.success(Pair(timeLineItems, newLastVisible)))
-                            }
-
-                            Status.FAILURE -> {
-                                emit(Resource.failure(R.string.get_debate_fail.toString()))
-                                //エラーハンドリング？
-                            }
-
-                            else -> {
-                                emit(Resource.failure("予期しないステータス: ${debatesState.status}"))
-                            }
-                        }
-
-
-//                        emit(Resource.success(data))
-                    }
-                }
-            } catch (e: Exception) {
-                emit(Resource.failure("Error fetching debates: ${e.message}"))
-            }
-        }
-    }
-
 
     private fun handleSuccess(likeStatus: LikeStatus): UserType? {
         return when (likeStatus) {

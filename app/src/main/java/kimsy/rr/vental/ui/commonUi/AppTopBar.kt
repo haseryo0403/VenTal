@@ -83,6 +83,18 @@ fun AppTopBarView(
                         modifier = Modifier
                     )
                 }
+            } else if (title.contains("マイページ")) {
+                IconButton(onClick = {
+                    navController.navigate(Screen.Notifications.route)
+                }) {
+                    Icon(painter = painterResource(id = R.drawable.baseline_notifications_24), contentDescription = "notifications")
+                }
+
+                IconButton(onClick = {
+                    navController.navigate(Screen.SettingsScreen.route)
+                }) {
+                    Icon(painter = painterResource(id = R.drawable.baseline_settings_24), contentDescription = "notifications")
+                }
             } else if(!title.contains("通知")){
 
                 IconButton(onClick = {

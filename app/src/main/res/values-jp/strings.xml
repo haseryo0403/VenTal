@@ -3,5 +3,20 @@
 <resources>
     <string name="get_debate_fail">討論の取得に失敗しました。</string>
     <string name="message_creation_fail">メッセージの送信に失敗しました。</string>
+    <string name="no_user_found">ユーザーが見つかりませんでした。</string>
+    <string name="account">アカウント</string>
+    <string name="account_settings_description">アカウント情報をここで確認できます</string>
+    <string name="notification_settings">通知設定</string>
+    <string name="notification_settings_description">ここで通知の設定をできます</string>
+    <string name="about_app">このアプリについて</string>
+    <string name="logout">ログアウト</string>
+    <string name="logout_comfirmation">アカウントからログアウトしますか？</string>
+    <string name="user_name">ユーザーネーム</string>
+    <string name="please_write_userName">ユーザーネームを入力してください</string>
+    <string name="self_introduce">自己紹介</string>
+    <string name="please_write_self_introduce">自己紹介を入力してください</string>
+    <string name="change">変更</string>
+    <string name="unknown_error">不明なエラーが発生しました</string>
+
     <string name="like_fail">いいねに失敗しました。しばらく時間を置いて、再度お試しください。</string>
 </resources>

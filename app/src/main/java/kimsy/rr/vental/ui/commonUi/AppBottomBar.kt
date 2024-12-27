@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material3.BottomAppBar
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import kimsy.rr.vental.R
 import kimsy.rr.vental.ViewModel.VentCardCreationViewModel
 import kimsy.rr.vental.screensInBottom
 import kimsy.rr.vental.ui.CommonComposable.ImagePermissionAndSelection
@@ -45,13 +47,20 @@ fun AppBottomBarView(
 // 右寄               Spacer(modifier = Modifier.weight(1f))
                 ImagePermissionAndSelection(
                     context = context,
+                    modifier = Modifier.padding(start = 8.dp),
                     onImageSelected = {uri ->
                         // 選択された画像URIをここで処理
                         if (uri != null) {
                             // 画像URIが選択された場合の処理
                             viewModel.selectedImageUri = uri
                         }
-                    })
+                    }){
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_image_24),
+                            modifier = Modifier.size(40.dp),
+                            contentDescription = "add Image"
+                        )
+                    }
             },
             modifier =
 //            Modifier.height(48.dp),

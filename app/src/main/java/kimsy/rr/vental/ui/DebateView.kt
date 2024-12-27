@@ -552,8 +552,15 @@ fun debateTextFieldWithOutImage(
             ) {
                 ImagePermissionAndSelection(
                     context = context,
+                    modifier = Modifier.padding(start = 8.dp),
                     onImageSelected = onImageSelected
-                )
+                ){
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_image_24),
+                        modifier = Modifier.size(40.dp),
+                        contentDescription = "add Image"
+                    )
+                }
                 IconButton(onClick = onSendClick) {
                     Icon(imageVector = Icons.Default.Send, contentDescription = "Send")
                 }

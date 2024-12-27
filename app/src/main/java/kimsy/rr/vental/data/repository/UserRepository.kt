@@ -153,4 +153,21 @@ class UserRepository @Inject constructor(
             Resource.failure(e.message)
         }
     }
+
+    suspend fun updateUser(
+        user: User
+    ) {
+
+        val query = db
+            .collection("users")
+            .document(user.uid)
+
+        val updates = mapOf(
+            "name" to user.name,
+            "photoURL" to user.photoURL,
+            "selfIntroduction" to user.selfIntroduction
+        )
+
+        query.update(updates).await()
+    }
 }

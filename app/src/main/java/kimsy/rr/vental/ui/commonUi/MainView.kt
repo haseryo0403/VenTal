@@ -52,6 +52,8 @@ import kimsy.rr.vental.ui.DebateView
 import kimsy.rr.vental.ui.FollowsView
 import kimsy.rr.vental.ui.MyPageView
 import kimsy.rr.vental.ui.NotificationsView
+import kimsy.rr.vental.ui.ProfileEditView
+import kimsy.rr.vental.ui.SettingsView
 import kimsy.rr.vental.ui.SwipeCardsView
 import kimsy.rr.vental.ui.TimeLineView
 import kimsy.rr.vental.ui.VentCardCreationView
@@ -191,6 +193,7 @@ fun Navigation(
     sharedDebateViewModel: SharedDebateViewModel,
     debateCreationViewModel: DebateCreationViewModel = hiltViewModel(),
     timeLineViewModel: TimeLineViewModel = hiltViewModel(),
+    myPageViewModel: MyPageViewModel = hiltViewModel(),
     context: Context,
     pd:PaddingValues){
 
@@ -229,10 +232,17 @@ fun Navigation(
             NotificationsView()
         }
         composable(Screen.BottomScreen.MyPage.bottomRoute) {
-            val viewModel = MyPageViewModel()
-            MyPageView(viewModel, authViewModel ,onSignOutSuccess = {
-                navController.navigate(Screen.SignupScreen.route)
-            })
+//            val viewModel = MyPageViewModel()
+            MyPageView(
+                sharedDebateViewModel = sharedDebateViewModel,
+                viewModel = myPageViewModel,
+                toDebateView = {
+                    navController.navigate(Screen.DebateScreen.route)
+                },
+                toProfileEditView = {
+                    navController.navigate(Screen.ProfileEditScreen.route)
+                }
+            )
         }
         composable(Screen.BottomScreen.VentCardCreation.route) {
             Log.d("Navigation", "to VCCVM")
@@ -253,6 +263,18 @@ fun Navigation(
         composable(Screen.DebateScreen.route) {
             DebateView(
                 sharedDebateViewModel = sharedDebateViewModel
+            )
+        }
+        composable(Screen.SettingsScreen.route) {
+            SettingsView(
+                authViewModel = authViewModel
+            )
+        }
+        composable(Screen.ProfileEditScreen.route) {
+            ProfileEditView(
+                toMyPageView = {
+                    navController.navigate(Screen.BottomScreen.MyPage.route)
+                }
             )
         }
 

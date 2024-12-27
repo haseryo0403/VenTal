@@ -10,17 +10,11 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import kimsy.rr.vental.MainActivity
-import kimsy.rr.vental.R
 import kimsy.rr.vental.data.hasImagePermission
 
 
@@ -28,7 +22,9 @@ import kimsy.rr.vental.data.hasImagePermission
 @Composable
 fun ImagePermissionAndSelection(
     context: Context,
-    onImageSelected: (Uri?) -> Unit // 画像選択時のコールバック
+    modifier: Modifier,
+    onImageSelected: (Uri?) -> Unit, // 画像選択時のコールバック
+    iconContent: @Composable () -> Unit // アイコン部分をカスタマイズ可能に
 ) {
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -72,12 +68,13 @@ fun ImagePermissionAndSelection(
                 }
             }
         },
-        modifier = Modifier.padding(start = 8.dp)
+        modifier = modifier
     ) {
-        Icon(
-            painter = painterResource(id = R.drawable.baseline_image_24),
-            modifier = Modifier.size(40.dp),
-            contentDescription = "add Image"
-        )
+//        Icon(
+//            painter = painterResource(id = R.drawable.baseline_image_24),
+//            modifier = Modifier.size(40.dp),
+//            contentDescription = "add Image"
+//        )
+        iconContent()
     }
 }
