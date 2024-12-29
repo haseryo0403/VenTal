@@ -37,51 +37,87 @@ class SharedDebateViewModel @Inject constructor(
     private val generateDebateItemByDebateIdUseCase: GenerateDebateItemByDebateIdUseCase
 
 ): ViewModel() {
+    //TODO
+    //Viewのlaunchedeffectで画面を指定例：currentView =
+    // lastvisibleやdebateitemやhasfinishなどをmapofにする
+    //もしくは
 
+    //TODO itemsは各画面のVMで保持する。
+    //そして、likeStateをSVMで保持し、全てのVMで監視して、SUCCESSなら
+    //val updatedDebate: DebateItem がヌルでなければそれのidと各VMで保持しているitemsと照合して、
+    // それのitemをアップデートする
+    //たぶんlikeStateを監視するためにはviewModelが引数にsvmをもつ必要があると思う
+    //TODO これだ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+
+    //各VM
     val currentUser = User.CurrentUserShareModel.getCurrentUserFromModel()
 
     //TimelineView関連
+    //各VM
     private val _getDebateItemsState = MutableStateFlow<Resource<Pair<List<DebateItem>, DocumentSnapshot?>>>(
         Resource.idle())
     val getDebateItemsState: StateFlow<Resource<Pair<List<DebateItem>, DocumentSnapshot?>>> get() = _getDebateItemsState
 
+    //各VM
     private val _timelineItems = MutableStateFlow<List<DebateItem>>(emptyList())
         val timelineItems: StateFlow<List<DebateItem>> get() = _timelineItems
 
+    //keep
     private val _currentDebateItem = MutableStateFlow<DebateItem?>(null)
         val currentDebateItem: StateFlow<DebateItem?> get() = _currentDebateItem
 
+    //各VM
     private var lastVisible: DocumentSnapshot? = null
 
+    //各VM
     var hasFinishedLoadingAllItems by mutableStateOf(false)
     private set
 
+    //keep
     private val _likeState = MutableStateFlow<Map<DebateItem, Resource<DebateItem>>>(emptyMap())
     val likeState: StateFlow<Map<DebateItem, Resource<DebateItem>>> get() = _likeState
 
+    //各VM
+    //各画面固有にするか、共通にするか
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> get() = _isRefreshing
+
     //mypageView関連
 
+    //各VM
     private var lastVisibleForMyPage: DocumentSnapshot? = null
 
+    //各VM
     private val _myPageItems = MutableStateFlow<List<DebateItem>>(emptyList())
     val myPageItems: StateFlow<List<DebateItem>> get() = _myPageItems
 
+    //各VM
     var hasFinishedLoadingAllMyPageItems by mutableStateOf(false)
         private set
 
     //NotificationView関連
 
+    //各VM
     private val _generateDebateItemState = MutableStateFlow<Resource<DebateItem>>(
         Resource.idle())
     val generateDebateItemState: StateFlow<Resource<DebateItem>> get() = _generateDebateItemState
+
+    fun onRefresh() {
+        viewModelScope.launch {
+            _isRefreshing.value = true
+            lastVisible = null
+            getTimeLineItems()
+        }
+    }
+
 
 
     suspend fun getTimeLineItems() {
         Log.d("TLVM", "getTLT called")
         viewModelScope.launch {
-            if (_timelineItems.value.isEmpty()) {
-                _getDebateItemsState.value = Resource.loading()
-            }
+//            if (_timelineItems.value.isEmpty()) {
+//            }
+            _getDebateItemsState.value = Resource.loading()
             _getDebateItemsState.value =
                 currentUser?.let { getTimeLineItemsUseCase.execute(lastVisible, it) }?: Resource.failure(R.string.no_user_found.toString())
             when (_getDebateItemsState.value.status) {
@@ -91,7 +127,14 @@ class SharedDebateViewModel @Inject constructor(
                         if (timelineItems.isEmpty()) {
                             hasFinishedLoadingAllItems = true
                         }
-                        _timelineItems.value = _timelineItems.value + timelineItems
+                        if (_isRefreshing.value) {
+                            _timelineItems.value = timelineItems
+                            _isRefreshing.value = false
+                        } else {
+                            _timelineItems.value = _timelineItems.value + timelineItems
+                        }
+//                        _timelineItems.value = _timelineItems.value + timelineItems
+
                         lastVisible = newLastVisible
                     }
                 }
@@ -103,8 +146,34 @@ class SharedDebateViewModel @Inject constructor(
         }
     }
 
+    suspend fun loadTimeLineItems() {
+        Log.d("TLVM", "getTLT called")
+        viewModelScope.launch {
+            //keep
+            if (_timelineItems.value.isEmpty()) {
+                _getDebateItemsState.value = Resource.loading()
+            }
+            //keep or use new state
+           _getDebateItemsState.value =
+                currentUser?.let { getTimeLineItemsUseCase.execute(lastVisible, it) }?: Resource.failure(R.string.no_user_found.toString())
+            when (_getDebateItemsState.value.status) {
+                Status.SUCCESS -> {
+                    Log.d("TLVM", "success")
+                    //keep
+                    _getDebateItemsState.value.data?.let { (timelineItems, newLastVisible) ->
+                        if (timelineItems.isEmpty()) {
+                            hasFinishedLoadingAllItems = true
+                        }
+                        _timelineItems.value = timelineItems
+                        lastVisible = newLastVisible
+                    }
+                }
+                else -> {}
+            }
+        }
+    }
+
     suspend fun getMyPageDebateItems() {
-        //TODO 上のぱくり
         viewModelScope.launch {
             _getDebateItemsState.value = Resource.loading()
             _getDebateItemsState.value =

@@ -10,7 +10,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -23,7 +25,12 @@ import kimsy.rr.vental.ViewModel.TimeLineViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.DebateCard
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun TimeLineView(
@@ -32,6 +39,8 @@ fun TimeLineView(
     toDebateView: () -> Unit,
     toAnotherUserPageView: (user: User) -> Unit
 ){
+    val isRefreshing by sharedDebateViewModel.isRefreshing.collectAsState()
+
     val timeLineItems by sharedDebateViewModel.timelineItems.collectAsState()
 
     val scrollState = rememberLazyListState()
@@ -56,14 +65,31 @@ fun TimeLineView(
             }
     }
 
+
+
+    val onRefresh: () -> Unit = {
+        //ここでVMのロードする関数を呼びたいが、
+        // ・loadingにはしたくない
+        // ・いまロードしたものはいらないかな？　lastvisibleなしでロードして、ロードに成功したらtimelineitemsにそのままぶちこむ！
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(2000) // 2秒待機
+        }
+
+    }
+
     when {
         timeLineItems.isNotEmpty() -> {
-            LazyColumn(state = scrollState){
-                items(timeLineItems) {item->
-                    DebateCard(sharedDebateViewModel, toDebateView, toAnotherUserPageView, item)
-                }
-                if (!hasFinishedLoadingAllItems) {
-                    item { LoadingIndicator(sharedDebateViewModel) }
+            PullToRefreshBox(
+                isRefreshing = isRefreshing,
+                onRefresh = {sharedDebateViewModel.onRefresh()}
+            ) {
+                LazyColumn(state = scrollState){
+                    items(timeLineItems) {item->
+                        DebateCard(sharedDebateViewModel, toDebateView, toAnotherUserPageView, item)
+                    }
+                    if (!hasFinishedLoadingAllItems) {
+                        item { LoadingIndicator(sharedDebateViewModel) }
+                    }
                 }
             }
         }
@@ -82,10 +108,8 @@ fun TimeLineView(
                 }
                 else -> {sharedDebateViewModel.resetGetDebateItemState()}
             }
-
         }
     }
-
 }
 
 @Composable

@@ -37,25 +37,6 @@ class GetTimeLineItemsUseCase @Inject constructor(
                         val debates = debatesState.data?.first
                             ?: return@withTimeout Resource.failure("討論データが空です。")
 
-//                        val timeLineItems = debates.mapNotNull { debate ->
-//                            val ventCard = getVentCard(debate)
-//                            val poster = getPosterInfo(debate)
-//                            val debater = getDebaterInfo(debate)
-//                            val likeState =
-//                                debateRepository.fetchLikeState(currentUser.uid, debate.debateId)
-//                            val likeUserType = when (likeState.status) {
-//                                Status.SUCCESS -> likeState.data?.let { handleSuccess(it) }
-//                                Status.FAILURE -> null
-//                                else -> null
-//                            }
-//
-//                            if (ventCard != null && poster != null && debater != null) {
-//                                DebateItem(debate, ventCard, poster, debater, likeUserType)
-//                            } else {
-//                                null // 失敗した場合はスキップ
-//                            }
-//                        }
-
                         val timeLineItems = debates.mapNotNull { debate ->
                             generateDebateItemUseCase.execute(debate, currentUser.uid)
                         }

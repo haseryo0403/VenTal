@@ -49,6 +49,7 @@ import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.otherScreen
 import kimsy.rr.vental.screensInBottom
+import kimsy.rr.vental.settingsScreen
 import kimsy.rr.vental.ui.AnotherUserPageView
 import kimsy.rr.vental.ui.DebateCreationView
 import kimsy.rr.vental.ui.DebateView
@@ -89,7 +90,7 @@ fun MainView(
     LaunchedEffect(nevBackStackEntry) {
         val route = nevBackStackEntry?.destination?.route
         title.value = screensInBottom.find { it.bottomRoute == route }?.bottomTitle
-            ?: otherScreen.find { it.route == route }?.title ?:"タイムライン"
+            ?: otherScreen.find { it.route == route }?.title ?: settingsScreen.find{ it.route == route}?.title ?:""
         // スクロールの状態をリセット
         scrollBehavior.state.heightOffset = 0f
     }
