@@ -1,5 +1,6 @@
 package kimsy.rr.vental.ViewModel
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.util.Log
@@ -13,6 +14,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.DocumentSnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kimsy.rr.vental.R
+import kimsy.rr.vental.UseCase.GenerateDebateItemByDebateIdUseCase
 import kimsy.rr.vental.UseCase.GetDebatesRelatedUserUseCase
 import kimsy.rr.vental.UseCase.GetTimeLineItemsUseCase
 import kimsy.rr.vental.UseCase.HandleDebateLikeActionUseCase
@@ -31,7 +33,9 @@ import javax.inject.Inject
 class SharedDebateViewModel @Inject constructor(
     private val getTimeLineItemsUseCase: GetTimeLineItemsUseCase,
     private val handleDebateLikeActionUseCase: HandleDebateLikeActionUseCase,
-    private val hetDebatesRelatedUserUseCase: GetDebatesRelatedUserUseCase
+    private val hetDebatesRelatedUserUseCase: GetDebatesRelatedUserUseCase,
+    private val generateDebateItemByDebateIdUseCase: GenerateDebateItemByDebateIdUseCase
+
 ): ViewModel() {
 
     val currentUser = User.CurrentUserShareModel.getCurrentUserFromModel()
@@ -64,6 +68,13 @@ class SharedDebateViewModel @Inject constructor(
 
     var hasFinishedLoadingAllMyPageItems by mutableStateOf(false)
         private set
+
+    //NotificationView関連
+
+    private val _generateDebateItemState = MutableStateFlow<Resource<DebateItem>>(
+        Resource.idle())
+    val generateDebateItemState: StateFlow<Resource<DebateItem>> get() = _generateDebateItemState
+
 
     suspend fun getTimeLineItems() {
         Log.d("TLVM", "getTLT called")
@@ -155,6 +166,25 @@ class SharedDebateViewModel @Inject constructor(
         }
     }
 
+    @SuppressLint("SuspiciousIndentation")
+    fun generateAndSetDebateItemByDebateId(
+        debateId: String,
+//        onSuccess: () -> Unit
+    ) {
+        viewModelScope.launch {
+            _generateDebateItemState.value = Resource.loading()
+            _generateDebateItemState.value =
+                currentUser?.let { generateDebateItemByDebateIdUseCase.execute(debateId, it.uid) }!!
+                when (_generateDebateItemState.value.status) {
+                    Status.SUCCESS -> {
+                        _generateDebateItemState.value.data?.let { setCurrentDebateItem(it) }
+//                        onSuccess()
+                    }
+                    else -> {}
+                }
+        }
+    }
+
     fun showLikeFailedToast(context: Context) {
         Toast.makeText(context, R.string.like_fail, Toast.LENGTH_SHORT).show()
     }
@@ -167,6 +197,10 @@ class SharedDebateViewModel @Inject constructor(
 
     fun resetGetDebateItemState() {
         _getDebateItemsState.value = Resource.idle()
+    }
+
+    fun resetGenerateDebateItemState() {
+        _generateDebateItemState.value = Resource.idle()
     }
 
 }

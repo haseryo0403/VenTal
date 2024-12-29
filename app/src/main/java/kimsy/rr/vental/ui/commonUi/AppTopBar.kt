@@ -97,6 +97,8 @@ fun AppTopBarView(
                 }
             } else if(!title.contains("通知")){
 
+                //TODO isReadの個数をチェックして反映？もしくは通知画面をリアルタイムアップデートにして、もし新しいのがあれば反映？どっちだ
+
                 IconButton(onClick = {
                     navController.navigate(Screen.Notifications.route)
                 }) {

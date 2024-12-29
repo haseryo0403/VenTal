@@ -26,6 +26,16 @@ class DebateRepository @Inject constructor(
     private val db: FirebaseFirestore,
 ) {
 
+    suspend fun fetchDebateByDebateId(debateId: String): Debate {
+        val query = db
+            .collectionGroup("debates")
+            .whereEqualTo("debateId", debateId)
+
+        val querySnapshot = query.get().await()
+        val debate = querySnapshot.toObjects(Debate::class.java).firstOrNull()
+        return debate ?: throw NoSuchElementException("Debate with ID $debateId not found")
+    }
+
     suspend fun fetchRelatedDebates(ventCardWithUser: VentCardWithUser): Resource<List<Debate>> {
         return try {
             Log.d("DR", "fetchRD was called")
@@ -150,9 +160,44 @@ class DebateRepository @Inject constructor(
         }
     }
 
-    suspend fun createDebate(debate: Debate): Resource<Debate>{
+//    suspend fun createDebate(debate: Debate): Resource<Debate>{
+//        Log.d("DR", "createDebate called")
+//        return try{
+//            withTimeout(10000L) {
+//                val docRefOnSwipeCard = db
+//                    .collection("users")
+//                    .document(debate.posterId)
+//                    .collection("swipeCards")
+//                    .document(debate.swipeCardId)
+//
+//                val debateDocRef = docRefOnSwipeCard
+//                    .collection("debates")
+//                    .add(debate)
+//                    .await()
+//
+//                docRefOnSwipeCard
+//                    .update("debateCount", FieldValue.increment(1))
+//                    .await()
+//
+//                val createdDebateSnapshot = debateDocRef.get().await()
+//
+//                val createdDebate = createdDebateSnapshot.toObject(Debate::class.java)
+//                    ?.copy(debateId = debateDocRef.id,
+//                        //TODO dateに変換？
+//                        )
+//                    ?: throw IllegalStateException("Failed to convert document to Debate")
+//
+//                Resource.success(createdDebate)
+//            }
+//        } catch (e: Exception) {
+//            Resource.failure(e.message)
+//        }
+//    }
+
+
+    suspend fun createDebate(debate: Debate): Resource<Debate> {
         Log.d("DR", "createDebate called")
-        return try{
+        return try {
             withTimeout(10000L) {
                 val docRefOnSwipeCard = db
                     .collection("users")
@@ -160,21 +205,26 @@ class DebateRepository @Inject constructor(
                     .collection("swipeCards")
                     .document(debate.swipeCardId)
 
-                val debateDocRef = docRefOnSwipeCard
+                val debateDoc = docRefOnSwipeCard
                     .collection("debates")
-                    .add(debate)
-                    .await()
+                    .document() // 新しいドキュメントIDを生成
 
+                // DebateオブジェクトにドキュメントIDを追加して保存
+                val debateWithId = debate.copy(debateId = debateDoc.id)
+
+                // ドキュメントを保存
+                debateDoc.set(debateWithId).await()
+
+                // swipeCardのdebateCountを更新
                 docRefOnSwipeCard
                     .update("debateCount", FieldValue.increment(1))
                     .await()
 
-                val createdDebateSnapshot = debateDocRef.get().await()
+                // 作成したドキュメントを取得
+                val createdDebateSnapshot = debateDoc.get().await()
 
+                // 作成したDebateオブジェクトを取得
                 val createdDebate = createdDebateSnapshot.toObject(Debate::class.java)
-                    ?.copy(debateId = debateDocRef.id,
-                        //TODO dateに変換？
-                        )
                     ?: throw IllegalStateException("Failed to convert document to Debate")
 
                 Resource.success(createdDebate)
@@ -183,6 +233,7 @@ class DebateRepository @Inject constructor(
             Resource.failure(e.message)
         }
     }
+
 
     suspend fun addDebatingSwipeCard (debaterId: String, swipeCardId: String) {
         val docRef = db

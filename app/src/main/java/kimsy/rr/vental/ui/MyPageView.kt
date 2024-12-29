@@ -36,6 +36,7 @@ import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.ViewModel.MyPageViewModel
 import kimsy.rr.vental.ViewModel.SharedDebateViewModel
 import kimsy.rr.vental.data.Status
+import kimsy.rr.vental.data.User
 import kimsy.rr.vental.data.UserPageData
 import kimsy.rr.vental.ui.CommonComposable.DebateCard
 
@@ -45,8 +46,11 @@ fun MyPageView(
     viewModel: MyPageViewModel,
     sharedDebateViewModel: SharedDebateViewModel,
     toDebateView: () -> Unit,
-    toProfileEditView: () -> Unit
+    toProfileEditView: () -> Unit,
+    toAnotherUserPageView: (user: User) -> Unit
 ){
+    val currentUser by viewModel.currentUser.collectAsState()
+
     val myPageItems by sharedDebateViewModel.myPageItems.collectAsState()
 
     val hasFinishedLoadingAllMyPageItems = sharedDebateViewModel.hasFinishedLoadingAllMyPageItems
@@ -89,11 +93,13 @@ fun MyPageView(
             Status.SUCCESS -> {
                 Log.d("MPV", "upds sccess")
                 userPageDataState.data?.let {
-                    AccountContent(
-                        userPageData = it,
-                        viewModel = viewModel,
-                        toProfileEditView = toProfileEditView
-                    )
+                    currentUser?.let { it1 ->
+                        AccountContent(
+                            userPageData = it,
+                            user = it1,
+                            toProfileEditView = toProfileEditView
+                        )
+                    }
                 }
                 Divider()
             }
@@ -117,7 +123,7 @@ fun MyPageView(
             when {
                 myPageItems.isNotEmpty() -> {
                         items(myPageItems) {item->
-                            DebateCard(sharedDebateViewModel, toDebateView, item)
+                            DebateCard(sharedDebateViewModel, toDebateView, toAnotherUserPageView, item)
                         }
                         if (!hasFinishedLoadingAllMyPageItems) {
                             item { MyPageLoadingIndicator(sharedDebateViewModel) }
@@ -149,10 +155,9 @@ fun MyPageView(
 @Composable
 fun AccountContent(
     userPageData: UserPageData,
-    viewModel: MyPageViewModel,
-    toProfileEditView: () -> Unit
+    user: User,
+    toProfileEditView: (() -> Unit)?
 ){
-    val currentUser by viewModel.currentUser.collectAsState()
     val debatesCount = userPageData.debatesCount
     val followerCount = userPageData.followerCount
 
@@ -172,16 +177,16 @@ fun AccountContent(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
-                Log.d("TAG", "Image URL: ${currentUser?.photoURL}")
+                Log.d("TAG", "Image URL: ${user?.photoURL}")
                 Image(
-                    painter = rememberAsyncImagePainter(currentUser?.photoURL),
+                    painter = rememberAsyncImagePainter(user?.photoURL),
                     contentDescription = null,
                     modifier = Modifier
                         .size(56.dp)
                         .clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
-                currentUser?.name?.let { Text(text = it) }
+                user?.name?.let { Text(text = it) }
 
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -196,7 +201,7 @@ fun AccountContent(
                     Text(text = "フォロワー")
                 }
             }
-            Button(onClick = { toProfileEditView() },
+            Button(onClick = { if (toProfileEditView != null) toProfileEditView() },
 
                 ) {
                 Text(text = "プロフィールを編集")

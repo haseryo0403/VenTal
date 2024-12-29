@@ -15,7 +15,14 @@
     <string name="please_write_self_introduce">自己紹介を入力してください</string>
     <string name="change">変更</string>
     <string name="unknown_error">不明なエラーが発生しました</string>
-
+    <string name="debate_started">　さんが討論を始めました。</string>
+    <string name="recieved_message">　さんが新しい反論を送信しました。</string>
+    <string name="recieved_comment">　さんがこの討論にコメントしました。</string>
+    <string name="load_notification_failed">通知の取得に失敗しました。</string>
+    <string name="no_notifications">現在通知はありません。</string>
+    <string name="notification_settings_debate_start">討論開始</string>
+    <string name="notification_settings_debate_message">討論メッセージ</string>
+    <string name="notification_settings_debate_comment">討論へのコメント</string>
 
     <string name="app_name" translatable="false">Vental</string>
     <string name="like_fail">いいねに失敗しました。しばらく時間を置いて、再度お試しください。</string>

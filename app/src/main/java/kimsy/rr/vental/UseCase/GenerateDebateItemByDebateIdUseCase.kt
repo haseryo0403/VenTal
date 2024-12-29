@@ -3,35 +3,49 @@ package kimsy.rr.vental.UseCase
 import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.LikeStatus
+import kimsy.rr.vental.data.NetworkUtils
+import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.data.UserType
 import kimsy.rr.vental.data.VentCard
 import kimsy.rr.vental.data.repository.DebateRepository
+import kimsy.rr.vental.data.repository.LogRepository
 import javax.inject.Inject
 
-class GenerateDebateItemUseCase @Inject constructor(
+class GenerateDebateItemByDebateIdUseCase @Inject constructor(
     private val getSwipeCardUseCase: GetSwipeCardUseCase,
     private val getUserDetailsUseCase: GetUserDetailsUseCase,
-    private val debateRepository: DebateRepository
-) {
-    //TODO BaseUseCaseを使用してtrycatch
-    suspend fun execute(debate: Debate, userId: String): DebateItem? {
-        val ventCard = getVentCard(debate)
-        val poster = getPosterInfo(debate)
-        val debater = getDebaterInfo(debate)
-        val likeState = debateRepository.fetchLikeState(userId, debate.debateId)
-        val likeUserType = when (likeState.status) {
-            Status.SUCCESS -> likeState.data?.let { handleSuccess(it) }
-            Status.FAILURE -> null
-            else -> null
-        }
+    private val debateRepository: DebateRepository,
+    networkUtils: NetworkUtils,
+    logRepository: LogRepository
+): BaseUseCase(networkUtils, logRepository) {
+    suspend fun execute(
+        debateId: String,
+        currentUserId: String
+    ): Resource<DebateItem> {
+        return executeWithLoggingAndNetworkCheck {
+            val debate = getDebateByDebateId(debateId)
+            val ventCard = getVentCard(debate)
+            val poster = getPosterInfo(debate)
+            val debater = getDebaterInfo(debate)
+            val likeState = debateRepository.fetchLikeState(currentUserId, debateId)
+            val likeUserType = when (likeState.status) {
+                Status.SUCCESS -> likeState.data?.let { handleSuccess(it) }
+                Status.FAILURE -> null
+                else -> null
+            }
 
-        return if (ventCard != null && poster != null && debater != null) {
-            DebateItem(debate, ventCard, poster, debater, likeUserType)
-        } else {
-            null // 失敗した場合はスキップ
+            if (ventCard != null && poster != null && debater != null) {
+                Resource.success(DebateItem(debate, ventCard, poster, debater, likeUserType))
+            } else {
+                Resource.failure("")
+            }
         }
+    }
+
+    private suspend fun getDebateByDebateId(debateId: String): Debate {
+        return debateRepository.fetchDebateByDebateId(debateId)
     }
 
     private fun handleSuccess(likeStatus: LikeStatus): UserType? {

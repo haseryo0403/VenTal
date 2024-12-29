@@ -38,6 +38,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kimsy.rr.vental.Screen
+import kimsy.rr.vental.ViewModel.AnotherUserPageViewModel
 import kimsy.rr.vental.ViewModel.AuthViewModel
 import kimsy.rr.vental.ViewModel.DebateCreationViewModel
 import kimsy.rr.vental.ViewModel.MyPageViewModel
@@ -45,12 +46,15 @@ import kimsy.rr.vental.ViewModel.SharedDebateViewModel
 import kimsy.rr.vental.ViewModel.TimeLineViewModel
 import kimsy.rr.vental.ViewModel.VentCardCreationViewModel
 import kimsy.rr.vental.data.Status
+import kimsy.rr.vental.data.User
 import kimsy.rr.vental.otherScreen
 import kimsy.rr.vental.screensInBottom
+import kimsy.rr.vental.ui.AnotherUserPageView
 import kimsy.rr.vental.ui.DebateCreationView
 import kimsy.rr.vental.ui.DebateView
 import kimsy.rr.vental.ui.FollowsView
 import kimsy.rr.vental.ui.MyPageView
+import kimsy.rr.vental.ui.NotificationSettingsView
 import kimsy.rr.vental.ui.NotificationsView
 import kimsy.rr.vental.ui.ProfileEditView
 import kimsy.rr.vental.ui.SettingsView
@@ -194,6 +198,7 @@ fun Navigation(
     debateCreationViewModel: DebateCreationViewModel = hiltViewModel(),
     timeLineViewModel: TimeLineViewModel = hiltViewModel(),
     myPageViewModel: MyPageViewModel = hiltViewModel(),
+    anotherUserPageViewModel: AnotherUserPageViewModel = hiltViewModel(),
     context: Context,
     pd:PaddingValues){
 
@@ -219,6 +224,9 @@ fun Navigation(
                     Log.d("MV", "to DebateScreen")
                     navController.navigate(Screen.DebateScreen.route)
                 },
+                toAnotherUserPageView = { user ->
+                    navigateToUserPage(user, navController)
+                },
                 timeLineViewModel = timeLineViewModel,
                 sharedDebateViewModel = sharedDebateViewModel
             )
@@ -229,7 +237,15 @@ fun Navigation(
         }
         composable(Screen.Notifications.route) {
             Log.d("Navigation", "to Noti")
-            NotificationsView()
+            NotificationsView(
+                sharedDebateViewModel = sharedDebateViewModel,
+                toDebateView = {
+                    navController.navigate(Screen.DebateScreen.route)
+                },
+                toAnotherUserPageView =  { user ->
+                    navigateToUserPage(user, navController)
+                }
+            )
         }
         composable(Screen.BottomScreen.MyPage.bottomRoute) {
 //            val viewModel = MyPageViewModel()
@@ -241,6 +257,9 @@ fun Navigation(
                 },
                 toProfileEditView = {
                     navController.navigate(Screen.ProfileEditScreen.route)
+                },
+                toAnotherUserPageView = { user ->
+                    navigateToUserPage(user, navController)
                 }
             )
         }
@@ -267,7 +286,10 @@ fun Navigation(
         }
         composable(Screen.SettingsScreen.route) {
             SettingsView(
-                authViewModel = authViewModel
+                authViewModel = authViewModel,
+                toNotificationSettingsView = {
+                    navController.navigate(Screen.SettingsMenuScreen.NotificationSettingsScreen.route)
+                }
             )
         }
         composable(Screen.ProfileEditScreen.route) {
@@ -277,9 +299,42 @@ fun Navigation(
                 }
             )
         }
+        composable(Screen.AnotherUserPageScreen.route) {
+            AnotherUserPageView(
+                viewModel = anotherUserPageViewModel,
+                sharedDebateViewModel = sharedDebateViewModel,
+                toDebateView = {
+                    navController.navigate(Screen.DebateScreen.route)
+                },
+                toAnotherUserPageView =  { user ->
+                    navigateToUserPage(user, navController)
+                }
+            )
+        }
+
+        composable(Screen.SettingsMenuScreen.NotificationSettingsScreen.route) {
+            NotificationSettingsView()
+        }
 
     }
 }
+
+fun navigateToUserPage(
+    user: User,
+    navController: NavController
+) {
+    val currentUserId = User.CurrentUserShareModel.getCurrentUserFromModel()?.uid
+    if (user.uid == currentUserId) {
+        // 自分のアカウントならマイページへ遷移
+        navController.navigate(Screen.BottomScreen.MyPage.route)
+    } else {
+        // 他人ユーザーページへ遷移
+        User.AnotherUserShareModel.setAnotherUser(user)
+        navController.navigate(Screen.AnotherUserPageScreen.route)
+    }
+}
+
+
 
 @Preview(
     device = Devices.PIXEL_7,

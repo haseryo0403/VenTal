@@ -14,6 +14,12 @@ sealed class Screen(val title: String, val route: String) {
         object MyPage: BottomScreen("マイページ", "mypage", R.drawable.baseline_account_circle_24,"プロフィール")
     }
 
+    sealed class SettingsMenuScreen(
+        val settingTitle: String, val settingRoute: String
+    ): Screen(settingTitle, settingRoute) {
+        object NotificationSettingsScreen: Screen("通知設定", "notification settings")
+    }
+
     object SignupScreen:Screen("signup","signupscreen")
     object TimeLineScreen:Screen("timeline","timelinescreen")
     object Notifications: Screen("通知", "notifications")
@@ -21,6 +27,7 @@ sealed class Screen(val title: String, val route: String) {
     object DebateScreen: Screen("投稿", "debate")
     object SettingsScreen: Screen("設定", "settings")
     object ProfileEditScreen: Screen("プロフィール編集", "profile edit")
+    object AnotherUserPageScreen: Screen("ユーザー", "another userPage")
 
 }
 
@@ -32,6 +39,10 @@ val screensInBottom = listOf(
     Screen.BottomScreen.MyPage
 )
 
+val settingsScreen = listOf(
+    Screen.SettingsMenuScreen.NotificationSettingsScreen
+)
+
 val otherScreen = listOf(
     Screen.SignupScreen,
     Screen.TimeLineScreen,
@@ -39,5 +50,6 @@ val otherScreen = listOf(
     Screen.DebateCreation,
     Screen.DebateScreen,
     Screen.SettingsScreen,
-    Screen.ProfileEditScreen
+    Screen.ProfileEditScreen,
+    Screen.AnotherUserPageScreen
 )

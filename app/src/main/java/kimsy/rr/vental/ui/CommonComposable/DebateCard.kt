@@ -37,6 +37,7 @@ import kimsy.rr.vental.R
 import kimsy.rr.vental.ViewModel.SharedDebateViewModel
 import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.Status
+import kimsy.rr.vental.data.User
 import kimsy.rr.vental.data.UserType
 
 
@@ -45,6 +46,7 @@ import kimsy.rr.vental.data.UserType
 fun DebateCard(
     sharedDebateViewModel: SharedDebateViewModel,
     toDebateView: () -> Unit,
+    toAnotherUserPageView: (user: User) -> Unit,
     debateItem: DebateItem
 ) {
     var debate = debateItem.debate
@@ -85,7 +87,9 @@ fun DebateCard(
                     .size(40.dp)
                     .clip(CircleShape)
                     .clickable {
-                        //TODO go to user
+//                        User.AnotherUserShareModel.setAnotherUser(poster)
+                        //TODO 遷移先ユーザーがログイン中のユーザーではないかチェックする
+                        toAnotherUserPageView(poster)
                     },
                 contentScale = ContentScale.Crop
             )
@@ -99,7 +103,8 @@ fun DebateCard(
                         text = poster.name,
                         modifier = Modifier
                             .clickable {
-                                //TODO go to user
+//                                User.AnotherUserShareModel.setAnotherUser(poster)
+                                toAnotherUserPageView(poster)
                             }
                     )
                 }
@@ -134,7 +139,8 @@ fun DebateCard(
                         .size(40.dp)
                         .clip(CircleShape)
                         .clickable {
-                            //TODO go to user
+//                            User.AnotherUserShareModel.setAnotherUser(debater)
+                            toAnotherUserPageView(debater)
                         },
                     contentScale = ContentScale.Crop
                 )
@@ -142,7 +148,8 @@ fun DebateCard(
                     text = debater.name,
                     modifier = Modifier
                         .clickable {
-                            //TODO go to user
+//                            User.AnotherUserShareModel.setAnotherUser(debater)
+                            toAnotherUserPageView(debater)
                         }
                 )
             }
@@ -190,15 +197,17 @@ fun DebateCard(
                         .size(40.dp)
                         .clip(CircleShape)
                         .clickable {
-                            //TODO go to user
-                        },
+//                            User.AnotherUserShareModel.setAnotherUser(poster)
+                            toAnotherUserPageView(poster)
+                       },
                     contentScale = ContentScale.Crop
                 )
                 Text(
                     text = poster.name,
                     modifier = Modifier
                         .clickable {
-                            //TODO go to user
+//                            User.AnotherUserShareModel.setAnotherUser(poster)
+                            toAnotherUserPageView(poster)
                         }
                 )
             }

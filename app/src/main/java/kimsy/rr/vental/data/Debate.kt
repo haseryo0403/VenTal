@@ -1,11 +1,10 @@
 package kimsy.rr.vental.data
 
-import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.ServerTimestamp
 import java.util.Date
 
 data class Debate(
-    @get:Exclude val debateId: String = "",
+    val debateId: String = "",
     val swipeCardImageURL: String = "",
     val swipeCardId: String = "",
     val posterId: String = "",

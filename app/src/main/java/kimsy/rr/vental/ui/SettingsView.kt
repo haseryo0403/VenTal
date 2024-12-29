@@ -61,7 +61,8 @@ fun SettingsItem(
 
 @Composable
 fun SettingsView(
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    toNotificationSettingsView: () -> Unit
 ) {
     val dialogOpen = remember { mutableStateOf(false)}
     val context = LocalContext.current
@@ -83,7 +84,7 @@ fun SettingsView(
                 title = stringResource(id = R.string.notification_settings),
                 description = stringResource(id = R.string.notification_settings_description),
                 onClick = {
-                    // TODO: goto notifications page
+                    toNotificationSettingsView()
                 }
             )
             SettingsItem(

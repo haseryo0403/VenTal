@@ -34,6 +34,16 @@ data class User(
             currentUser = null
         }
 
+    } object AnotherUserShareModel {
+        private var anotherUser: User? = null
+
+        fun setAnotherUser(user: User) {
+            anotherUser = user
+        }
+
+        fun getAnotherUser(): User? {
+            return anotherUser
+        }
     }
 }
 

@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import kimsy.rr.vental.ViewModel.SharedDebateViewModel
 import kimsy.rr.vental.ViewModel.TimeLineViewModel
 import kimsy.rr.vental.data.Status
+import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.DebateCard
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -28,7 +29,8 @@ import kimsy.rr.vental.ui.CommonComposable.DebateCard
 fun TimeLineView(
     timeLineViewModel: TimeLineViewModel,
     sharedDebateViewModel: SharedDebateViewModel,
-    toDebateView: () -> Unit
+    toDebateView: () -> Unit,
+    toAnotherUserPageView: (user: User) -> Unit
 ){
     val timeLineItems by sharedDebateViewModel.timelineItems.collectAsState()
 
@@ -58,7 +60,7 @@ fun TimeLineView(
         timeLineItems.isNotEmpty() -> {
             LazyColumn(state = scrollState){
                 items(timeLineItems) {item->
-                    DebateCard(sharedDebateViewModel, toDebateView, item)
+                    DebateCard(sharedDebateViewModel, toDebateView, toAnotherUserPageView, item)
                 }
                 if (!hasFinishedLoadingAllItems) {
                     item { LoadingIndicator(sharedDebateViewModel) }
