@@ -21,7 +21,6 @@ import javax.inject.Inject
 @HiltViewModel
 class NotificationsViewModel @Inject constructor(
     private val loadNotificationUseCase: LoadNotificationUseCase,
-//    private val generateDebateItemByDebateIdUseCase: GenerateDebateItemByDebateIdUseCase
 ): ViewModel() {
     val currentUser = User.CurrentUserShareModel.getCurrentUserFromModel()
 
@@ -60,14 +59,6 @@ class NotificationsViewModel @Inject constructor(
             }
         }
     }
-
-//    suspend fun generateDebateItemByDebateId(debateId: String) {
-//        viewModelScope.launch {
-//            val generateState =
-//                currentUser?.let { generateDebateItemByDebateIdUseCase.execute(debateId, it.uid) }
-//            when ()
-//        }
-//    }
 
     fun resetState() {
         _loadNotificationDataState.value = Resource.idle()

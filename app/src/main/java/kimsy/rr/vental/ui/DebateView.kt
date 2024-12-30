@@ -101,6 +101,7 @@ fun DebateView(
     when (likeState[currentDebateItem]?.status) {
         Status.SUCCESS -> {
             //TODO もし必要なUIの処理があれば。
+            currentDebateItem?.let { sharedDebateViewModel.resetLikeState(it) }
         }
         Status.FAILURE -> {
             sharedDebateViewModel.showLikeFailedToast(LocalContext.current)

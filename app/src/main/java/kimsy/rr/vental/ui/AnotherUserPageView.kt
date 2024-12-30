@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Divider
 import androidx.compose.material3.CircularProgressIndicator
@@ -26,7 +25,6 @@ import kimsy.rr.vental.ViewModel.AnotherUserPageViewModel
 import kimsy.rr.vental.ViewModel.SharedDebateViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
-import kimsy.rr.vental.ui.CommonComposable.DebateCard
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
@@ -37,11 +35,11 @@ fun AnotherUserPageView(
     toAnotherUserPageView: (user: User) -> Unit
 ){
     val anotherUser by viewModel.anotherUser.collectAsState()
-    val myPageItems by sharedDebateViewModel.myPageItems.collectAsState()
+    val anotherUserPageItems by viewModel.anotherUserPageItems.collectAsState()
 
-    val hasFinishedLoadingAllMyPageItems = sharedDebateViewModel.hasFinishedLoadingAllMyPageItems
+    val hasFinishedLoadingAllItems = viewModel.hasFinishedLoadingAllItems
 
-    val getDebateItemState by sharedDebateViewModel.getDebateItemsState.collectAsState()
+    val getDebateItemState by viewModel.getDebateItemsState.collectAsState()
 
     val scrollState = rememberLazyListState()
 
@@ -107,13 +105,20 @@ fun AnotherUserPageView(
             }
 
             when {
-                myPageItems.isNotEmpty() -> {
-                    items(myPageItems) {item->
-                        DebateCard(sharedDebateViewModel, toDebateView, toAnotherUserPageView, item)
-                    }
-                    if (!hasFinishedLoadingAllMyPageItems) {
-                        item { MyPageLoadingIndicator(sharedDebateViewModel) }
-                    }
+                anotherUserPageItems.isNotEmpty() -> {
+//                    items(myPageItems) {item->
+//                        DebateCard(
+//                            sharedDebateViewModel,
+//                            toDebateView,
+//                            toAnotherUserPageView,
+//                            onLikeStateSuccess = {
+//                                    debateItem ->
+//                                viewModel.onLikeSuccess(debateItem)
+//                            },
+//                            item)                    }
+//                    if (!hasFinishedLoadingAllMyPageItems) {
+////                        item { MyPageLoadingIndicator(sharedDebateViewModel) }
+//                    }
                 }
                 else -> {
                     item {
@@ -127,9 +132,9 @@ fun AnotherUserPageView(
                             }
                             Status.FAILURE -> {
                                 Text(text = "討論の取得に失敗しまいた。")
-                                sharedDebateViewModel.resetGetDebateItemState()
+                                viewModel.resetGetDebateItemState()
                             }
-                            else -> {sharedDebateViewModel.resetGetDebateItemState()}
+                            else -> {viewModel.resetGetDebateItemState()}
                         }
                     }
                 }
@@ -139,8 +144,8 @@ fun AnotherUserPageView(
 }
 
 @Composable
-fun AnotherUserPageLoadingIndicator(sharedDebateViewModel: SharedDebateViewModel) {
-    val getDebateItemState by sharedDebateViewModel.getDebateItemsState.collectAsState()
+fun AnotherUserPageLoadingIndicator(viewModel: AnotherUserPageViewModel) {
+    val getDebateItemState by viewModel.getDebateItemsState.collectAsState()
     Box(
         modifier = Modifier.fillMaxWidth()
     ) {

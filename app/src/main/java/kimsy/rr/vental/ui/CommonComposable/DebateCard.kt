@@ -47,8 +47,10 @@ fun DebateCard(
     sharedDebateViewModel: SharedDebateViewModel,
     toDebateView: () -> Unit,
     toAnotherUserPageView: (user: User) -> Unit,
+    onLikeStateSuccess: (debateItem: DebateItem) -> Unit,
     debateItem: DebateItem
 ) {
+//    var debateItem by remember { mutableStateOf(debateItem) }
     var debate = debateItem.debate
     val ventCard = debateItem.ventCard
     val poster = debateItem.poster
@@ -59,6 +61,9 @@ fun DebateCard(
     when (likeState[debateItem]?.status) {
         Status.SUCCESS -> {
             //TODO もし必要なUIの処理があれば。
+            onLikeStateSuccess(likeState[debateItem]?.data!!)
+//            showingDebateItem = likeState[showingDebateItem]?.data!!
+            sharedDebateViewModel.resetLikeState(debateItem)
         }
         Status.FAILURE -> {
             sharedDebateViewModel.showLikeFailedToast(LocalContext.current)

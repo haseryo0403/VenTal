@@ -39,18 +39,26 @@ fun TimeLineView(
     toDebateView: () -> Unit,
     toAnotherUserPageView: (user: User) -> Unit
 ){
-    val isRefreshing by sharedDebateViewModel.isRefreshing.collectAsState()
+//    val isRefreshing by sharedDebateViewModel.isRefreshing.collectAsState()
+    val isRefreshing by timeLineViewModel.isRefreshing.collectAsState()
 
-    val timeLineItems by sharedDebateViewModel.timelineItems.collectAsState()
+//    val timeLineItems by sharedDebateViewModel.timelineItems.collectAsState()
+    val timeLineItems by timeLineViewModel.timelineItems.collectAsState()
 
     val scrollState = rememberLazyListState()
 
-    val hasFinishedLoadingAllItems = sharedDebateViewModel.hasFinishedLoadingAllItems
+//    val hasFinishedLoadingAllItems = sharedDebateViewModel.hasFinishedLoadingAllItems
+    val hasFinishedLoadingAllItems = timeLineViewModel.hasFinishedLoadingAllItems
 
-    val getDebateItemState by sharedDebateViewModel.getDebateItemsState.collectAsState()
+//    val getDebateItemState by sharedDebateViewModel.getDebateItemsState.collectAsState()
+    val getDebateItemState by timeLineViewModel.getDebateItemsState.collectAsState()
+
+
 
     LaunchedEffect(Unit) {
-        sharedDebateViewModel.getTimeLineItems()
+//        sharedDebateViewModel.getTimeLineItems()
+        timeLineViewModel.getTimeLineItems()
+
         scrollState.scrollToItem(
             timeLineViewModel.savedScrollIndex,
             timeLineViewModel.savedScrollOffset
@@ -81,14 +89,24 @@ fun TimeLineView(
         timeLineItems.isNotEmpty() -> {
             PullToRefreshBox(
                 isRefreshing = isRefreshing,
-                onRefresh = {sharedDebateViewModel.onRefresh()}
+//                onRefresh = {sharedDebateViewModel.onRefresh()}
+                onRefresh = {timeLineViewModel.onRefresh()}
             ) {
                 LazyColumn(state = scrollState){
                     items(timeLineItems) {item->
-                        DebateCard(sharedDebateViewModel, toDebateView, toAnotherUserPageView, item)
+                        DebateCard(
+                            sharedDebateViewModel,
+                            toDebateView,
+                            toAnotherUserPageView,
+                            onLikeStateSuccess = {
+                                debateItem ->
+                                    timeLineViewModel.onLikeSuccess(debateItem)
+                            },
+                            item)
                     }
                     if (!hasFinishedLoadingAllItems) {
-                        item { LoadingIndicator(sharedDebateViewModel) }
+//                        item { LoadingIndicator(sharedDebateViewModel) }
+                        item { LoadingIndicator(timeLineViewModel) }
                     }
                 }
             }
@@ -104,17 +122,18 @@ fun TimeLineView(
                 }
                 Status.FAILURE -> {
                     Text(text = "討論の取得に失敗しまいた。")
-                    sharedDebateViewModel.resetGetDebateItemState()
+                    timeLineViewModel.resetGetDebateItemState()
                 }
-                else -> {sharedDebateViewModel.resetGetDebateItemState()}
+                else -> {timeLineViewModel.resetGetDebateItemState()}
             }
         }
     }
 }
 
 @Composable
-fun LoadingIndicator(sharedDebateViewModel: SharedDebateViewModel) {
-    val getDebateItemState by sharedDebateViewModel.getDebateItemsState.collectAsState()
+fun LoadingIndicator(timeLineViewModel: TimeLineViewModel) {
+//    val getDebateItemState by sharedDebateViewModel.getDebateItemsState.collectAsState()
+    val getDebateItemState by timeLineViewModel.getDebateItemsState.collectAsState()
     Box(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -133,7 +152,8 @@ fun LoadingIndicator(sharedDebateViewModel: SharedDebateViewModel) {
 
     LaunchedEffect(Unit) {
         // 要素の追加読み込み
-        sharedDebateViewModel.getTimeLineItems()
+//        sharedDebateViewModel.getTimeLineItems()
+        timeLineViewModel.getTimeLineItems()
         Log.d("CUDUC", "LE")
     }
 }

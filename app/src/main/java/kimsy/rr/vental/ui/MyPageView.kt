@@ -20,8 +20,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -40,6 +42,7 @@ import kimsy.rr.vental.data.User
 import kimsy.rr.vental.data.UserPageData
 import kimsy.rr.vental.ui.CommonComposable.DebateCard
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun MyPageView(
@@ -51,11 +54,16 @@ fun MyPageView(
 ){
     val currentUser by viewModel.currentUser.collectAsState()
 
-    val myPageItems by sharedDebateViewModel.myPageItems.collectAsState()
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
 
-    val hasFinishedLoadingAllMyPageItems = sharedDebateViewModel.hasFinishedLoadingAllMyPageItems
+//    val myPageItems by sharedDebateViewModel.myPageItems.collectAsState()
+    val myPageItems by viewModel.myPageItems.collectAsState()
 
-    val getDebateItemState by sharedDebateViewModel.getDebateItemsState.collectAsState()
+//    val hasFinishedLoadingAllMyPageItems = sharedDebateViewModel.hasFinishedLoadingAllMyPageItems
+    val hasFinishedLoadingAllItems = viewModel.hasFinishedLoadingAllItems
+
+//    val getDebateItemState by sharedDebateViewModel.getDebateItemsState.collectAsState()
+    val getDebateItemState by viewModel.getDebateItemsState.collectAsState()
 
     val scrollState = rememberLazyListState()
 
@@ -64,7 +72,8 @@ fun MyPageView(
     LaunchedEffect(Unit) {
         viewModel.updateCurrentUser()
         viewModel.loadUserPageData()
-        sharedDebateViewModel.getMyPageDebateItems()
+//        sharedDebateViewModel.getMyPageDebateItems()
+        viewModel.getMyPageDebateItems()
         scrollState.scrollToItem(
             viewModel.savedScrollIndex,
             viewModel.savedScrollOffset
@@ -109,46 +118,59 @@ fun MyPageView(
             }
             else -> {}
         }
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = { viewModel.onRefresh() }
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = MaterialTheme.colorScheme.background),
+                state = scrollState
+            ){
+                item {
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color = MaterialTheme.colorScheme.background),
-            state = scrollState
-        ){
-            item {
-
-            }
-
-            when {
-                myPageItems.isNotEmpty() -> {
-                        items(myPageItems) {item->
-                            DebateCard(sharedDebateViewModel, toDebateView, toAnotherUserPageView, item)
-                        }
-                        if (!hasFinishedLoadingAllMyPageItems) {
-                            item { MyPageLoadingIndicator(sharedDebateViewModel) }
-                        }
                 }
-                else -> {
-                    item {
-                        when (getDebateItemState.status){
-                            Status.LOADING -> {
-                                Box(
-                                    modifier = Modifier.fillMaxSize()
-                                ) {
-                                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+
+                when {
+                    myPageItems.isNotEmpty() -> {
+                        items(myPageItems) {item->
+                            DebateCard(
+                                sharedDebateViewModel,
+                                toDebateView,
+                                toAnotherUserPageView,
+                                onLikeStateSuccess = {
+                                        debateItem ->
+                                    viewModel.onLikeSuccess(debateItem)
+                                },
+                                item)                        }
+                        if (!hasFinishedLoadingAllItems) {
+                            item { MyPageLoadingIndicator(viewModel) }
+                        }
+                    }
+                    else -> {
+                        item {
+                            when (getDebateItemState.status){
+                                Status.LOADING -> {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize()
+                                    ) {
+                                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                                    }
                                 }
+                                Status.FAILURE -> {
+                                    Text(text = "討論の取得に失敗しまいた。")
+    //                                sharedDebateViewModel.resetGetDebateItemState()
+                                    viewModel.resetGetDebateItemState()
+                                }
+                                else -> {viewModel.resetGetDebateItemState()}
                             }
-                            Status.FAILURE -> {
-                                Text(text = "討論の取得に失敗しまいた。")
-                                sharedDebateViewModel.resetGetDebateItemState()
-                            }
-                            else -> {sharedDebateViewModel.resetGetDebateItemState()}
                         }
                     }
                 }
             }
         }
+
     }
 }
 
@@ -212,8 +234,9 @@ fun AccountContent(
 }
 
 @Composable
-fun MyPageLoadingIndicator(sharedDebateViewModel: SharedDebateViewModel) {
-    val getDebateItemState by sharedDebateViewModel.getDebateItemsState.collectAsState()
+fun MyPageLoadingIndicator(viewModel: MyPageViewModel) {
+//    val getDebateItemState by sharedDebateViewModel.getDebateItemsState.collectAsState()
+    val getDebateItemState by viewModel.getDebateItemsState.collectAsState()
     Box(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -232,7 +255,8 @@ fun MyPageLoadingIndicator(sharedDebateViewModel: SharedDebateViewModel) {
 
     LaunchedEffect(Unit) {
         // 要素の追加読み込み
-        sharedDebateViewModel.getMyPageDebateItems()
+//        sharedDebateViewModel.getMyPageDebateItems()
+        viewModel.getMyPageDebateItems()
         Log.d("CUDUC", "LE")
     }
 }
