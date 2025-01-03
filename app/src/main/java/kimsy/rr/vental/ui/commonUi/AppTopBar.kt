@@ -135,6 +135,7 @@ fun AppTopBarView(
                 containerColor = MaterialTheme.colorScheme.background,
                 titleContentColor = MaterialTheme.colorScheme.onBackground
             )
+
         )
         when (saveState.value.status) {
             Status.LOADING -> {

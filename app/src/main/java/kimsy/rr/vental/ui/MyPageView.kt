@@ -13,21 +13,29 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,23 +64,32 @@ fun MyPageView(
 
     val isRefreshing by viewModel.isRefreshing.collectAsState()
 
-//    val myPageItems by sharedDebateViewModel.myPageItems.collectAsState()
     val myPageItems by viewModel.myPageItems.collectAsState()
 
-//    val hasFinishedLoadingAllMyPageItems = sharedDebateViewModel.hasFinishedLoadingAllMyPageItems
     val hasFinishedLoadingAllItems = viewModel.hasFinishedLoadingAllItems
 
-//    val getDebateItemState by sharedDebateViewModel.getDebateItemsState.collectAsState()
     val getDebateItemState by viewModel.getDebateItemsState.collectAsState()
 
     val scrollState = rememberLazyListState()
 
     val userPageDataState by viewModel.userPageDateState.collectAsState()
 
+    var selectedTabIndex by remember { mutableStateOf(0) }
+
+    val tabs = listOf("討論", "カード", "いいね")
+    val pagerState = rememberPagerState(pageCount = { tabs.size })
+
+    LaunchedEffect(key1 = selectedTabIndex) {
+        pagerState.animateScrollToPage(selectedTabIndex)
+    }
+
+    LaunchedEffect(pagerState.currentPage) {
+        selectedTabIndex = pagerState.currentPage
+    }
+
     LaunchedEffect(Unit) {
         viewModel.updateCurrentUser()
         viewModel.loadUserPageData()
-//        sharedDebateViewModel.getMyPageDebateItems()
         viewModel.getMyPageDebateItems()
         scrollState.scrollToItem(
             viewModel.savedScrollIndex,
@@ -118,6 +135,23 @@ fun MyPageView(
             }
             else -> {}
         }
+
+        TabRow(
+            selectedTabIndex = selectedTabIndex,
+            indicator = { tabPositions ->
+                TabRowDefaults.Indicator(
+                    modifier = Modifier
+                        .tabIndicatorOffset(tabPositions[selectedTabIndex])
+                        .width(200.dp)
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth(),
+            containerColor = MaterialTheme.colorScheme.background
+        ) {
+
+        }
+
         PullToRefreshBox(
             isRefreshing = isRefreshing,
             onRefresh = { viewModel.onRefresh() }

@@ -3,32 +3,44 @@ package kimsy.rr.vental.ui
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresExtension
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import kimsy.rr.vental.ViewModel.SharedDebateViewModel
 import kimsy.rr.vental.ViewModel.TimeLineViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.DebateCard
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -39,92 +51,181 @@ fun TimeLineView(
     toDebateView: () -> Unit,
     toAnotherUserPageView: (user: User) -> Unit
 ){
-//    val isRefreshing by sharedDebateViewModel.isRefreshing.collectAsState()
     val isRefreshing by timeLineViewModel.isRefreshing.collectAsState()
 
-//    val timeLineItems by sharedDebateViewModel.timelineItems.collectAsState()
-    val timeLineItems by timeLineViewModel.timelineItems.collectAsState()
+    val recentTimeLineItems by timeLineViewModel.recentTimelineItems.collectAsState()
 
-    val scrollState = rememberLazyListState()
+    val popularTimeLineItems by timeLineViewModel.popularTimelineItems.collectAsState()
 
-//    val hasFinishedLoadingAllItems = sharedDebateViewModel.hasFinishedLoadingAllItems
-    val hasFinishedLoadingAllItems = timeLineViewModel.hasFinishedLoadingAllItems
+    val recentItemScrollState = rememberLazyListState()
+    val popularItemScrollState = rememberLazyListState()
 
-//    val getDebateItemState by sharedDebateViewModel.getDebateItemsState.collectAsState()
+    val hasFinishedLoadingAllRecentItems = timeLineViewModel.hasFinishedLoadingAllRecentItems
+    val hasFinishedLoadingAllPopularItems = timeLineViewModel.hasFinishedLoadingAllPopularItems
+
     val getDebateItemState by timeLineViewModel.getDebateItemsState.collectAsState()
 
+    var selectedTabIndex by remember { mutableStateOf(0) }
+    
+    val tabs = listOf("新着", "人気")
+    val pagerState = rememberPagerState(pageCount = { tabs.size })
 
+    LaunchedEffect(key1 = selectedTabIndex) {
+        pagerState.animateScrollToPage(selectedTabIndex)
+    }
 
     LaunchedEffect(Unit) {
-//        sharedDebateViewModel.getTimeLineItems()
-        timeLineViewModel.getTimeLineItems()
-
-        scrollState.scrollToItem(
-            timeLineViewModel.savedScrollIndex,
-            timeLineViewModel.savedScrollOffset
+        timeLineViewModel.getRecentTimeLineItems()
+        timeLineViewModel.getPopularTimeLineItems()
+        recentItemScrollState.scrollToItem(
+            timeLineViewModel.recentItemSavedScrollIndex,
+            timeLineViewModel.recentItemSavedScrollOffset
+        )
+        popularItemScrollState.scrollToItem(
+            timeLineViewModel.popularItemSavedScrollIndex,
+            timeLineViewModel.popularItemSavedScrollOffset
         )
     }
 
     // スクロール位置を保存
-    LaunchedEffect(scrollState) {
-        snapshotFlow { scrollState.firstVisibleItemIndex to scrollState.firstVisibleItemScrollOffset }
+    LaunchedEffect(recentItemScrollState) {
+        snapshotFlow { recentItemScrollState.firstVisibleItemIndex to recentItemScrollState.firstVisibleItemScrollOffset }
             .collect { (index, offset) ->
-                timeLineViewModel.setScrollState(index, offset)
+                timeLineViewModel.setRecentItemScrollState(index, offset)
+            }
+    }
+    // スクロール位置を保存
+    LaunchedEffect(popularItemScrollState) {
+        snapshotFlow { popularItemScrollState.firstVisibleItemIndex to popularItemScrollState.firstVisibleItemScrollOffset }
+            .collect { (index, offset) ->
+                timeLineViewModel.setPopularItemScrollState(index, offset)
             }
     }
 
-
-
-    val onRefresh: () -> Unit = {
-        //ここでVMのロードする関数を呼びたいが、
-        // ・loadingにはしたくない
-        // ・いまロードしたものはいらないかな？　lastvisibleなしでロードして、ロードに成功したらtimelineitemsにそのままぶちこむ！
-        CoroutineScope(Dispatchers.Main).launch {
-            delay(2000) // 2秒待機
-        }
-
+    LaunchedEffect(pagerState.currentPage) {
+            selectedTabIndex = pagerState.currentPage
     }
 
-    when {
-        timeLineItems.isNotEmpty() -> {
-            PullToRefreshBox(
-                isRefreshing = isRefreshing,
-//                onRefresh = {sharedDebateViewModel.onRefresh()}
-                onRefresh = {timeLineViewModel.onRefresh()}
-            ) {
-                LazyColumn(state = scrollState){
-                    items(timeLineItems) {item->
-                        DebateCard(
-                            sharedDebateViewModel,
-                            toDebateView,
-                            toAnotherUserPageView,
-                            onLikeStateSuccess = {
-                                debateItem ->
-                                    timeLineViewModel.onLikeSuccess(debateItem)
-                            },
-                            item)
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        TabRow(
+            selectedTabIndex = selectedTabIndex,
+            indicator = { tabPositions ->
+                TabRowDefaults.Indicator(
+                    modifier = Modifier
+                        .tabIndicatorOffset(tabPositions[selectedTabIndex])
+                        .width(200.dp)
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth(),
+            containerColor = MaterialTheme.colorScheme.background
+        ) {
+            tabs.forEachIndexed { index, tab ->
+                Tab(
+                    selected = selectedTabIndex == index,
+                    onClick = { selectedTabIndex = index },
+                    modifier = Modifier
+                        .padding(8.dp),
+                    content = {
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                text = tab,
+                                modifier = Modifier
+                                    .padding(8.dp),
+                                color = if (selectedTabIndex == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
+                            )
+                        }
                     }
-                    if (!hasFinishedLoadingAllItems) {
-//                        item { LoadingIndicator(sharedDebateViewModel) }
-                        item { LoadingIndicator(timeLineViewModel) }
+                )
+            }
+        }
+
+        when {
+            recentTimeLineItems.isNotEmpty() -> {
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f)
+                ) { index ->
+                    when (index) {
+                        0 -> {
+
+                            PullToRefreshBox(
+                                isRefreshing = isRefreshing,
+                                onRefresh = { timeLineViewModel.onRefreshRecentItem() }
+                            ) {
+                                LazyColumn(state = recentItemScrollState) {
+                                    items(recentTimeLineItems) { item ->
+                                        DebateCard(
+                                            sharedDebateViewModel,
+                                            toDebateView,
+                                            toAnotherUserPageView,
+                                            onLikeStateSuccess = { debateItem ->
+                                                timeLineViewModel.onLikeSuccess(debateItem)
+                                            },
+                                            item
+                                        )
+                                    }
+                                    if (!hasFinishedLoadingAllRecentItems) {
+                                        //                        item { LoadingIndicator(sharedDebateViewModel) }
+                                        item { LoadingIndicator(timeLineViewModel) }
+                                    }
+                                }
+                            }
+                        }
+
+                        1 -> {
+                            PullToRefreshBox(
+                                isRefreshing = isRefreshing,
+                                onRefresh = { timeLineViewModel.onRefreshPopularItem() }
+                            ) {
+                                LazyColumn(state = popularItemScrollState) {
+                                    items(popularTimeLineItems) { item ->
+                                        DebateCard(
+                                            sharedDebateViewModel,
+                                            toDebateView,
+                                            toAnotherUserPageView,
+                                            onLikeStateSuccess = { debateItem ->
+                                                timeLineViewModel.onLikeSuccess(debateItem)
+                                            },
+                                            item
+                                        )
+                                    }
+                                    if (!hasFinishedLoadingAllPopularItems) {
+                                        item { LoadingIndicator(timeLineViewModel) }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
-        }
-        else -> {
-            when (getDebateItemState.status){
-                Status.LOADING -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+
+            else -> {
+                when (getDebateItemState.status) {
+                    Status.LOADING -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                        }
+                    }
+
+                    Status.FAILURE -> {
+                        Text(text = "討論の取得に失敗しまいた。")
+                        timeLineViewModel.resetGetDebateItemState()
+                    }
+
+                    else -> {
+                        timeLineViewModel.resetGetDebateItemState()
                     }
                 }
-                Status.FAILURE -> {
-                    Text(text = "討論の取得に失敗しまいた。")
-                    timeLineViewModel.resetGetDebateItemState()
-                }
-                else -> {timeLineViewModel.resetGetDebateItemState()}
             }
         }
     }
@@ -153,7 +254,7 @@ fun LoadingIndicator(timeLineViewModel: TimeLineViewModel) {
     LaunchedEffect(Unit) {
         // 要素の追加読み込み
 //        sharedDebateViewModel.getTimeLineItems()
-        timeLineViewModel.getTimeLineItems()
+        timeLineViewModel.getRecentTimeLineItems()
         Log.d("CUDUC", "LE")
     }
 }

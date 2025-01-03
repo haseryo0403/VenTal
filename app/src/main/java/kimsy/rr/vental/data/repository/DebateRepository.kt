@@ -3,6 +3,7 @@ package kimsy.rr.vental.data.repository
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresExtension
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
@@ -19,7 +20,9 @@ import kimsy.rr.vental.data.VentCardWithUser
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
 import java.io.IOException
+import java.util.Calendar
 import javax.inject.Inject
+
 
 
 class DebateRepository @Inject constructor(
@@ -100,9 +103,9 @@ class DebateRepository @Inject constructor(
         ).orderBy("debateCreatedDatetime", Query.Direction.DESCENDING)
 
         val querySnapshot = if (lastVisible == null) {
-            query.limit(10).get().await()
+            query.limit(100).get().await()
         } else {
-            query.startAfter(lastVisible).limit(10).get().await()
+            query.startAfter(lastVisible).limit(100).get().await()
         }
 
         if (querySnapshot.isEmpty) {
@@ -133,9 +136,9 @@ class DebateRepository @Inject constructor(
                 .orderBy("debateCreatedDatetime", Query.Direction.DESCENDING)
 
             val querySnapshot = if (lastVisible == null) {
-                query.limit(10).get().await()
+                query.limit(100).get().await()
             } else {
-                query.startAfter(lastVisible).limit(10).get().await()
+                query.startAfter(lastVisible).limit(100).get().await()
             }
 
             if (querySnapshot.isEmpty) {
@@ -159,6 +162,47 @@ class DebateRepository @Inject constructor(
             Resource.failure(e.message)
         }
     }
+    //スクロールにて取得タイミングを管理。調べないと？
+    suspend fun fetchPopular10Debates(
+        lastVisible: DocumentSnapshot? = null
+    ): Pair<List<Debate>, DocumentSnapshot?> {
+
+        // 現在の日時から2ヶ月前の日時を計算
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.MONTH, -2) // 2ヶ月前
+        val twoMonthsAgo = Timestamp(calendar.time)
+
+        Log.d("DR", "fetchD was called")
+        val query = db
+            .collectionGroup("debates")
+            .whereGreaterThanOrEqualTo("debateCreatedDatetime", twoMonthsAgo)
+            .orderBy("totalLikeCount", Query.Direction.DESCENDING)
+
+        val querySnapshot = if (lastVisible == null) {
+            query.limit(100).get().await()
+        } else {
+            query.startAfter(lastVisible).limit(100).get().await()
+        }
+
+        if (querySnapshot.isEmpty) {
+            // データがない場合、空リストとnullを返す
+            return Pair(emptyList(), null)
+        }
+
+        val newLastVisible = querySnapshot.documents.lastOrNull()
+
+        Log.d("TAG", "ventCards: $querySnapshot size: ${querySnapshot.size()}")
+
+        val debates = querySnapshot.documents.mapNotNull { document->
+            document.toObject(Debate::class.java)!!.copy(
+                debateId = document.id,
+                debateCreatedDatetime = document.getTimestamp("debateCreatedDatetime")?.toDate()
+            )
+        }
+        return Pair(debates, newLastVisible)
+    }
+
+
 
 //    suspend fun createDebate(debate: Debate): Resource<Debate>{
 //        Log.d("DR", "createDebate called")
@@ -297,10 +341,15 @@ class DebateRepository @Inject constructor(
 
         when (userType) {
             UserType.POSTER -> {
-                transaction.update(docRef, "posterLikeCount", FieldValue.increment(1))
+                transaction
+                    .update(docRef, "posterLikeCount", FieldValue.increment(1))
+                    .update(docRef, "totalLikeCount", FieldValue.increment(1))
             }
             UserType.DEBATER -> {
-                transaction.update(docRef, "debaterLikeCount", FieldValue.increment(1))
+                transaction
+                    .update(docRef, "debaterLikeCount", FieldValue.increment(1))
+                    .update(docRef, "totalLikeCount", FieldValue.increment(1))
+
             }
         }
     }
@@ -322,10 +371,16 @@ class DebateRepository @Inject constructor(
 
         when (userType) {
             UserType.POSTER -> {
-                transaction.update(docRef, "posterLikeCount", FieldValue.increment(-1))
+                transaction
+                    .update(docRef, "posterLikeCount", FieldValue.increment(-1))
+                    .update(docRef, "totalLikeCount", FieldValue.increment(-1))
+
             }
             UserType.DEBATER -> {
-                transaction.update(docRef, "debaterLikeCount", FieldValue.increment(-1))
+                transaction
+                    .update(docRef, "debaterLikeCount", FieldValue.increment(-1))
+                    .update(docRef, "totalLikeCount", FieldValue.increment(-1))
+
             }
         }
     }

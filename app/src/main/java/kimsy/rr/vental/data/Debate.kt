@@ -13,6 +13,7 @@ data class Debate(
     val debaterLikeCount: Int = 0,
     val firstMessage: String = "",
     val firstMessageImageURL: String? = "",
+    val totalLikeCount: Int = 0,
     val debateReportFlag: Boolean = false,
     val debateDeletionRequestFlag: Boolean   = false,
     @ServerTimestamp

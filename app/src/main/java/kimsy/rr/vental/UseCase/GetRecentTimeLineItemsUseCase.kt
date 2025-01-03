@@ -13,10 +13,13 @@ import kimsy.rr.vental.data.UserType
 import kimsy.rr.vental.data.VentCard
 import kimsy.rr.vental.data.repository.DebateRepository
 import kimsy.rr.vental.data.repository.LogRepository
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
-class GetTimeLineItemsUseCase @Inject constructor(
+class GetRecentTimeLineItemsUseCase @Inject constructor(
     private val debateRepository: DebateRepository,
     private val getUserDetailsUseCase: GetUserDetailsUseCase,
     private val getSwipeCardUseCase: GetSwipeCardUseCase,
@@ -34,14 +37,18 @@ class GetTimeLineItemsUseCase @Inject constructor(
 
                 when (debatesState.status) {
                     Status.SUCCESS -> {
+                        val startTime = System.currentTimeMillis()
                         val debates = debatesState.data?.first
                             ?: return@withTimeout Resource.failure("討論データが空です。")
 
-                        val timeLineItems = debates.mapNotNull { debate ->
-                            generateDebateItemUseCase.execute(debate, currentUser.uid)
-                        }
+                        val timeLineItems = generateDebateItem(debates, currentUser.uid)
+
 
                         val newLastVisible = debatesState.data.second
+
+                        val endTime = System.currentTimeMillis()
+                        Log.d("Performance", "Firestore クエリ時間: ${endTime - startTime}ms")
+
                         Resource.success(Pair(timeLineItems, newLastVisible))
                     }
 
@@ -56,6 +63,21 @@ class GetTimeLineItemsUseCase @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    // 並列処理を行う関数
+    private suspend fun generateDebateItem(
+        debates: List<Debate>,
+        currentUserUid: String
+    ): List<DebateItem> {
+        return coroutineScope {
+            debates.map { debate ->
+                async {
+                    generateDebateItemUseCase.execute(debate, currentUserUid)
+                }
+            }.awaitAll()
+                .filterNotNull()
         }
     }
 

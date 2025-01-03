@@ -9,7 +9,8 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.DocumentSnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kimsy.rr.vental.R
-import kimsy.rr.vental.UseCase.GetTimeLineItemsUseCase
+import kimsy.rr.vental.UseCase.GetPopularTimeLineItemsUseCase
+import kimsy.rr.vental.UseCase.GetRecentTimeLineItemsUseCase
 import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
@@ -21,15 +22,19 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TimeLineViewModel @Inject constructor(
-    private val getTimeLineItemsUseCase: GetTimeLineItemsUseCase,
+    private val getRecentTimeLineItemsUseCase: GetRecentTimeLineItemsUseCase,
+    private val getPopularTimeLineItemsUseCase: GetPopularTimeLineItemsUseCase
 ): ViewModel() {
 
     init {
         Log.d("TLVM" , "initialized")
     }
 
-    var savedScrollIndex by mutableStateOf(0)
-    var savedScrollOffset by mutableStateOf(0)
+    var recentItemSavedScrollIndex by mutableStateOf(0)
+    var recentItemSavedScrollOffset by mutableStateOf(0)
+
+    var popularItemSavedScrollIndex by mutableStateOf(0)
+    var popularItemSavedScrollOffset by mutableStateOf(0)
 
     val currentUser = User.CurrentUserShareModel.getCurrentUserFromModel()
 
@@ -40,76 +45,129 @@ class TimeLineViewModel @Inject constructor(
     val getDebateItemsState: StateFlow<Resource<Pair<List<DebateItem>, DocumentSnapshot?>>> get() = _getDebateItemsState
 
     //各VM
-    private val _timelineItems = MutableStateFlow<List<DebateItem>>(emptyList())
-    val timelineItems: StateFlow<List<DebateItem>> get() = _timelineItems
-
-    private var lastVisible: DocumentSnapshot? = null
+    private val _recentTimelineItems = MutableStateFlow<List<DebateItem>>(emptyList())
+    val recentTimelineItems: StateFlow<List<DebateItem>> get() = _recentTimelineItems
 
     //各VM
-    var hasFinishedLoadingAllItems by mutableStateOf(false)
+    private val _popularTimelineItems = MutableStateFlow<List<DebateItem>>(emptyList())
+    val popularTimelineItems: StateFlow<List<DebateItem>> get() = _popularTimelineItems
+
+    private var recentItemLastVisible: DocumentSnapshot? = null
+    private var popularItemLastVisible: DocumentSnapshot? = null
+
+    //各VM
+    var hasFinishedLoadingAllRecentItems by mutableStateOf(false)
+        private set
+    //各VM
+    var hasFinishedLoadingAllPopularItems by mutableStateOf(false)
         private set
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> get() = _isRefreshing
 
     //各VM
-    fun onRefresh() {
+    fun onRefreshRecentItem() {
         viewModelScope.launch {
             _isRefreshing.value = true
-            lastVisible = null
-            getTimeLineItems()
+            recentItemLastVisible = null
+            getRecentTimeLineItems()
+        }
+    }
+
+    fun onRefreshPopularItem() {
+        viewModelScope.launch {
+            _isRefreshing.value = true
+            popularItemLastVisible = null
+            getPopularTimeLineItems()
         }
     }
 
     fun onLikeSuccess(debateItem: DebateItem) {
-        val index = _timelineItems.value.indexOfFirst { it.debate.debateId == debateItem.debate.debateId }
+        val index = _recentTimelineItems.value.indexOfFirst { it.debate.debateId == debateItem.debate.debateId }
         if (index != -1) {
-            // 変更: _timelineItemsのStateFlowを更新
-            _timelineItems.value = _timelineItems.value.toMutableList().apply {
+            _recentTimelineItems.value = _recentTimelineItems.value.toMutableList().apply {
                 this[index] = debateItem
             }
         }
     }
 
     //各VM
-    suspend fun getTimeLineItems() {
+    suspend fun getRecentTimeLineItems() {
         Log.d("TLVM", "getTLT called")
         viewModelScope.launch {
-//            if (_timelineItems.value.isEmpty()) {
-//            }
             _getDebateItemsState.value = Resource.loading()
             _getDebateItemsState.value =
-                currentUser?.let { getTimeLineItemsUseCase.execute(lastVisible, it) }?: Resource.failure(
+                currentUser?.let { getRecentTimeLineItemsUseCase.execute(recentItemLastVisible, it) }?: Resource.failure(
                     R.string.no_user_found.toString())
             when (_getDebateItemsState.value.status) {
                 Status.SUCCESS -> {
                     Log.d("TLVM", "success")
                     _getDebateItemsState.value.data?.let { (timelineItems, newLastVisible) ->
                         if (timelineItems.isEmpty()) {
-                            hasFinishedLoadingAllItems = true
+                            hasFinishedLoadingAllRecentItems = true
                         }
                         if (_isRefreshing.value) {
-                            _timelineItems.value = timelineItems
+                            _recentTimelineItems.value = timelineItems
                             _isRefreshing.value = false
                         } else {
-                            _timelineItems.value = _timelineItems.value + timelineItems
+                            _recentTimelineItems.value = _recentTimelineItems.value + timelineItems
                         }
-//                        _timelineItems.value = _timelineItems.value + timelineItems
-
-                        lastVisible = newLastVisible
+                        recentItemLastVisible = newLastVisible
                     }
                 }
                 Status.FAILURE -> {
-                    Log.d("TLVM", "failure")
+                   Log.d("TLVM", "failure")
+
+
                 }
                 else -> {}
             }
         }
     }
 
-    fun setScrollState(index: Int, offset: Int) {
-        savedScrollIndex = index
-        savedScrollOffset = offset
+    suspend fun getPopularTimeLineItems() {
+        Log.d("TLVM", "getTLT called")
+        viewModelScope.launch {
+            _getDebateItemsState.value = Resource.loading()
+            _getDebateItemsState.value =
+                currentUser?.let { getPopularTimeLineItemsUseCase.execute(popularItemLastVisible, it) }?: Resource.failure(
+                    R.string.no_user_found.toString())
+            when (_getDebateItemsState.value.status) {
+                Status.SUCCESS -> {
+                    Log.d("TLVM", "success")
+                    _getDebateItemsState.value.data?.let { (timelineItems, newLastVisible) ->
+                        if (timelineItems.isEmpty()) {
+                            hasFinishedLoadingAllPopularItems = true
+                        }
+                        if (_isRefreshing.value) {
+                            _popularTimelineItems.value = timelineItems
+                            _isRefreshing.value = false
+                        } else {
+                            _popularTimelineItems.value = _popularTimelineItems.value + timelineItems
+                        }
+                        popularItemLastVisible = newLastVisible
+                    }
+                }
+                Status.FAILURE -> {
+                   Log.d("TLVM", "failure")
+
+
+                }
+                else -> {}
+            }
+        }
+    }
+
+
+
+    fun setRecentItemScrollState(index: Int, offset: Int) {
+        recentItemSavedScrollIndex = index
+        recentItemSavedScrollOffset = offset
+    }
+
+    fun setPopularItemScrollState(index: Int, offset: Int) {
+        popularItemSavedScrollIndex = index
+        popularItemSavedScrollOffset = offset
     }
 
     fun resetGetDebateItemState() {

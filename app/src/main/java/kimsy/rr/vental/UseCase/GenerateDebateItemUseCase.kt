@@ -16,6 +16,7 @@ class GenerateDebateItemUseCase @Inject constructor(
     private val debateRepository: DebateRepository
 ) {
     //TODO BaseUseCaseを使用してtrycatch
+    //400msほど
     suspend fun execute(debate: Debate, userId: String): DebateItem? {
         val ventCard = getVentCard(debate)
         val poster = getPosterInfo(debate)
@@ -26,12 +27,12 @@ class GenerateDebateItemUseCase @Inject constructor(
             Status.FAILURE -> null
             else -> null
         }
-
         return if (ventCard != null && poster != null && debater != null) {
             DebateItem(debate, ventCard, poster, debater, likeUserType)
         } else {
             null // 失敗した場合はスキップ
         }
+
     }
 
     private fun handleSuccess(likeStatus: LikeStatus): UserType? {

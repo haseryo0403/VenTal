@@ -5,11 +5,13 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.QuerySnapshot
 import kimsy.rr.vental.data.DebatingVentCard
 import kimsy.rr.vental.data.LikedVentCard
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.VentCard
 import kimsy.rr.vental.data.VentCardWithUser
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
@@ -44,6 +46,8 @@ suspend fun getVentCardsWithUser(
     lastVisible: DocumentSnapshot? = null
 ): Resource<Pair<List<VentCardWithUser>, DocumentSnapshot?>> {
     return try {
+        val startTime = System.currentTimeMillis()
+
         val query = db
             .collectionGroup("swipeCards")
             .whereNotEqualTo("posterId", userId)
@@ -68,7 +72,13 @@ suspend fun getVentCardsWithUser(
         val likedVentCardIds = likedVentCard.map { it.ventCardId }
         val debatingVentCardIds = debatingVentCard.map { it.swipeCardId }
 
+        //892ms
+//        val ventCardsWithUser = generateVentCardItem(querySnapshot, likedVentCardIds, debatingVentCardIds)
+
+        //792ms
         val ventCardsWithUser = querySnapshot.documents.mapNotNull { document ->
+
+
             val ventCard = document.toObject(VentCardWithUser::class.java)?.copy(
                 swipeCardId = document.reference.id
             )
@@ -99,17 +109,65 @@ suspend fun getVentCardsWithUser(
             } else {
                 null
             }
+
+
         }
 
         if (ventCardsWithUser.isEmpty() && newLastVisible != null) {
             return getVentCardsWithUser(userId, likedVentCard, debatingVentCard, newLastVisible)
         }
 
+        val endTime = System.currentTimeMillis()
+        Log.d("Performance", "Firestore クエリ時間: ${endTime - startTime}ms")
+
         Resource.success(Pair(ventCardsWithUser, newLastVisible))
     } catch (e: Exception) {
         Resource.failure("Error fetching vent cards: ${e.message}")
     }
 }
+
+    private suspend fun generateVentCardItem(
+        querySnapshot: QuerySnapshot,
+        likedVentCardIds: List<String>,
+        debatingVentCardIds: List<String>
+    ):  List<VentCardWithUser>{
+        return coroutineScope {
+            querySnapshot.documents.mapNotNull { document ->
+                val ventCard = document.toObject(VentCardWithUser::class.java)?.copy(
+                    swipeCardId = document.reference.id
+                )
+
+                if (ventCard == null || likedVentCardIds.contains(ventCard.swipeCardId) || debatingVentCardIds.contains(ventCard.swipeCardId)) {
+                    return@mapNotNull null
+                }
+
+                val parentReference = document.reference.parent.parent
+
+                if (parentReference != null) {
+                    try {
+                        val parentDocument = parentReference.get().await()
+                        val name = parentDocument.getString("name") ?: return@mapNotNull null
+                        val photoURL = parentDocument.getString("photoURL") ?: return@mapNotNull null
+
+                        // Firestoreから直接toObjectを使ってVentCardWithUserを作成
+                        document.toObject(VentCardWithUser::class.java)?.copy(
+                            swipeCardId = document.reference.id,
+                            posterName = name,
+                            posterImageURL = photoURL,
+                            swipeCardCreatedDateTime = document.getTimestamp("swipeCardCreatedDateTime")!!.toDate()
+                        )
+                    } catch (e: Exception) {
+                        Log.w("Firestore", "Error getting parent document", e)
+                        null
+                    }
+                } else {
+                    null
+                }
+            }
+        }
+    }
+
+
 
     suspend fun likeVentCard(userId: String, posterId: String, ventCardId: String): Resource<Unit>{
         return try {
