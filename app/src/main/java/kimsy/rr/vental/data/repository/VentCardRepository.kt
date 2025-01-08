@@ -25,16 +25,53 @@ class VentCardRepository @Inject constructor(
     ): Resource<Unit>{
         return try {
             withTimeout(10000L){
-                db
+                val query = db
                     .collection("users")
                     .document(ventCard.posterId)
                     .collection("swipeCards")
-                    .add(ventCard)
-                    .await()
+
+                val docRef = query
+                    .document()
+
+                val ventCardWithId = ventCard.copy(swipeCardId = docRef.id)
+
+                docRef.set(ventCardWithId).await()
+
                 Resource.success(Unit)
             }
         } catch (e : Exception) {
             Resource.failure(e.message)
+        }
+    }
+
+    suspend fun fetchUserVentCards(
+        userId: String,
+        lastVisible: DocumentSnapshot? = null
+    ): Pair<List<VentCard>, DocumentSnapshot?> {
+
+        val query = db
+            .collection("users")
+            .document(userId)
+            .collection("swipeCards")
+
+        val querySnapshot = if (lastVisible == null) {
+            query.limit(10).get().await()
+        } else {
+            query.startAfter(lastVisible).limit(10).get().await()
+        }
+
+        if (querySnapshot.isEmpty) {
+            // データがない場合、空リストとnullを返す
+            return Pair(emptyList(), null)
+        } else {
+            val newLastVisible = querySnapshot.documents.lastOrNull()
+
+            val ventCards = querySnapshot.documents.mapNotNull { document ->
+                document.toObject(VentCard::class.java)?.copy(
+                    swipeCardCreatedDateTime = document.getTimestamp("swipeCardCreatedDateTime")?.toDate()
+                )?: return Pair(emptyList(), null)
+            }
+            return Pair(ventCards, newLastVisible)
         }
     }
 

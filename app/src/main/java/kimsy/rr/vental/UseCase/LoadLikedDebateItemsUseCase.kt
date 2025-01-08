@@ -1,6 +1,5 @@
 package kimsy.rr.vental.UseCase
 
-import com.google.firebase.firestore.DocumentSnapshot
 import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.NetworkUtils
 import kimsy.rr.vental.data.Resource
@@ -11,30 +10,27 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
-class GetDebatesRelatedUserUseCase @Inject constructor(
+class LoadLikedDebateItemsUseCase @Inject constructor(
     private val debateRepository: DebateRepository,
     private val generateDebateItemUseCase: GenerateDebateItemUseCase,
     networkUtils: NetworkUtils,
     logRepository: LogRepository
 ): BaseUseCase(networkUtils, logRepository) {
     suspend fun execute(
-        lastVisible: DocumentSnapshot?,
+        likedDebateIds: List<String>,
         currentUserId: String
-    ): Resource<Pair<List<DebateItem>, DocumentSnapshot?>> {
+    ): Resource<List<DebateItem>> {
         return executeWithLoggingAndNetworkCheck {
-            val result = debateRepository.fetch10DebatesRelatedUser(currentUserId, lastVisible)
-            val debates = result.first
-            val newLastVisible = result.second
-            val relatedDebateItems = coroutineScope {
+            val debates = debateRepository.fetch10DebatesByIdList(likedDebateIds)
+            val debateItems = coroutineScope {
                 debates.map { debate ->
                     async {
                         generateDebateItemUseCase.execute(debate, currentUserId)
                     }
                 }.awaitAll().filterNotNull()
-
             }
 
-            Resource.success(Pair(relatedDebateItems, newLastVisible))
+            Resource.success(debateItems)
         }
     }
 }

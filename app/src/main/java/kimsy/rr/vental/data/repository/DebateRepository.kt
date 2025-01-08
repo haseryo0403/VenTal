@@ -125,6 +125,49 @@ class DebateRepository @Inject constructor(
         return Pair(debates, newLastVisible)
     }
 
+    suspend fun fetchLikedDebateIds(userId: String): List<String>{
+        val likedDebatesRef = db
+            .collection("users")
+            .document(userId)
+            .collection("likedDebate")
+            .orderBy("likedDate", Query.Direction.DESCENDING)
+
+        val likedDebateQuerySnapshot = likedDebatesRef.get().await()
+        val likedDebateIds = likedDebateQuerySnapshot.documents.map { document ->
+            document.id
+        }
+
+        return likedDebateIds
+    }
+
+    suspend fun fetch10DebatesByIdList(
+        debateIds: List<String>
+    ) : List<Debate> {
+
+        val query = db
+            .collectionGroup("debates")
+            .whereIn("debateId", debateIds)
+
+        val querySnapshot = query.limit(10).get().await()
+
+        if (querySnapshot.isEmpty) {
+            // データがない場合、空リストとnullを返す
+            return emptyList()
+        }
+
+
+        val debates = querySnapshot.documents.mapNotNull { document->
+            document.toObject(Debate::class.java)!!.copy(
+                debateCreatedDatetime = document.getTimestamp("debateCreatedDatetime")?.toDate()
+            )
+        }
+
+        return debates
+    }
+
+
+
+
     //スクロールにて取得タイミングを管理。調べないと？
     suspend fun fetch10Debates(
         lastVisible: DocumentSnapshot? = null

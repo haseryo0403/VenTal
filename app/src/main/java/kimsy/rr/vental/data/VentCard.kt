@@ -4,6 +4,7 @@ import com.google.firebase.firestore.ServerTimestamp
 import java.util.Date
 
 data class VentCard(
+    val swipeCardId: String = "",
     val posterId: String = "",
     val swipeCardContent: String = "",
     val swipeCardImageURL: String = "",

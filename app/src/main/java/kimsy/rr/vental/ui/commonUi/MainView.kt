@@ -41,7 +41,10 @@ import kimsy.rr.vental.Screen
 import kimsy.rr.vental.ViewModel.AnotherUserPageViewModel
 import kimsy.rr.vental.ViewModel.AuthViewModel
 import kimsy.rr.vental.ViewModel.DebateCreationViewModel
+import kimsy.rr.vental.ViewModel.MyDebateViewModel
+import kimsy.rr.vental.ViewModel.MyLikedDebateViewModel
 import kimsy.rr.vental.ViewModel.MyPageViewModel
+import kimsy.rr.vental.ViewModel.MyVentCardViewModel
 import kimsy.rr.vental.ViewModel.SharedDebateViewModel
 import kimsy.rr.vental.ViewModel.TimeLineViewModel
 import kimsy.rr.vental.ViewModel.VentCardCreationViewModel
@@ -199,6 +202,9 @@ fun Navigation(
     debateCreationViewModel: DebateCreationViewModel = hiltViewModel(),
     timeLineViewModel: TimeLineViewModel = hiltViewModel(),
     myPageViewModel: MyPageViewModel = hiltViewModel(),
+    myDebateViewModel: MyDebateViewModel = hiltViewModel(),
+    myVentCardViewModel: MyVentCardViewModel = hiltViewModel(),
+    myLikedDebateViewModel: MyLikedDebateViewModel = hiltViewModel(),
     anotherUserPageViewModel: AnotherUserPageViewModel = hiltViewModel(),
     context: Context,
     pd:PaddingValues){
@@ -253,6 +259,9 @@ fun Navigation(
             MyPageView(
                 sharedDebateViewModel = sharedDebateViewModel,
                 viewModel = myPageViewModel,
+                myDebateViewModel = myDebateViewModel,
+                myVentCardViewModel = myVentCardViewModel,
+                myLikedDebateViewModel = myLikedDebateViewModel,
                 toDebateView = {
                     navController.navigate(Screen.DebateScreen.route)
                 },

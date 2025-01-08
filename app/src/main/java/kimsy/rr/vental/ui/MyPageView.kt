@@ -3,6 +3,7 @@ package kimsy.rr.vental.ui
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresExtension
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -11,64 +12,60 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
+import kimsy.rr.vental.ViewModel.MyDebateViewModel
+import kimsy.rr.vental.ViewModel.MyLikedDebateViewModel
 import kimsy.rr.vental.ViewModel.MyPageViewModel
+import kimsy.rr.vental.ViewModel.MyVentCardViewModel
 import kimsy.rr.vental.ViewModel.SharedDebateViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.data.UserPageData
-import kimsy.rr.vental.ui.CommonComposable.DebateCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun MyPageView(
     viewModel: MyPageViewModel,
+    myDebateViewModel: MyDebateViewModel,
+    myVentCardViewModel: MyVentCardViewModel,
+    myLikedDebateViewModel: MyLikedDebateViewModel,
     sharedDebateViewModel: SharedDebateViewModel,
     toDebateView: () -> Unit,
     toProfileEditView: () -> Unit,
     toAnotherUserPageView: (user: User) -> Unit
 ){
     val currentUser by viewModel.currentUser.collectAsState()
-
-    val isRefreshing by viewModel.isRefreshing.collectAsState()
-
-    val myPageItems by viewModel.myPageItems.collectAsState()
-
-    val hasFinishedLoadingAllItems = viewModel.hasFinishedLoadingAllItems
-
-    val getDebateItemState by viewModel.getDebateItemsState.collectAsState()
 
     val scrollState = rememberLazyListState()
 
@@ -90,121 +87,112 @@ fun MyPageView(
     LaunchedEffect(Unit) {
         viewModel.updateCurrentUser()
         viewModel.loadUserPageData()
-        viewModel.getMyPageDebateItems()
-        scrollState.scrollToItem(
-            viewModel.savedScrollIndex,
-            viewModel.savedScrollOffset
-        )
     }
 
-    // スクロール位置を保存
-    LaunchedEffect(scrollState) {
-        snapshotFlow { scrollState.firstVisibleItemIndex to scrollState.firstVisibleItemScrollOffset }
-            .collect { (index, offset) ->
-                viewModel.setScrollState(index, offset)
-            }
-    }
-
+    // TODO 修正
+    val isScrolled = remember { derivedStateOf { scrollState.firstVisibleItemScrollOffset > 0 } }
+    val accountContentHeight by animateDpAsState(if (isScrolled.value) 0.dp else 140.dp)
+    val tabRowHeight by animateDpAsState(if (isScrolled.value) 0.dp else 48.dp)
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(color = MaterialTheme.colorScheme.background)
     ) {
-        when (userPageDataState.status) {
-            Status.LOADING -> {
-                Log.d("MPV", "upds loading")
-                //TODO Loading
-            }
-            Status.SUCCESS -> {
-                Log.d("MPV", "upds sccess")
-                userPageDataState.data?.let {
-                    currentUser?.let { it1 ->
-                        AccountContent(
-                            userPageData = it,
-                            user = it1,
-                            toProfileEditView = toProfileEditView
-                        )
-                    }
-                }
-                Divider()
-            }
-            Status.FAILURE -> {
-                Log.d("MPV", "upds failure")
-                //TODO error-handling
-            }
-            else -> {}
-        }
-
-        TabRow(
-            selectedTabIndex = selectedTabIndex,
-            indicator = { tabPositions ->
-                TabRowDefaults.Indicator(
-                    modifier = Modifier
-                        .tabIndicatorOffset(tabPositions[selectedTabIndex])
-                        .width(200.dp)
-                )
-            },
+        Box(
             modifier = Modifier
-                .fillMaxWidth(),
-            containerColor = MaterialTheme.colorScheme.background
+                .fillMaxWidth()
+                .height(accountContentHeight)
+                .background(MaterialTheme.colorScheme.background)
         ) {
-
+            when (userPageDataState.status) {
+                Status.LOADING -> {
+                    // TODO: Loading
+                }
+                Status.SUCCESS -> {
+                    userPageDataState.data?.let {
+                        currentUser?.let { user ->
+                            AccountContent(
+                                userPageData = it,
+                                user = user,
+                                toProfileEditView = toProfileEditView
+                            )
+                        }
+                    }
+                }
+                Status.FAILURE -> {
+                    // TODO: Error Handling
+                }
+                else -> {}
+            }
         }
 
-        PullToRefreshBox(
-            isRefreshing = isRefreshing,
-            onRefresh = { viewModel.onRefresh() }
+        // TabRow
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(tabRowHeight)
+                .background(MaterialTheme.colorScheme.background)
         ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(color = MaterialTheme.colorScheme.background),
-                state = scrollState
-            ){
-                item {
-
-                }
-
-                when {
-                    myPageItems.isNotEmpty() -> {
-                        items(myPageItems) {item->
-                            DebateCard(
-                                sharedDebateViewModel,
-                                toDebateView,
-                                toAnotherUserPageView,
-                                onLikeStateSuccess = {
-                                        debateItem ->
-                                    viewModel.onLikeSuccess(debateItem)
-                                },
-                                item)                        }
-                        if (!hasFinishedLoadingAllItems) {
-                            item { MyPageLoadingIndicator(viewModel) }
+            TabRow(
+                selectedTabIndex = selectedTabIndex,
+                indicator = { tabPositions ->
+                    TabRowDefaults.Indicator(
+                        modifier = Modifier
+                            .tabIndicatorOffset(tabPositions[selectedTabIndex])
+                            .width(200.dp)
+                    )
+                },
+                containerColor = MaterialTheme.colorScheme.background
+            ) {
+                tabs.forEachIndexed { index, tab ->
+                    Tab(
+                        selected = selectedTabIndex == index,
+                        onClick = { /* Handle Tab Click */ },
+                        modifier = Modifier.padding(8.dp),
+                        content = {
+                            Text(
+                                text = tab,
+                                color = if (selectedTabIndex == index)
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    MaterialTheme.colorScheme.onBackground
+                            )
                         }
-                    }
-                    else -> {
-                        item {
-                            when (getDebateItemState.status){
-                                Status.LOADING -> {
-                                    Box(
-                                        modifier = Modifier.fillMaxSize()
-                                    ) {
-                                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                                    }
-                                }
-                                Status.FAILURE -> {
-                                    Text(text = "討論の取得に失敗しまいた。")
-    //                                sharedDebateViewModel.resetGetDebateItemState()
-                                    viewModel.resetGetDebateItemState()
-                                }
-                                else -> {viewModel.resetGetDebateItemState()}
-                            }
-                        }
-                    }
+                    )
                 }
             }
         }
 
+        // HorizontalPager
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(1f)
+        ) { index ->
+            when (index) {
+                0 -> {
+                    MyDebateView(
+                        viewModel = myDebateViewModel,
+                        sharedDebateViewModel = sharedDebateViewModel,
+                        toDebateView = toDebateView,
+                        toAnotherUserPageView = toAnotherUserPageView
+                    )
+                }
+                1 -> {
+                    MyVentCardView(viewModel = myVentCardViewModel)
+                }
+                2 -> {
+                    MyLikedDebateView(
+                        viewModel = myLikedDebateViewModel,
+                        sharedDebateViewModel = sharedDebateViewModel,
+                        toDebateView = toDebateView,
+                        toAnotherUserPageView = toAnotherUserPageView
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -264,34 +252,6 @@ fun AccountContent(
             }
         }
         Divider()
-    }
-}
-
-@Composable
-fun MyPageLoadingIndicator(viewModel: MyPageViewModel) {
-//    val getDebateItemState by sharedDebateViewModel.getDebateItemsState.collectAsState()
-    val getDebateItemState by viewModel.getDebateItemsState.collectAsState()
-    Box(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        when (getDebateItemState.status){
-            Status.LOADING -> {
-                Box(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                }
-            }
-            Status.FAILURE -> Text(text = "討論の追加の取得に失敗しまいた。")
-            else -> {}
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        // 要素の追加読み込み
-//        sharedDebateViewModel.getMyPageDebateItems()
-        viewModel.getMyPageDebateItems()
-        Log.d("CUDUC", "LE")
     }
 }
 
