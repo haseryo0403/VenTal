@@ -9,6 +9,8 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.DocumentSnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kimsy.rr.vental.UseCase.LoadNotificationUseCase
+import kimsy.rr.vental.UseCase.MarkNotificationAsReadUseCase
+import kimsy.rr.vental.UseCase.ObserveNotificationCountUseCase
 import kimsy.rr.vental.data.NotificationItem
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
@@ -21,6 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class NotificationsViewModel @Inject constructor(
     private val loadNotificationUseCase: LoadNotificationUseCase,
+    private val observeNotificationCountUseCase: ObserveNotificationCountUseCase,
+    private val markNotificationAsReadUseCase: MarkNotificationAsReadUseCase
 ): ViewModel() {
     val currentUser = User.CurrentUserShareModel.getCurrentUserFromModel()
 
@@ -34,6 +38,9 @@ class NotificationsViewModel @Inject constructor(
 
     var hasFinishedLoadingAllItems by mutableStateOf(false)
         private set
+
+    private val _notificationCountState = MutableStateFlow<Resource<Int>>(Resource.idle())
+    val notificationCountState: StateFlow<Resource<Int>> get() = _notificationCountState
 
     suspend fun loadNotificationItems() {
         viewModelScope.launch {
@@ -57,6 +64,27 @@ class NotificationsViewModel @Inject constructor(
                 else -> {
                 }
             }
+        }
+    }
+
+    fun observeNotificationCount() {
+        viewModelScope.launch {
+            currentUser?.let {
+                observeNotificationCountUseCase.execute(it.uid)
+                    .collect{ resource ->
+                        _notificationCountState.value = resource
+                    }
+            }
+        }
+    }
+
+    fun markNotificationAsRead(notificationItem: NotificationItem) {
+        viewModelScope.launch {
+            currentUser?.let {
+                Log.d("NVM", "mNAR called")
+                markNotificationAsReadUseCase.execute(it.uid, notificationItem.notification.notificationId)
+            }
+
         }
     }
 

@@ -27,7 +27,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.rememberAsyncImagePainter
 import com.google.firebase.firestore.DocumentSnapshot
 import kimsy.rr.vental.R
@@ -43,7 +42,7 @@ import kimsy.rr.vental.ui.CommonComposable.CustomCircularProgressIndicator
 @Composable
 fun NotificationsView(
     sharedDebateViewModel: SharedDebateViewModel,
-    notificationsViewModel: NotificationsViewModel = hiltViewModel(),
+    notificationsViewModel: NotificationsViewModel,
     toDebateView: () -> Unit,
     toAnotherUserPageView: (user: User) -> Unit
 ){
@@ -51,11 +50,34 @@ fun NotificationsView(
     val loadNotificationDataState by notificationsViewModel.loadNotificationDataState.collectAsState()
     val notificationItems by notificationsViewModel.notificationItems.collectAsState()
     val generateDebateItemState by sharedDebateViewModel.generateDebateItemState.collectAsState()
+    val notificationCountState = notificationsViewModel.notificationCountState.collectAsState()
 
     LaunchedEffect(Unit) {
+//        if (notificationCountState.value.status == Status.SUCCESS) {
+//            when(notificationCountState.value.data) {
+//                0 -> {}
+//                else -> {
+//
+//                }
+//            }
+//        } else {
+//
+//        }
+        if (notificationItems.isNotEmpty()) {
+            notificationItems.forEach { notificationItem ->
+                if (notificationItem.notification.readFlag == false) {
+                    //TODO change flag
+                    notificationsViewModel.markNotificationAsRead(notificationItem)
+                }
+            }
+        }
         //戻るボタンで実行されてしまうと同じ内容をどんどんストックしてしまうため
+        Log.d("NV", "通知表示")
         if (notificationItems.isEmpty()) {
+            Log.d("NV", "通知表示からです")
             notificationsViewModel.loadNotificationItems()
+        } else {
+
         }
     }
 
@@ -126,7 +148,6 @@ fun notificationRow(
     toDebateView: () -> Unit,
     toAnotherUserPageView: (user: User) -> Unit
     ) {
-    Log.d("NV", "notification row called")
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -187,18 +208,5 @@ fun NotificationLoadingIndicator(
     LaunchedEffect(Unit) {
         // 要素の追加読み込み
         notificationsViewModel.loadNotificationItems()
-        Log.d("CUDUC", "LE")
     }
 }
-
-
-
-//@Preview(
-//    device = Devices.PIXEL_7,
-//    showSystemUi = true,
-//    showBackground = true,
-//)
-//@Composable
-//fun NotificaitonsPrev(){
-//    NotificationsView()
-//}

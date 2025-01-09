@@ -6,8 +6,13 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -20,13 +25,16 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kimsy.rr.vental.R
 import kimsy.rr.vental.Screen
+import kimsy.rr.vental.ViewModel.NotificationsViewModel
 import kimsy.rr.vental.ViewModel.VentCardCreationViewModel
 import kimsy.rr.vental.data.Status
 import kotlinx.coroutines.CoroutineScope
@@ -42,10 +50,18 @@ fun AppTopBarView(
     onBackNavClicked: () -> Unit = {},
     onSavingFailure: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior,
-    viewModel: VentCardCreationViewModel
+    ventCardCreationViewModel: VentCardCreationViewModel,
+    notificationsViewModel: NotificationsViewModel
 ){
     val titleToDisableScroll = listOf("VCC", "VentCards")
-    val saveState = viewModel.saveState.collectAsState()
+    val saveState = ventCardCreationViewModel.saveState.collectAsState()
+
+    val notificationCountState = notificationsViewModel.notificationCountState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        notificationsViewModel.observeNotificationCount()
+    }
+
 
     val navigationIcon: (@Composable () -> Unit)? =
         {
@@ -71,11 +87,11 @@ fun AppTopBarView(
                 OutlinedButton(onClick = {
                     //スワイプカード登録
                     Log.d("AppTopBar","送信ボタン押下")
-                    if(viewModel.content.isBlank() && viewModel.selectedImageUri == null){
+                    if(ventCardCreationViewModel.content.isBlank() && ventCardCreationViewModel.selectedImageUri == null){
                         Toast.makeText(context, "内容を入力してください", Toast.LENGTH_LONG).show()
                     } else {
                         onBackNavClicked()
-                        viewModel.startSavingVentCard(context)
+                        ventCardCreationViewModel.startSavingVentCard(context)
                     }
                      }) {
                     Text(
@@ -97,13 +113,42 @@ fun AppTopBarView(
                 }
             } else if(!title.contains("通知")){
 
-                //TODO isReadの個数をチェックして反映？もしくは通知画面をリアルタイムアップデートにして、もし新しいのがあれば反映？どっちだ
+                BadgedBox(
+                    badge = {
+                        if (notificationCountState.value.status == Status.SUCCESS) {
+                            when(notificationCountState.value.data) {
+                                0 -> {}
+                                else -> {
+                                    Badge(
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .offset(x = (-4).dp)
+                                    ){
+                                        Text(text = notificationCountState.value.data.toString())
+                                    }
+                                }
+                            }
+                        } else {
 
-                IconButton(onClick = {
-                    navController.navigate(Screen.Notifications.route)
-                }) {
-                    Icon(painter = painterResource(id = R.drawable.baseline_notifications_24), contentDescription = "notifications")
+                        }
+                    },
+                    modifier = Modifier.padding(end = 8.dp)
+                ){
+                    IconButton(
+                        onClick = {
+                        navController.navigate(Screen.Notifications.route)
+                        },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_notifications_24),
+                            contentDescription = "notifications",
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
+
                 }
+
 
             } else {
                 null
@@ -144,14 +189,14 @@ fun AppTopBarView(
                         .align(Alignment.BottomCenter)
                         .fillMaxWidth()
                 )            }
-            Status.SUCCESS -> {viewModel.resetValues()}
+            Status.SUCCESS -> {ventCardCreationViewModel.resetValues()}
             Status.FAILURE -> {
                 Log.e("ATB", "${saveState.value.message}")
                 CoroutineScope(Dispatchers.Main).launch {
                     onSavingFailure() // メインスレッドでventCardCreationViewに移動
                     Toast.makeText(context, "送信に失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
                 }
-                viewModel.resetStatus()
+                ventCardCreationViewModel.resetStatus()
             }
             else -> {}
         }

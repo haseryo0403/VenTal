@@ -3,6 +3,7 @@ package kimsy.rr.vental.data
 import com.google.firebase.firestore.FieldValue
 
 data class NotificationData(
+    val notificationId: String = "",
     val fromUserId: String = "",
     val type: NotificationType = NotificationType.DEBATESTART,
     val targetItemId: String = "",

@@ -45,6 +45,7 @@ import kimsy.rr.vental.ViewModel.MyDebateViewModel
 import kimsy.rr.vental.ViewModel.MyLikedDebateViewModel
 import kimsy.rr.vental.ViewModel.MyPageViewModel
 import kimsy.rr.vental.ViewModel.MyVentCardViewModel
+import kimsy.rr.vental.ViewModel.NotificationsViewModel
 import kimsy.rr.vental.ViewModel.SharedDebateViewModel
 import kimsy.rr.vental.ViewModel.TimeLineViewModel
 import kimsy.rr.vental.ViewModel.VentCardCreationViewModel
@@ -73,7 +74,8 @@ import kimsy.rr.vental.ui.VentCardCreationView
 fun MainView(
     authViewModel: AuthViewModel,
     ventCardCreationViewModel: VentCardCreationViewModel = hiltViewModel(),
-    sharedDebateViewModel: SharedDebateViewModel = hiltViewModel()
+    sharedDebateViewModel: SharedDebateViewModel = hiltViewModel(),
+    notificationsViewModel: NotificationsViewModel = hiltViewModel()
 ){
 
     Log.e("View", "Main called")
@@ -157,7 +159,8 @@ fun MainView(
                      {controller.navigateUp()},
                      {controller.navigate(Screen.BottomScreen.VentCardCreation.route)},
                      scrollBehavior,
-                     viewModel = ventCardCreationViewModel
+                     ventCardCreationViewModel = ventCardCreationViewModel,
+                     notificationsViewModel = notificationsViewModel
                  )
         },
         scaffoldState = scaffoldState
@@ -198,6 +201,7 @@ fun Navigation(
     navController: NavController,
     authViewModel: AuthViewModel,
     ventCardCreationViewModel: VentCardCreationViewModel,
+    notificationsViewModel: NotificationsViewModel = hiltViewModel(),
     sharedDebateViewModel: SharedDebateViewModel,
     debateCreationViewModel: DebateCreationViewModel = hiltViewModel(),
     timeLineViewModel: TimeLineViewModel = hiltViewModel(),
@@ -246,6 +250,7 @@ fun Navigation(
             Log.d("Navigation", "to Noti")
             NotificationsView(
                 sharedDebateViewModel = sharedDebateViewModel,
+                notificationsViewModel = notificationsViewModel,
                 toDebateView = {
                     navController.navigate(Screen.DebateScreen.route)
                 },

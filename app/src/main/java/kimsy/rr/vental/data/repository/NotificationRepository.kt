@@ -7,6 +7,9 @@ import com.google.firebase.firestore.Query
 import kimsy.rr.vental.data.NotificationData
 import kimsy.rr.vental.data.NotificationSettings
 import kimsy.rr.vental.data.NotificationType
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
@@ -27,8 +30,12 @@ class NotificationRepository @Inject constructor(
                     .collection("users")
                     .document(toUserId)
                     .collection("notifications")
+                    .document()
 
-                docRef.add(notificationData).await()
+                val notificationDataWithId = notificationData.copy(notificationId = docRef.id)
+
+                docRef.set(notificationDataWithId).await()
+//                docRef.add(notificationData).await()
                 Result.success(Unit)
             }
         } catch (e: Exception) {
@@ -78,4 +85,54 @@ class NotificationRepository @Inject constructor(
         }
         return Pair(notificationsData, newLastVisible)
     }
+
+    suspend fun observeNotificationCount(
+        currentUserId: String,
+        notificationSettings: NotificationSettings
+    ): Flow<Int> = callbackFlow{
+
+        val excludedNotificationType = mutableListOf<NotificationType>().apply {
+            if (!notificationSettings.debateStartNotification) add(NotificationType.DEBATESTART)
+            if (!notificationSettings.messageNotification) add(NotificationType.DEBATEMESSAGE)
+            if (!notificationSettings.commentNotification) add(NotificationType.DEBATECOMMENT)
+        }
+
+        val baseDocRef = db
+            .collection("users")
+            .document(currentUserId)
+            .collection("notifications")
+
+        val docRef = if (excludedNotificationType.isNotEmpty()) {
+            baseDocRef.whereNotIn("type", excludedNotificationType).whereEqualTo("readFlag", false)
+        } else {
+            baseDocRef.whereEqualTo("readFlag", false)
+        }
+
+        val subscription = docRef.addSnapshotListener{ querySnapshot, exception ->
+            if (exception != null) {
+                close(exception)
+                return@addSnapshotListener
+            }
+
+            if (querySnapshot != null) {
+                val count = querySnapshot.size()
+                trySend(count)
+            }
+        }
+        awaitClose{ subscription.remove() }
+    }
+
+    suspend fun markNotificationAsRead(
+        currentUserId: String,
+        notificationId: String
+    ){
+        val query = db
+            .collection("users")
+            .document(currentUserId)
+            .collection("notifications")
+            .document(notificationId)
+
+        query.update("readFlag", true)
+    }
+
 }
