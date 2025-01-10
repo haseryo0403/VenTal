@@ -37,6 +37,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -54,6 +55,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.rememberAsyncImagePainter
@@ -96,6 +98,7 @@ fun DebateView(
 
     LaunchedEffect(Unit) {
         currentDebateItem?.let { debateViewModel.getMessages(it.debate) }
+        debateViewModel.observeFollowingUserIds()
     }
 
     when (likeState[currentDebateItem]?.status) {
@@ -141,7 +144,8 @@ fun DebateView(
                     if (currentDebateItem != null) {
                         DebateContent(
                             debateItem = currentDebateItem!!,
-                            sharedDebateViewModel = sharedDebateViewModel
+                            sharedDebateViewModel = sharedDebateViewModel,
+                            debateViewModel = debateViewModel
                         )
                     } else {
                         Toast.makeText(
@@ -243,9 +247,13 @@ fun DebateView(
 @Composable
 fun DebateContent(
     debateItem: DebateItem,
-    sharedDebateViewModel: SharedDebateViewModel
+    sharedDebateViewModel: SharedDebateViewModel,
+    debateViewModel: DebateViewModel
                   ) {
 
+    val followingUserIdsState by debateViewModel.followingUserIdsState.collectAsState()
+
+    val currentUser = debateViewModel.currentUser
 
     val debate = debateItem.debate
     val ventCard = debateItem.ventCard
@@ -253,6 +261,16 @@ fun DebateContent(
     val poster = debateItem.poster
     val heartIcon = painterResource(id = R.drawable.baseline_favorite_24)
     Log.d("DV", "$debateItem, $ventCard")
+
+    val followState by debateViewModel.followState.collectAsState()
+
+    when(followState.status) {
+        Status.FAILURE -> {
+            Toast.makeText(LocalContext.current, stringResource(id = R.string.follow_fail), Toast.LENGTH_SHORT).show()
+        }
+        else -> {}
+    }
+
     Row(
         modifier = Modifier.fillMaxWidth()
     ){
@@ -266,6 +284,37 @@ fun DebateContent(
             Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(text = poster.name)
+
+                when (followingUserIdsState.status) {
+                    Status.SUCCESS -> {
+                        val followingUserIds = followingUserIdsState.data
+                        if (currentUser != null) {
+                            if (followingUserIds != null && poster.uid != currentUser.uid) {
+                                if (!followingUserIds.contains(poster.uid)){
+                                    OutlinedButton(
+                                        onClick = {
+                                            debateViewModel.followUser(poster.uid)
+                                        },
+                                        modifier = Modifier.height(32.dp)
+                                    ) {
+                                        Text(text = "フォローする")
+                                    }
+                                } else {
+                                    OutlinedButton(
+                                        onClick = {
+                                            debateViewModel.unFollowUser(poster.uid)
+                                        },
+                                        modifier = Modifier.height(32.dp)
+                                    ) {
+                                        Text(text = "フォロー解除")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else -> {}
+                }
+
                 Text(
                     text = ventCard.swipeCardCreatedDateTime?.let {
                         formatTimeDifference(it)

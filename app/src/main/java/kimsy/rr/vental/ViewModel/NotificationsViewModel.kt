@@ -84,7 +84,6 @@ class NotificationsViewModel @Inject constructor(
                 Log.d("NVM", "mNAR called")
                 markNotificationAsReadUseCase.execute(it.uid, notificationItem.notification.notificationId)
             }
-
         }
     }
 

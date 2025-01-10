@@ -26,6 +26,8 @@
     <string name="notification_settings_debate_message">討論メッセージ</string>
     <string name="notification_settings_debate_comment">討論へのコメント</string>
     <string name="please_check_internet">インターネットの接続を確認してください</string>
+    <string name="follow_fail">フォロー、解除に失敗しました。時間をおいて再度お試しください。</string>
+
 
     <string name="like_fail">いいねに失敗しました。しばらく時間を置いて、再度お試しください。</string>
 </resources>

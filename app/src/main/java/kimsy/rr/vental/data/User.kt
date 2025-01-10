@@ -5,7 +5,8 @@ data class User(
     val name: String = "",
 //    val email: String = "",
     val photoURL: String = "",
-    val selfIntroduction: String? = ""
+    val selfIntroduction: String? = "",
+    val followerCount: Int = 0
     ){
     companion object {
         fun createUser(

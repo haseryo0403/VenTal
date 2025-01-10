@@ -5,10 +5,13 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kimsy.rr.vental.UseCase.FollowUseCase
 import kimsy.rr.vental.UseCase.GetMessageUseCase
 import kimsy.rr.vental.UseCase.MessageCreationUseCase
+import kimsy.rr.vental.UseCase.ObserveFollowingUserIdUseCase
 import kimsy.rr.vental.UseCase.SaveImageUseCase
 import kimsy.rr.vental.UseCase.SaveNotificationUseCase
+import kimsy.rr.vental.UseCase.UnFollowUseCase
 import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.Message
 import kimsy.rr.vental.data.NotificationType
@@ -25,7 +28,10 @@ class DebateViewModel @Inject constructor(
     private val getMessageUseCase: GetMessageUseCase,
     private val messageCreationUseCase: MessageCreationUseCase,
     private val saveImageUseCase: SaveImageUseCase,
-    private val saveNotificationUseCase: SaveNotificationUseCase
+    private val saveNotificationUseCase: SaveNotificationUseCase,
+    private val observeFollowingUserIdUseCase: ObserveFollowingUserIdUseCase,
+    private val followUseCase: FollowUseCase,
+    private val unFollowUseCase: UnFollowUseCase
     ): ViewModel() {
 
     val currentUser = User.CurrentUserShareModel.getCurrentUserFromModel()
@@ -35,6 +41,12 @@ class DebateViewModel @Inject constructor(
 
     private val _createMessageState = MutableStateFlow<Resource<Unit>>(Resource.idle())
     val createMessageState: StateFlow<Resource<Unit>> get() = _createMessageState
+
+    private val _followingUserIdsState = MutableStateFlow<Resource<List<String>>>(Resource.idle())
+    val followingUserIdsState: StateFlow<Resource<List<String>>> get() = _followingUserIdsState
+
+    private val _followState = MutableStateFlow<Resource<Unit>>(Resource.idle())
+    val followState: StateFlow<Resource<Unit>> get() = _followState
 
     fun getMessages(debate: Debate) {
         viewModelScope.launch {
@@ -86,8 +98,44 @@ class DebateViewModel @Inject constructor(
         }
     }
 
+    fun observeFollowingUserIds() {
+        viewModelScope.launch {
+            currentUser?.let {
+                observeFollowingUserIdUseCase.execute(it.uid)
+                    .collect{ resource ->
+                        _followingUserIdsState.value = resource
+                    }
+            }
+        }
+    }
+
+    fun followUser(toUserId: String) {
+        viewModelScope.launch {
+            _followState.value = Resource.loading()
+            if (_followingUserIdsState.value.status == Status.SUCCESS) {
+                currentUser?.let {
+                    _followState.value = followUseCase.execute(it.uid, toUserId)
+                }
+            }
+        }
+    }
+
+    fun unFollowUser(toUserId: String) {
+        viewModelScope.launch {
+            //一旦フォローアンフォロー共有State
+            _followState.value = Resource.loading()
+            if (_followingUserIdsState.value.status == Status.SUCCESS) {
+                currentUser?.let {
+                    _followState.value = unFollowUseCase.execute(it.uid, toUserId)
+                }
+            }
+        }
+    }
+
     fun resetState() {
         _fetchMessageState.value = Resource.idle()
         _createMessageState.value = Resource.idle()
+        _followState.value = Resource.idle()
+        _followingUserIdsState.value = Resource.idle()
     }
 }

@@ -24,6 +24,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
@@ -115,7 +116,10 @@ fun MyPageView(
                             AccountContent(
                                 userPageData = it,
                                 user = user,
-                                toProfileEditView = toProfileEditView
+                                toProfileEditView = toProfileEditView,
+                                followUser = null,
+                                unFollowUser = null,
+                                isFollowing = null
                             )
                         }
                     }
@@ -200,10 +204,12 @@ fun MyPageView(
 fun AccountContent(
     userPageData: UserPageData,
     user: User,
-    toProfileEditView: (() -> Unit)?
+    toProfileEditView: (() -> Unit)?,
+    followUser: (() -> Unit)?,
+    unFollowUser: (() -> Unit)?,
+    isFollowing: Boolean?
 ){
     val debatesCount = userPageData.debatesCount
-    val followerCount = userPageData.followerCount
 
     Row(
         modifier = Modifier
@@ -241,14 +247,43 @@ fun AccountContent(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Text(text = followerCount.toString())
+                    Text(text = user.followerCount.toString())
                     Text(text = "フォロワー")
                 }
             }
-            Button(onClick = { if (toProfileEditView != null) toProfileEditView() },
 
-                ) {
-                Text(text = "プロフィールを編集")
+            if (toProfileEditView != null) {
+                Button(onClick = { toProfileEditView() },
+
+                    ) {
+                    Text(text = "プロフィールを編集")
+                }
+            } else {
+                when (isFollowing) {
+                    true -> {
+                        Button(
+                            onClick = {
+                                if (unFollowUser != null) {
+                                    unFollowUser()
+                                }
+                            }
+                        ) {
+                            Text(text = "フォロー解除")
+                        }
+                    }
+                    false -> {
+                        OutlinedButton(
+                            onClick = {
+                                if (followUser != null) {
+                                    followUser()
+                                }
+                            }
+                        ) {
+                            Text(text = "フォローする")
+                        }
+                    }
+                    null ->{}
+                }
             }
         }
         Divider()

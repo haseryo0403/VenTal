@@ -9,27 +9,31 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Divider
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import kimsy.rr.vental.ViewModel.AnotherUserPageViewModel
 import kimsy.rr.vental.ViewModel.SharedDebateViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
+import kimsy.rr.vental.ui.CommonComposable.DebateCard
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun AnotherUserPageView(
-    viewModel: AnotherUserPageViewModel,
+    viewModel: AnotherUserPageViewModel = hiltViewModel(),
     sharedDebateViewModel: SharedDebateViewModel,
     toDebateView: () -> Unit,
     toAnotherUserPageView: (user: User) -> Unit
@@ -45,28 +49,23 @@ fun AnotherUserPageView(
 
     val userPageDataState by viewModel.userPageDateState.collectAsState()
 
+    val followingUserIdsState by viewModel.followingUserIdsState.collectAsState()
+
+    val followingUserIds = when (followingUserIdsState.status) {
+        Status.SUCCESS -> {
+            followingUserIdsState.data
+        }
+        else -> {null}
+    }
+
     LaunchedEffect(Unit) {
-        viewModel.updateAnotherUser()
         viewModel.loadUserPageData()
-//        sharedDebateViewModel.getMyPageDebateItems()
-        scrollState.scrollToItem(
-            viewModel.savedScrollIndex,
-            viewModel.savedScrollOffset
-        )
+        viewModel.observeFollowingUserIds()
     }
-
-    // スクロール位置を保存
-    LaunchedEffect(scrollState) {
-        snapshotFlow { scrollState.firstVisibleItemIndex to scrollState.firstVisibleItemScrollOffset }
-            .collect { (index, offset) ->
-                viewModel.setScrollState(index, offset)
-            }
-    }
-
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.background)
     ) {
         when (userPageDataState.status) {
@@ -81,7 +80,10 @@ fun AnotherUserPageView(
                         AccountContent(
                             userPageData = it,
                             user = it1,
-                            toProfileEditView = null
+                            toProfileEditView = null,
+                            followUser = {viewModel.followUser(it1.uid)},
+                            unFollowUser = {viewModel.unFollowUser(it1.uid)},
+                            isFollowing = followingUserIds?.contains(it1.uid)
                         )
                     }
                 }
@@ -94,53 +96,84 @@ fun AnotherUserPageView(
             else -> {}
         }
 
+        AnotherUserDebateView(
+            viewModel = viewModel,
+            sharedDebateViewModel = sharedDebateViewModel,
+            toDebateView = toDebateView,
+            toAnotherUserPageView = toAnotherUserPageView
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
+@Composable
+fun AnotherUserDebateView(
+    viewModel: AnotherUserPageViewModel,
+    sharedDebateViewModel: SharedDebateViewModel,
+    toDebateView: () -> Unit,
+    toAnotherUserPageView: (user: User) -> Unit
+){
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
+
+    val debateItems by viewModel.debateItems.collectAsState()
+
+    val hasFinishedLoadingAllItems = viewModel.hasFinishedLoadingAllItems
+
+    val getDebateItemState by viewModel.getDebateItemsState.collectAsState()
+
+
+    LaunchedEffect(Unit) {
+        viewModel.getAnotherUserPageDebateItems()
+    }
+
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = { viewModel.onRefresh() }
+    ) {
         LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color = MaterialTheme.colorScheme.background),
-            state = scrollState
-        ){
-            item {
-
-            }
-
+            modifier = Modifier.fillMaxWidth()
+        ) {
             when {
-                anotherUserPageItems.isNotEmpty() -> {
-//                    items(myPageItems) {item->
-//                        DebateCard(
-//                            sharedDebateViewModel,
-//                            toDebateView,
-//                            toAnotherUserPageView,
-//                            onLikeStateSuccess = {
-//                                    debateItem ->
-//                                viewModel.onLikeSuccess(debateItem)
-//                            },
-//                            item)                    }
-//                    if (!hasFinishedLoadingAllMyPageItems) {
-////                        item { MyPageLoadingIndicator(sharedDebateViewModel) }
-//                    }
+                debateItems.isNotEmpty() -> {
+                    items(debateItems) { item->
+                        DebateCard(
+                            sharedDebateViewModel,
+                            toDebateView,
+                            toAnotherUserPageView,
+                            onLikeStateSuccess = {
+                                    debateItem ->
+                                viewModel.onLikeSuccess(debateItem)
+                            },
+                            item)                        }
+                    if (!hasFinishedLoadingAllItems) {
+                        item { AnotherUserPageLoadingIndicator(viewModel) }
+                    }
                 }
                 else -> {
                     item {
-                        when (getDebateItemState.status){
+                        when (getDebateItemState.status) {
                             Status.LOADING -> {
                                 Box(
                                     modifier = Modifier.fillMaxSize()
                                 ) {
-                                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.align(Alignment.Center)
+                                    )
                                 }
                             }
                             Status.FAILURE -> {
-                                Text(text = "討論の取得に失敗しまいた。")
+                                Text(text = "討論の取得に失敗しました。")
                                 viewModel.resetGetDebateItemState()
                             }
-                            else -> {viewModel.resetGetDebateItemState()}
+                            else -> viewModel.resetGetDebateItemState()
                         }
                     }
                 }
             }
         }
     }
+
 }
 
 @Composable
@@ -164,7 +197,7 @@ fun AnotherUserPageLoadingIndicator(viewModel: AnotherUserPageViewModel) {
 
     LaunchedEffect(Unit) {
         // 要素の追加読み込み
-//        sharedDebateViewModel.getMyPageDebateItems()
+        viewModel.getAnotherUserPageDebateItems()
         Log.d("CUDUC", "LE")
     }
 }

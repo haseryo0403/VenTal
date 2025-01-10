@@ -50,7 +50,6 @@ fun DebateCard(
     onLikeStateSuccess: (debateItem: DebateItem) -> Unit,
     debateItem: DebateItem
 ) {
-//    var debateItem by remember { mutableStateOf(debateItem) }
     var debate = debateItem.debate
     val ventCard = debateItem.ventCard
     val poster = debateItem.poster
@@ -62,7 +61,6 @@ fun DebateCard(
         Status.SUCCESS -> {
             //TODO もし必要なUIの処理があれば。
             onLikeStateSuccess(likeState[debateItem]?.data!!)
-//            showingDebateItem = likeState[showingDebateItem]?.data!!
             sharedDebateViewModel.resetLikeState(debateItem)
         }
         Status.FAILURE -> {
@@ -92,7 +90,6 @@ fun DebateCard(
                     .size(40.dp)
                     .clip(CircleShape)
                     .clickable {
-//                        User.AnotherUserShareModel.setAnotherUser(poster)
                         //TODO 遷移先ユーザーがログイン中のユーザーではないかチェックする
                         toAnotherUserPageView(poster)
                     },
@@ -108,7 +105,6 @@ fun DebateCard(
                         text = poster.name,
                         modifier = Modifier
                             .clickable {
-//                                User.AnotherUserShareModel.setAnotherUser(poster)
                                 toAnotherUserPageView(poster)
                             }
                     )
@@ -144,7 +140,6 @@ fun DebateCard(
                         .size(40.dp)
                         .clip(CircleShape)
                         .clickable {
-//                            User.AnotherUserShareModel.setAnotherUser(debater)
                             toAnotherUserPageView(debater)
                         },
                     contentScale = ContentScale.Crop
@@ -153,7 +148,6 @@ fun DebateCard(
                     text = debater.name,
                     modifier = Modifier
                         .clickable {
-//                            User.AnotherUserShareModel.setAnotherUser(debater)
                             toAnotherUserPageView(debater)
                         }
                 )
@@ -164,7 +158,6 @@ fun DebateCard(
                 modifier = Modifier.padding(8.dp)
             ) {
                 IconButton(onClick = {
-//                        timeLineViewModel.handleLikeDebaterAction(debateItem)
                     sharedDebateViewModel.handleLikeAction(debateItem, UserType.DEBATER)
                 }) {
                     Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
@@ -180,7 +173,6 @@ fun DebateCard(
                 modifier = Modifier.padding(8.dp)
             ) {
                 IconButton(onClick = {
-//                        timeLineViewModel.handleLikePosterAction(debateItem)
                     sharedDebateViewModel.handleLikeAction(debateItem, UserType.POSTER)
                 }) {
                     Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
@@ -202,7 +194,6 @@ fun DebateCard(
                         .size(40.dp)
                         .clip(CircleShape)
                         .clickable {
-//                            User.AnotherUserShareModel.setAnotherUser(poster)
                             toAnotherUserPageView(poster)
                        },
                     contentScale = ContentScale.Crop
@@ -211,7 +202,6 @@ fun DebateCard(
                     text = poster.name,
                     modifier = Modifier
                         .clickable {
-//                            User.AnotherUserShareModel.setAnotherUser(poster)
                             toAnotherUserPageView(poster)
                         }
                 )

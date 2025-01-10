@@ -19,16 +19,16 @@ class GetDebatesRelatedUserUseCase @Inject constructor(
 ): BaseUseCase(networkUtils, logRepository) {
     suspend fun execute(
         lastVisible: DocumentSnapshot?,
-        currentUserId: String
+        userId: String
     ): Resource<Pair<List<DebateItem>, DocumentSnapshot?>> {
         return executeWithLoggingAndNetworkCheck {
-            val result = debateRepository.fetch10DebatesRelatedUser(currentUserId, lastVisible)
+            val result = debateRepository.fetch10DebatesRelatedUser(userId, lastVisible)
             val debates = result.first
             val newLastVisible = result.second
             val relatedDebateItems = coroutineScope {
                 debates.map { debate ->
                     async {
-                        generateDebateItemUseCase.execute(debate, currentUserId)
+                        generateDebateItemUseCase.execute(debate, userId)
                     }
                 }.awaitAll().filterNotNull()
 

@@ -245,43 +245,6 @@ class DebateRepository @Inject constructor(
         return Pair(debates, newLastVisible)
     }
 
-
-
-//    suspend fun createDebate(debate: Debate): Resource<Debate>{
-//        Log.d("DR", "createDebate called")
-//        return try{
-//            withTimeout(10000L) {
-//                val docRefOnSwipeCard = db
-//                    .collection("users")
-//                    .document(debate.posterId)
-//                    .collection("swipeCards")
-//                    .document(debate.swipeCardId)
-//
-//                val debateDocRef = docRefOnSwipeCard
-//                    .collection("debates")
-//                    .add(debate)
-//                    .await()
-//
-//                docRefOnSwipeCard
-//                    .update("debateCount", FieldValue.increment(1))
-//                    .await()
-//
-//                val createdDebateSnapshot = debateDocRef.get().await()
-//
-//                val createdDebate = createdDebateSnapshot.toObject(Debate::class.java)
-//                    ?.copy(debateId = debateDocRef.id,
-//                        //TODO dateに変換？
-//                        )
-//                    ?: throw IllegalStateException("Failed to convert document to Debate")
-//
-//                Resource.success(createdDebate)
-//            }
-//        } catch (e: Exception) {
-//            Resource.failure(e.message)
-//        }
-//    }
-
-
     suspend fun createDebate(debate: Debate): Resource<Debate> {
         Log.d("DR", "createDebate called")
         return try {
@@ -365,7 +328,7 @@ class DebateRepository @Inject constructor(
             .document(debateId)
 
         transaction.delete(docRef)
-        }
+    }
 
     fun likeCountUp(
         posterId: String,

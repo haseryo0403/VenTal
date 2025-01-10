@@ -316,7 +316,6 @@ fun Navigation(
         }
         composable(Screen.AnotherUserPageScreen.route) {
             AnotherUserPageView(
-                viewModel = anotherUserPageViewModel,
                 sharedDebateViewModel = sharedDebateViewModel,
                 toDebateView = {
                     navController.navigate(Screen.DebateScreen.route)
