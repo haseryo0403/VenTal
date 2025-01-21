@@ -245,6 +245,57 @@ class DebateRepository @Inject constructor(
         return Pair(debates, newLastVisible)
     }
 
+    //降順なのでstartAtDateはendAtDateより新しい日付
+    suspend fun fetchDebateByUserIdList(
+        userIds: List<String>,
+        startAfterDate: Timestamp,
+        endAtDate: Timestamp
+    ): List<Debate> {
+
+        Log.d("DR", startAfterDate.toString())
+        Log.d("DR", endAtDate.toString())
+
+        val debates = mutableListOf<Debate>()
+
+        val debaterQuery = db
+            .collectionGroup("debates")
+            .whereIn("debaterId", userIds)
+            .orderBy("debateCreatedDatetime", Query.Direction.DESCENDING)
+            .startAfter(startAfterDate)
+            .endAt(endAtDate)
+
+        val posterQuery = db
+            .collectionGroup("debates")
+            .whereIn("posterId", userIds)
+            .orderBy("debateCreatedDatetime", Query.Direction.DESCENDING)
+            .startAfter(startAfterDate)
+            .endAt(endAtDate)
+
+
+        val debaterSnapshot = debaterQuery.get().await()
+        val posterSnapshot = posterQuery.get().await()
+
+        Log.d("Firestore", "Snapshot size: ${debaterSnapshot.size()}")
+        Log.d("Firestore", "Snapshot size: ${posterSnapshot.size()}")
+        Log.d("DR", debaterSnapshot.toString())
+        Log.d("DR", posterSnapshot.toString())
+
+        debates.addAll(
+            debaterSnapshot.documents.mapNotNull {document->
+                document.toObject(Debate::class.java)!!.copy(
+                    debateCreatedDatetime = document.getTimestamp("debateCreatedDatetime")?.toDate()
+                )
+            }
+        )
+        debates.addAll(posterSnapshot.documents.mapNotNull {document->
+            document.toObject(Debate::class.java)!!.copy(
+                debateCreatedDatetime = document.getTimestamp("debateCreatedDatetime")?.toDate()
+            )
+        })
+
+        return debates.distinctBy { it.debateId }
+    }
+
     suspend fun createDebate(debate: Debate): Resource<Debate> {
         Log.d("DR", "createDebate called")
         return try {

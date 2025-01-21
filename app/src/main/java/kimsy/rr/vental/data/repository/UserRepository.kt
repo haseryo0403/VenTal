@@ -170,4 +170,21 @@ class UserRepository @Inject constructor(
 
         query.update(updates).await()
     }
+
+    suspend fun fetchFollowingUserIds(
+        userId: String
+    ): List<String> {
+        val docRef = db
+            .collection("users")
+            .document(userId)
+            .collection("following")
+
+        val querySnapshot = docRef.get().await()
+        val followingUserIds = querySnapshot.documents.map { document ->
+            document.id
+        }
+
+        return followingUserIds
+    }
+
 }

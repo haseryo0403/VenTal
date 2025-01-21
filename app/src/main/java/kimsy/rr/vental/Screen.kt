@@ -28,6 +28,7 @@ sealed class Screen(val title: String, val route: String) {
     object SettingsScreen: Screen("設定", "settings")
     object ProfileEditScreen: Screen("プロフィール編集", "profile edit")
     object AnotherUserPageScreen: Screen("ユーザー", "another userPage")
+    object FollowListScreen: Screen("フォロー一覧", "follow list")
 
 }
 
@@ -51,5 +52,6 @@ val otherScreen = listOf(
     Screen.DebateScreen,
     Screen.SettingsScreen,
     Screen.ProfileEditScreen,
-    Screen.AnotherUserPageScreen
+    Screen.AnotherUserPageScreen,
+    Screen.FollowListScreen
 )

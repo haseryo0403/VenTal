@@ -41,6 +41,7 @@ import kimsy.rr.vental.Screen
 import kimsy.rr.vental.ViewModel.AnotherUserPageViewModel
 import kimsy.rr.vental.ViewModel.AuthViewModel
 import kimsy.rr.vental.ViewModel.DebateCreationViewModel
+import kimsy.rr.vental.ViewModel.FollowPageViewModel
 import kimsy.rr.vental.ViewModel.MyDebateViewModel
 import kimsy.rr.vental.ViewModel.MyLikedDebateViewModel
 import kimsy.rr.vental.ViewModel.MyPageViewModel
@@ -57,7 +58,8 @@ import kimsy.rr.vental.settingsScreen
 import kimsy.rr.vental.ui.AnotherUserPageView
 import kimsy.rr.vental.ui.DebateCreationView
 import kimsy.rr.vental.ui.DebateView
-import kimsy.rr.vental.ui.FollowsView
+import kimsy.rr.vental.ui.FollowListView
+import kimsy.rr.vental.ui.FollowPageView
 import kimsy.rr.vental.ui.MyPageView
 import kimsy.rr.vental.ui.NotificationSettingsView
 import kimsy.rr.vental.ui.NotificationsView
@@ -210,6 +212,7 @@ fun Navigation(
     myVentCardViewModel: MyVentCardViewModel = hiltViewModel(),
     myLikedDebateViewModel: MyLikedDebateViewModel = hiltViewModel(),
     anotherUserPageViewModel: AnotherUserPageViewModel = hiltViewModel(),
+    followPageViewModel: FollowPageViewModel = hiltViewModel(),
     context: Context,
     pd:PaddingValues){
 
@@ -244,7 +247,19 @@ fun Navigation(
         }
         composable(Screen.BottomScreen.Follows.bottomRoute) {
             Log.d("Navigation", "to Follows")
-            FollowsView()
+            FollowPageView(
+                viewModel = followPageViewModel,
+                sharedDebateViewModel = sharedDebateViewModel,
+                toDebateView = {
+                    navController.navigate(Screen.DebateScreen.route)
+                },
+                toAnotherUserPageView =  { user ->
+                    navigateToUserPage(user, navController)
+                },
+                toFollowListView = {
+                    navController.navigate(Screen.FollowListScreen.route)
+                }
+            )
         }
         composable(Screen.Notifications.route) {
             Log.d("Navigation", "to Noti")
@@ -328,6 +343,15 @@ fun Navigation(
 
         composable(Screen.SettingsMenuScreen.NotificationSettingsScreen.route) {
             NotificationSettingsView()
+        }
+
+        composable(Screen.FollowListScreen.route) {
+            FollowListView(
+                viewModel = followPageViewModel,
+                toAnotherUserPageView =   { user ->
+                navigateToUserPage(user, navController)
+                }
+            )
         }
 
     }
