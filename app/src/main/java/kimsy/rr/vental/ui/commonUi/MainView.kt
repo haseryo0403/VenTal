@@ -64,6 +64,7 @@ import kimsy.rr.vental.ui.MyPageView
 import kimsy.rr.vental.ui.NotificationSettingsView
 import kimsy.rr.vental.ui.NotificationsView
 import kimsy.rr.vental.ui.ProfileEditView
+import kimsy.rr.vental.ui.ReportDebateView
 import kimsy.rr.vental.ui.SettingsView
 import kimsy.rr.vental.ui.SwipeCardsView
 import kimsy.rr.vental.ui.TimeLineView
@@ -216,11 +217,10 @@ fun Navigation(
     context: Context,
     pd:PaddingValues){
 
-    Log.d("Navigation", "Navigation called")
-
     NavHost(navController = navController as NavHostController,
         startDestination = Screen.BottomScreen.TimeLine.bottomRoute,
         modifier = Modifier.padding(pd)){
+
 
         composable(Screen.BottomScreen.VentCards.bottomRoute) {
             Log.d("Navigation", "to MSCD")
@@ -311,7 +311,10 @@ fun Navigation(
         }
         composable(Screen.DebateScreen.route) {
             DebateView(
-                sharedDebateViewModel = sharedDebateViewModel
+                sharedDebateViewModel = sharedDebateViewModel,
+                toReportDebateView = {
+                    navController.navigate(Screen.ReportDebateScreen.route)
+                }
             )
         }
         composable(Screen.SettingsScreen.route) {
@@ -350,6 +353,14 @@ fun Navigation(
                 viewModel = followPageViewModel,
                 toAnotherUserPageView =   { user ->
                 navigateToUserPage(user, navController)
+                }
+            )
+        }
+        
+        composable(Screen.ReportDebateScreen.route) {
+            ReportDebateView(
+                toDebateView = {
+                    navController.navigate(Screen.DebateScreen.route)
                 }
             )
         }

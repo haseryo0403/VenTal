@@ -1,5 +1,6 @@
 package kimsy.rr.vental.ui
 
+import android.app.Activity
 import android.content.Context
 import android.net.Uri
 import android.os.Build
@@ -9,6 +10,7 @@ import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,6 +35,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.primarySurface
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
@@ -57,12 +60,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
 import kimsy.rr.vental.ViewModel.DebateViewModel
 import kimsy.rr.vental.ViewModel.SharedDebateViewModel
+import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.DebateItem
+import kimsy.rr.vental.data.DebateShareModel
 import kimsy.rr.vental.data.Message
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.UserType
@@ -72,6 +78,7 @@ import kimsy.rr.vental.ui.CommonComposable.MaxLengthOutlinedTextField
 import kimsy.rr.vental.ui.CommonComposable.MaxLengthTextField
 import kimsy.rr.vental.ui.CommonComposable.MessageItem
 import kimsy.rr.vental.ui.CommonComposable.formatTimeDifference
+import kimsy.rr.vental.ui.CommonComposable.showAsBottomSheet
 
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -80,8 +87,10 @@ import kimsy.rr.vental.ui.CommonComposable.formatTimeDifference
 @Composable
 fun DebateView(
     debateViewModel: DebateViewModel = hiltViewModel(),
-    sharedDebateViewModel: SharedDebateViewModel
-    ){
+    sharedDebateViewModel: SharedDebateViewModel,
+    toReportDebateView: () -> Unit
+){
+    val activity = LocalContext.current as Activity
 
     val currentUser = sharedDebateViewModel.currentUser
 
@@ -126,6 +135,13 @@ fun DebateView(
         else -> {}
     }
 
+    //TODO delete
+//    val sheetState = rememberModalBottomSheetState(
+//        initialValue = ModalBottomSheetValue.HalfExpanded,
+////        skipHalfExpanded = true
+//    )
+//    val coroutineScope = rememberCoroutineScope()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -140,83 +156,131 @@ fun DebateView(
                     .fillMaxSize()
                     .padding(bottom = if (imageUri == null) 120.dp else 0.dp) // TextField の高さ分の余白を確保
             ) {
+
+
+
                 item {
-                    if (currentDebateItem != null) {
-                        DebateContent(
-                            debateItem = currentDebateItem!!,
-                            sharedDebateViewModel = sharedDebateViewModel,
-                            debateViewModel = debateViewModel
-                        )
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "読み込みに失敗しました。通信環境の良いところで再度お試しください。",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
-
-                    Divider()
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.End
-                    ) {
-                        IconButton(onClick = { /*TODO*/ }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.outline_mode_comment_24),
-                                contentDescription = "comment"
+//                    ModalBottomSheetLayout(
+//                        sheetState = sheetState,
+//                        sheetContent = {
+//                            Column(
+//                                modifier = Modifier
+//                                    .fillMaxWidth()
+//                                    .height(300.dp)
+//                                    .padding(16.dp),
+//                                horizontalAlignment = Alignment.CenterHorizontally
+//                            ) {
+//                                Text("モーダルシートのタイトル", style = MaterialTheme.typography.headlineMedium)
+//                                Spacer(modifier = Modifier.height(8.dp))
+//                                Button(onClick = { coroutineScope.launch { sheetState.hide() } }) {
+//                                    Text("閉じる")
+//                                }
+//                            }
+//                        }
+//                    ) {
+                        if (currentDebateItem != null) {
+                            DebateContent(
+                                debateItem = currentDebateItem!!,
+                                sharedDebateViewModel = sharedDebateViewModel,
+                                debateViewModel = debateViewModel
                             )
-                        }
-                        Text(text = "16")
-                    }
-
-                    Divider()
-
-                    when (fetchMessageState.status) {
-                        Status.LOADING -> {
-                            showLoadingIndicator()
-                        }
-                        Status.SUCCESS -> {
-                            if (fetchMessageState.data != null) {
-                                MessageItem(messages = fetchMessageState.data!!)
-                            } else {
-                                Text(text = "どうやらメッセージが無いようです。")
-                            }
-                        }
-                        Status.FAILURE -> {
+                        } else {
                             Toast.makeText(
                                 context,
                                 "読み込みに失敗しました。通信環境の良いところで再度お試しください。",
                                 Toast.LENGTH_LONG
                             ).show()
-                            debateViewModel.resetState()
-                            Log.e("DV", "${fetchMessageState.message}")
                         }
-                        else -> {}
-                    }
 
-                    if (imageUri != null) {
-                        debateTextFieldWithImage(
-                            imageUri = imageUri!!,
-                            onImageDelete = { imageUri = null },
-                            text = text,
-                            onTextChange = { text = it }
+                        Divider()
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.End
                         ) {
-                            currentUser?.let {
-                                currentDebateItem?.let {
-                                    debateViewModel.createMessage(
-                                        debate = it.debate,
-                                        text = text,
-                                        imageUri = imageUri,
-                                        context = context
-                                    )
+                            IconButton(onClick = { /*TODO*/ }) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.outline_mode_comment_24),
+                                    contentDescription = "comment"
+                                )
+                            }
+                            Text(text = "16")
+
+                            IconButton(onClick = {
+//                                currentDebateItem?.let {
+//                                    debateViewModel.reportDebate(it.debate)
+//                                }
+                                activity.showAsBottomSheet { hideModal ->
+                                    val debate = currentDebateItem?.debate
+                                    if (currentUser != null && debate != null) {
+                                        BottomSheet(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            debate = debate,
+                                            currentUserId = currentUser.uid,
+                                            toReportDebateView = toReportDebateView,
+                                            hideModal = hideModal
+                                        )
+                                    }
+                                }
+
+                            }) {
+                                Icon(painter = painterResource(id = R.drawable.baseline_more_vert_24),
+                                    contentDescription = "option")
+                            }
+
+                        }
+
+                        Divider()
+
+                        when (fetchMessageState.status) {
+                            Status.LOADING -> {
+                                showLoadingIndicator()
+                            }
+                            Status.SUCCESS -> {
+                                if (fetchMessageState.data != null) {
+                                    MessageItem(messages = fetchMessageState.data!!)
+                                } else {
+                                    Text(text = "どうやらメッセージが無いようです。")
+                                }
+                            }
+                            Status.FAILURE -> {
+                                Toast.makeText(
+                                    context,
+                                    "読み込みに失敗しました。通信環境の良いところで再度お試しください。",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                                debateViewModel.resetState()
+                                Log.e("DV", "${fetchMessageState.message}")
+                            }
+                            else -> {}
+                        }
+
+                        if (imageUri != null) {
+                            debateTextFieldWithImage(
+                                imageUri = imageUri!!,
+                                onImageDelete = { imageUri = null },
+                                text = text,
+                                onTextChange = { text = it }
+                            ) {
+                                currentUser?.let {
+                                    currentDebateItem?.let {
+                                        debateViewModel.createMessage(
+                                            debate = it.debate,
+                                            text = text,
+                                            imageUri = imageUri,
+                                            context = context
+                                        )
+                                    }
                                 }
                             }
                         }
-                    }
+
+//                    }
+
+
                 }
             }
 
@@ -242,6 +306,48 @@ fun DebateView(
         }
     }
 }
+
+
+@Composable
+fun BottomSheet(
+    modifier: Modifier,
+    debate: Debate,
+    currentUserId: String,
+    toReportDebateView: () -> Unit,
+    hideModal: () -> Unit
+){
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .height(300.dp)
+            .background(
+                androidx.compose.material.MaterialTheme.colors.primarySurface
+            )
+    ){
+        Column(modifier = modifier.padding(16.dp), verticalArrangement = Arrangement.SpaceBetween){
+            if (currentUserId == debate.posterId || currentUserId == debate.debaterId) {
+                //TODO 削除依頼
+            } else {
+                Row(
+                    modifier = modifier
+                        .padding(16.dp)
+                        .clickable {
+                            DebateShareModel.setReportedDebateToModel(debate)
+                            hideModal()
+                            toReportDebateView()
+                        }
+                ){
+                    Icon(modifier = Modifier.padding(end = 8.dp),
+                        painter =  painterResource(id = R.drawable.outline_report_problem_24),
+                        contentDescription = "report debate")
+                    Text(text = "討論を通報", fontSize = 20.sp, color = Color.White)
+                }
+            }
+        }
+    }
+}
+
+
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
@@ -618,4 +724,108 @@ fun debateTextFieldWithOutImage(
         }
     }
 }
+
+//
+//@Composable
+//fun MoreBottomSheet(
+//    modifier: Modifier,
+//    onReportDebateClicked: () -> Unit
+//){
+//    Box(
+//        Modifier
+//            .fillMaxWidth()
+//            .height(300.dp)
+//            .background(
+//                androidx.compose.material.MaterialTheme.colors.primarySurface
+//            )
+//    ){
+//        Column(modifier = modifier.padding(16.dp), verticalArrangement = Arrangement.SpaceBetween){
+//            Row(modifier = modifier
+//                .padding(16.dp)
+//                .clickable{
+//                    //TODO open dialog?
+//                    onReportDebateClicked()
+//                }
+//            ){
+//                Icon(modifier = Modifier.padding(end = 8.dp),
+//                    painter =  painterResource(id = R.drawable.outline_report_problem_24),
+//                    contentDescription = "Settings")
+//                Text(text = "Settings", fontSize = 20.sp, color = Color.White)
+//            }
+//        }
+//    }
+//}
+//
+//
+//@Composable
+//fun reportDebateDialog(
+//    dialogOpen: MutableState<Boolean>,
+//    viewModel: DebateViewModel,
+//    context: Context
+//){
+//    var text by remember { mutableStateOf("")}
+//
+//    if(dialogOpen.value){
+//        Dialog(
+//            onDismissRequest = { dialogOpen.value = false },
+//        ) {
+//            Card(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(360.dp)
+//                    .padding(16.dp),
+//                shape = RoundedCornerShape(16.dp),
+//            ) {
+//                Column(
+//                    modifier = Modifier
+//                        .fillMaxSize(),
+//                    verticalArrangement = Arrangement.Center,
+//                    horizontalAlignment = Alignment.CenterHorizontally,
+//                ) {
+//                    Text(
+//                        text = "追加したいタグを入力してください。タグは最大5つまで追加できます",
+//                        modifier = Modifier.padding(16.dp),
+//                    )
+//                    MaxLengthOutlinedTextField(
+//                        value = text,
+//                        onValueChange = {newText -> text = newText},
+//                        maxLength = 50
+//                    )
+//
+//                    Row(
+//                        modifier = Modifier
+//                            .fillMaxWidth(),
+//                        horizontalArrangement = Arrangement.Center,
+//                    ) {
+//                        TextButton(
+//                            onClick = {
+//                                dialogOpen.value = false
+//                            },
+//                            modifier = Modifier.padding(16.dp),
+//                        ) {
+//                            Text("キャンセル")
+//                        }
+//                        TextButton(
+//                            onClick = {
+//                                if(viewModel.tags.contains(text)){
+//                                    Toast.makeText(context, "同じタグは追加できません", Toast.LENGTH_SHORT).show()
+//                                } else {
+//                                    dialogOpen.value = false
+//                                    viewModel.tags.add(text)
+//                                    text = ""
+//                                }
+//                            },
+//                            modifier = Modifier.padding(16.dp),
+//                        ) {
+//                            Text("追加")
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
+
+
+
 

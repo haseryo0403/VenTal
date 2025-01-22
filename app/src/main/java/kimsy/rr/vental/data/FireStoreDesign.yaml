@@ -122,4 +122,11 @@ notificationSettings:
   messageEnabled: true
   commentEnabled: true
 
+reports:  # 通報の親コレクション
+  debates:  # 議論に関する通報親コレクション
+    debateId: # 各議論に関する通報コレクション
+      - reporterId: "user789"
+        reason: 1
+        reportedDateTime: 2024-01-10T10:00:00Z
+
 notificationsLog: #将来入れるかも

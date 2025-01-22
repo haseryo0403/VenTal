@@ -24,6 +24,21 @@ data class Debate(
 //
 //        )
 //    }
+} object DebateShareModel {
+    private var reportedDebate: Debate? = null
+
+    fun setReportedDebateToModel(debate: Debate) {
+        reportedDebate = debate
+    }
+
+    fun getReportedDebateFromModel():Debate? {
+        return reportedDebate
+    }
+
+    fun resetReportedDebateOnModel() {
+        reportedDebate = null
+    }
+
 }
 
 enum class LikeStatus {

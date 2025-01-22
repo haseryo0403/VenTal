@@ -27,7 +27,18 @@
     <string name="notification_settings_debate_comment">討論へのコメント</string>
     <string name="please_check_internet">インターネットの接続を確認してください</string>
     <string name="follow_fail">フォロー、解除に失敗しました。時間をおいて再度お試しください。</string>
-
+    <string name="report_reason_title_0">ヘイト</string>
+    <string name="report_reason_description_0">誹謗中傷、差別、非人間的な扱い、ヘイト行為等</string>
+    <string name="report_reason_title_1">自殺や自傷行為</string>
+    <string name="report_reason_description_1">自殺、自傷行為を助長、推奨、指示、策略を共有</string>
+    <string name="report_reason_title_2">詐欺や犯罪行為</string>
+    <string name="report_reason_description_2">詐欺や犯罪行為を行ったり、助長、推奨、指示、策略を共有</string>
+    <string name="report_reason_title_3">なりすまし</string>
+    <string name="report_reason_description_3">他の人になりすましている</string>
+    <string name="report_reason_title_4">暴力行為やヘイト行為の主体</string>
+    <string name="report_reason_description_4">暴力的過激主義とテロ行為、ヘイトグループ/ネットワーク</string>
+    <string name="report_button">通報する</string>
+    <string name="report_success">通報が完了しました。順次対応いたします。今しばらくお待ちください。</string>
 
     <string name="like_fail">いいねに失敗しました。しばらく時間を置いて、再度お試しください。</string>
 </resources>
