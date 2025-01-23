@@ -488,4 +488,20 @@ class DebateRepository @Inject constructor(
         docRef.update("debateReportFlag", true).await()
     }
 
+    suspend fun updateDeletionRequestFlag(
+        debateId: String,
+        swipeCardId: String,
+        posterId: String
+    ) {
+        val docRef = db
+            .collection("users")
+            .document(posterId)
+            .collection("swipeCards")
+            .document(swipeCardId)
+            .collection("debates")
+            .document(debateId)
+
+        docRef.update("debateDeletionRequestFlag", true).await()
+    }
+
 }

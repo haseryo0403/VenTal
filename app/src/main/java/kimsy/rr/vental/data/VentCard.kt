@@ -33,4 +33,31 @@ data class VentCard(
             )
         }
     }
+} object VentCardShareModel{
+    private var reportedVentCard: VentCard? = null
+    private var deleteRequestedVentCard: VentCard? = null
+
+    fun setReportedVentCardToModel(ventCard: VentCard) {
+        reportedVentCard = ventCard
+    }
+
+    fun getReportedVentCardFromModel():VentCard? {
+        return reportedVentCard
+    }
+
+    fun resetReportedVentCardOnModel() {
+        reportedVentCard = null
+    }
+
+    fun setDeleteRequestedVentCardToModel(ventCard: VentCard) {
+        deleteRequestedVentCard = ventCard
+    }
+
+    fun getDeleteRequestedVentCardFromModel():VentCard? {
+        return deleteRequestedVentCard
+    }
+
+    fun resetDeleteRequestedVentCardOnModel() {
+        deleteRequestedVentCard = null
+    }
 }

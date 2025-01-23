@@ -29,6 +29,7 @@ import kimsy.rr.vental.ViewModel.VentCardsViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.CardStack
+import kimsy.rr.vental.ui.commonUi.ErrorView
 
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -39,6 +40,8 @@ fun SwipeCardsView(
     debateCreationViewModel: DebateCreationViewModel,
     context: Context,
     toDebateCreationView: () -> Unit,
+    toReportVentCardView: () -> Unit,
+    toRequestVentCardDeletionView: () -> Unit,
     authViewModel: AuthViewModel
 ){
     var noCardsLeft by remember { mutableStateOf(false) }
@@ -63,8 +66,13 @@ fun SwipeCardsView(
             }
 
             loadCardsState.value.status == Status.FAILURE && (noCardsLeft || ventCards.isEmpty()) -> {
-                Toast.makeText(context, "読み込みに失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
-                ventCardsViewModel.resetState()
+//                Toast.makeText(context, "読み込みに失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
+//                ventCardsViewModel.resetState()
+                ErrorView(
+                    retry = {
+                        ventCardsViewModel.loadVentCards(user.uid)
+                    }
+                )
             }
 
             loadCardsState.value.status == Status.SUCCESS && (noCardsLeft || ventCards.isEmpty()) -> {
@@ -104,7 +112,9 @@ fun SwipeCardsView(
                         },
                         onLessStack = {
                             ventCardsViewModel.loadVentCards(user.uid)
-                        }
+                        },
+                        toReportVentCardView = toReportVentCardView,
+                        toRequestVentCardDeletionView = toRequestVentCardDeletionView
                     )
                 } else {
                     Log.d("ventcardview", "ventCard is empty")

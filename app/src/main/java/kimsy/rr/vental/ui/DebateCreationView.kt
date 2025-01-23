@@ -59,6 +59,7 @@ import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.ui.CommonComposable.ImagePermissionAndSelection
 import kimsy.rr.vental.ui.CommonComposable.MaxLengthOutlinedTextField
 import kimsy.rr.vental.ui.CommonComposable.MaxLengthTextField
+import kimsy.rr.vental.ui.commonUi.ErrorView
 
 @OptIn(ExperimentalLayoutApi::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -83,8 +84,9 @@ fun DebateCreationView(
         when {
 
             fetchRelatedDebateState.status == Status.FAILURE-> {
-                Toast.makeText(context, "読み込みに失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
-                debateCreationViewModel.resetFetchRelatedDebateState()
+//                Toast.makeText(context, "読み込みに失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
+//                debateCreationViewModel.resetFetchRelatedDebateState()
+                ErrorView(retry = null)
             }
 
             debateCreationState.status == Status.FAILURE -> {

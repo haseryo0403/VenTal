@@ -26,6 +26,7 @@ data class Debate(
 //    }
 } object DebateShareModel {
     private var reportedDebate: Debate? = null
+    private var deleteRequestedDebate: Debate? = null
 
     fun setReportedDebateToModel(debate: Debate) {
         reportedDebate = debate
@@ -37,6 +38,18 @@ data class Debate(
 
     fun resetReportedDebateOnModel() {
         reportedDebate = null
+    }
+
+    fun setDeleteRequestedDebateToModel(debate: Debate) {
+        deleteRequestedDebate = debate
+    }
+
+    fun getDeleteRequestedDebateFromModel():Debate? {
+        return deleteRequestedDebate
+    }
+
+    fun resetDeleteRequestedDebateOnModel() {
+        deleteRequestedDebate = null
     }
 
 }

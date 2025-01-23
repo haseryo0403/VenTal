@@ -28,7 +28,9 @@ import kimsy.rr.vental.ViewModel.AnotherUserPageViewModel
 import kimsy.rr.vental.ViewModel.SharedDebateViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
+import kimsy.rr.vental.ui.CommonComposable.CustomCircularProgressIndicator
 import kimsy.rr.vental.ui.CommonComposable.DebateCard
+import kimsy.rr.vental.ui.commonUi.ErrorView
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
@@ -71,7 +73,7 @@ fun AnotherUserPageView(
         when (userPageDataState.status) {
             Status.LOADING -> {
                 Log.d("MPV", "upds loading")
-                //TODO Loading
+                CustomCircularProgressIndicator()
             }
             Status.SUCCESS -> {
                 Log.d("MPV", "upds sccess")
@@ -90,8 +92,11 @@ fun AnotherUserPageView(
                 Divider()
             }
             Status.FAILURE -> {
-                Log.d("MPV", "upds failure")
-                //TODO error-handling
+                ErrorView(retry = {
+                    viewModel.loadUserPageData()
+                    viewModel.observeFollowingUserIds()
+                    viewModel.getAnotherUserPageDebateItems()
+                })
             }
             else -> {}
         }
@@ -163,8 +168,13 @@ fun AnotherUserDebateView(
                                 }
                             }
                             Status.FAILURE -> {
-                                Text(text = "討論の取得に失敗しました。")
-                                viewModel.resetGetDebateItemState()
+//                                Text(text = "討論の取得に失敗しました。")
+//                                viewModel.resetGetDebateItemState()
+                                ErrorView(retry = {
+                                    viewModel.loadUserPageData()
+                                    viewModel.observeFollowingUserIds()
+                                    viewModel.getAnotherUserPageDebateItems()
+                                })
                             }
                             else -> viewModel.resetGetDebateItemState()
                         }

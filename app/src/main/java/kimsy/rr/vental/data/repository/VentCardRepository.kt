@@ -53,6 +53,7 @@ class VentCardRepository @Inject constructor(
             .collection("users")
             .document(userId)
             .collection("swipeCards")
+            .orderBy("swipeCardCreatedDateTime", Query.Direction.DESCENDING)
 
         val querySnapshot = if (lastVisible == null) {
             query.limit(10).get().await()
@@ -351,6 +352,32 @@ suspend fun getVentCardsWithUser(
             Log.e("VCR", "error")
             Resource.failure(e.message)
         }
+    }
+
+    suspend fun updateReportFlag(
+        swipeCardId: String,
+        posterId: String
+    ){
+        val docRef = db
+            .collection("users")
+            .document(posterId)
+            .collection("swipeCards")
+            .document(swipeCardId)
+
+        docRef.update("swipeCardReportFlag", true).await()
+    }
+
+    suspend fun updateDeletionRequestFlag(
+        swipeCardId: String,
+        posterId: String
+    ) {
+        val docRef = db
+            .collection("users")
+            .document(posterId)
+            .collection("swipeCards")
+            .document(swipeCardId)
+
+        docRef.update("swipeCardDeletionRequestFlag", true).await()
     }
 
 }

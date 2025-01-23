@@ -1,5 +1,6 @@
 package kimsy.rr.vental.ui
 
+import android.app.Activity
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
@@ -37,12 +39,16 @@ import kimsy.rr.vental.R
 import kimsy.rr.vental.ViewModel.MyVentCardViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.ui.CommonComposable.formatTimeDifference
+import kimsy.rr.vental.ui.CommonComposable.showAsBottomSheet
+import kimsy.rr.vental.ui.commonUi.VentCardBottomSheet
 
 @Composable
 fun MyVentCardView(
     viewModel: MyVentCardViewModel,
+    toReportVentCardView: () -> Unit,
+    toRequestVentCardDeletionView: () -> Unit
 ) {
-
+    val activity = LocalContext.current as Activity
     val currentUser by viewModel.currentUser.collectAsState()
     val profileURL = currentUser?.photoURL
     val currentUserName = currentUser?.name?: "unknown"
@@ -113,6 +119,26 @@ fun MyVentCardView(
                                                 formatTimeDifference(it)
                                             } ?: "日付不明"
                                         )
+                                        IconButton(onClick = {
+                                            activity.showAsBottomSheet { hideModal ->
+                                                currentUser?.let {
+                                                    VentCardBottomSheet(
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                        ventCard = item,
+                                                        currentUserId = it.uid,
+                                                        toReportVentCardView = toReportVentCardView,
+                                                        toRequestVentCardDeletionView = toRequestVentCardDeletionView,
+                                                        hideModal = hideModal
+                                                    )
+                                                }
+                                            }
+
+                                        }) {
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.baseline_more_vert_24),
+                                                contentDescription = "option"
+                                            )
+                                        }
                                         IconButton(
                                             onClick = { /*TODO*/ },
                                             modifier = Modifier.size(24.dp)

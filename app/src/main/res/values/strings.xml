@@ -35,9 +35,25 @@
     <string name="report_reason_description_3">他の人になりすましている</string>
     <string name="report_reason_title_4">暴力行為やヘイト行為の主体</string>
     <string name="report_reason_description_4">暴力的過激主義とテロ行為、ヘイトグループ/ネットワーク</string>
-    <string name="report_button">通報する</string>
-    <string name="report_success">通報が完了しました。順次対応いたします。今しばらくお待ちください。</string>
+    <string name="request_reason_title_0">ミス</string>
+    <string name="request_reason_description_0">単純な操作ミスの削除依頼</string>
+    <string name="request_reason_title_1">後悔</string>
+    <string name="request_reason_description_1">自分の発言に後悔をした。取り消したい</string>
+    <string name="request_reason_title_2">納得</string>
+    <string name="request_reason_description_2">他のユーザーの発言に感銘を受けた。意見を変えたい</string>
+    <string name="request_reason_title_3">個人情報漏洩</string>
+    <string name="request_reason_description_3">個人情報の漏洩、意図せず重要な情報を記載、許可されていない情報を誤って記載等</string>
+    <string name="request_reason_title_4">詐欺や犯罪行為</string>
+    <string name="request_reason_description_4">詐欺や犯罪行為を行ったり、助長、推奨、指示、策略を共有</string>
 
+    <string name="report_button">通報する</string>
+    <string name="request_button">依頼する</string>
+    <string name="report_success">通報が完了しました。順次対応いたします。今しばらくお待ちください。</string>
+    <string name="request_success">依頼が完了しました。順次対応いたします。今しばらくお待ちください。</string>
+    <string name="to_do_request_debate_deletion">討論の削除を依頼</string>
+    <string name="to_do_request_ventCard_deletion">カードの削除を依頼</string>
+    <string name="to_do_report_debate">討論を通報</string>
+    <string name="to_do_report_ventCard">カードを通報</string>
 
 
     <string name="app_name" translatable="false">Vental</string>

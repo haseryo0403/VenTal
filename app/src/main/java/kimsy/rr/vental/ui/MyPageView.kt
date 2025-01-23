@@ -64,7 +64,9 @@ fun MyPageView(
     sharedDebateViewModel: SharedDebateViewModel,
     toDebateView: () -> Unit,
     toProfileEditView: () -> Unit,
-    toAnotherUserPageView: (user: User) -> Unit
+    toAnotherUserPageView: (user: User) -> Unit,
+    toReportVentCardView: () -> Unit,
+    toRequestVentCardDeletionView: () -> Unit
 ){
     val currentUser by viewModel.currentUser.collectAsState()
 
@@ -185,7 +187,11 @@ fun MyPageView(
                     )
                 }
                 1 -> {
-                    MyVentCardView(viewModel = myVentCardViewModel)
+                    MyVentCardView(
+                        viewModel = myVentCardViewModel,
+                        toReportVentCardView = toReportVentCardView,
+                        toRequestVentCardDeletionView = toRequestVentCardDeletionView
+                    )
                 }
                 2 -> {
                     MyLikedDebateView(

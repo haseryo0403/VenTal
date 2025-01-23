@@ -41,6 +41,7 @@ import kimsy.rr.vental.ViewModel.TimeLineViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.DebateCard
+import kimsy.rr.vental.ui.commonUi.ErrorView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -218,8 +219,22 @@ fun TimeLineView(
                     }
 
                     Status.FAILURE -> {
-                        Text(text = "討論の取得に失敗しまいた。")
-                        timeLineViewModel.resetGetDebateItemState()
+                        ErrorView(
+                            retry = {
+                                timeLineViewModel.getRecentTimeLineItems()
+                                timeLineViewModel.getPopularTimeLineItems()
+                                recentItemScrollState.scrollToItem(
+                                    timeLineViewModel.recentItemSavedScrollIndex,
+                                    timeLineViewModel.recentItemSavedScrollOffset
+                                )
+                                popularItemScrollState.scrollToItem(
+                                    timeLineViewModel.popularItemSavedScrollIndex,
+                                    timeLineViewModel.popularItemSavedScrollOffset
+                                )
+                            }
+                        )
+//                        Text(text = "討論の取得に失敗しまいた。")
+//                        timeLineViewModel.resetGetDebateItemState()
                     }
 
                     else -> {

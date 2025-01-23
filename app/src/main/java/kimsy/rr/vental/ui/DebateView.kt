@@ -79,6 +79,7 @@ import kimsy.rr.vental.ui.CommonComposable.MaxLengthTextField
 import kimsy.rr.vental.ui.CommonComposable.MessageItem
 import kimsy.rr.vental.ui.CommonComposable.formatTimeDifference
 import kimsy.rr.vental.ui.CommonComposable.showAsBottomSheet
+import kimsy.rr.vental.ui.commonUi.ErrorView
 
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -88,7 +89,8 @@ import kimsy.rr.vental.ui.CommonComposable.showAsBottomSheet
 fun DebateView(
     debateViewModel: DebateViewModel = hiltViewModel(),
     sharedDebateViewModel: SharedDebateViewModel,
-    toReportDebateView: () -> Unit
+    toReportDebateView: () -> Unit,
+    toRequestDebateDeletionView: () -> Unit
 ){
     val activity = LocalContext.current as Activity
 
@@ -216,11 +218,12 @@ fun DebateView(
                                 activity.showAsBottomSheet { hideModal ->
                                     val debate = currentDebateItem?.debate
                                     if (currentUser != null && debate != null) {
-                                        BottomSheet(
+                                        DebateBottomSheet(
                                             modifier = Modifier.fillMaxWidth(),
                                             debate = debate,
                                             currentUserId = currentUser.uid,
                                             toReportDebateView = toReportDebateView,
+                                            toRequestDebateDeletionView = toRequestDebateDeletionView,
                                             hideModal = hideModal
                                         )
                                     }
@@ -247,13 +250,17 @@ fun DebateView(
                                 }
                             }
                             Status.FAILURE -> {
-                                Toast.makeText(
-                                    context,
-                                    "読み込みに失敗しました。通信環境の良いところで再度お試しください。",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                                debateViewModel.resetState()
-                                Log.e("DV", "${fetchMessageState.message}")
+//                                Toast.makeText(
+//                                    context,
+//                                    "読み込みに失敗しました。通信環境の良いところで再度お試しください。",
+//                                    Toast.LENGTH_LONG
+//                                ).show()
+//                                debateViewModel.resetState()
+//                                Log.e("DV", "${fetchMessageState.message}")
+                                ErrorView(retry = {
+                                    currentDebateItem?.let { debateViewModel.getMessages(it.debate) }
+                                    debateViewModel.observeFollowingUserIds()
+                                })
                             }
                             else -> {}
                         }
@@ -309,11 +316,12 @@ fun DebateView(
 
 
 @Composable
-fun BottomSheet(
+fun DebateBottomSheet(
     modifier: Modifier,
     debate: Debate,
     currentUserId: String,
     toReportDebateView: () -> Unit,
+    toRequestDebateDeletionView: () -> Unit,
     hideModal: () -> Unit
 ){
     Box(
@@ -326,7 +334,20 @@ fun BottomSheet(
     ){
         Column(modifier = modifier.padding(16.dp), verticalArrangement = Arrangement.SpaceBetween){
             if (currentUserId == debate.posterId || currentUserId == debate.debaterId) {
-                //TODO 削除依頼
+                Row(
+                    modifier = modifier
+                        .padding(16.dp)
+                        .clickable {
+                            DebateShareModel.setDeleteRequestedDebateToModel(debate)
+                            hideModal()
+                            toRequestDebateDeletionView()
+                        }
+                ){
+                    Icon(modifier = Modifier.padding(end = 8.dp),
+                        painter =  painterResource(id = R.drawable.outline_delete_24),
+                        contentDescription = "request debate deletion")
+                    Text(text = stringResource(id = R.string.to_do_request_debate_deletion), fontSize = 20.sp, color = Color.White)
+                }
             } else {
                 Row(
                     modifier = modifier
@@ -340,7 +361,7 @@ fun BottomSheet(
                     Icon(modifier = Modifier.padding(end = 8.dp),
                         painter =  painterResource(id = R.drawable.outline_report_problem_24),
                         contentDescription = "report debate")
-                    Text(text = "討論を通報", fontSize = 20.sp, color = Color.White)
+                    Text(text = stringResource(id = R.string.to_do_report_debate), fontSize = 20.sp, color = Color.White)
                 }
             }
         }

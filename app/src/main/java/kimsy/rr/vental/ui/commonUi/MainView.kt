@@ -65,6 +65,9 @@ import kimsy.rr.vental.ui.NotificationSettingsView
 import kimsy.rr.vental.ui.NotificationsView
 import kimsy.rr.vental.ui.ProfileEditView
 import kimsy.rr.vental.ui.ReportDebateView
+import kimsy.rr.vental.ui.ReportVentCardView
+import kimsy.rr.vental.ui.RequestDebateDeletionView
+import kimsy.rr.vental.ui.RequestVentCardDeletionView
 import kimsy.rr.vental.ui.SettingsView
 import kimsy.rr.vental.ui.SwipeCardsView
 import kimsy.rr.vental.ui.TimeLineView
@@ -229,7 +232,11 @@ fun Navigation(
                 context = context,
                 authViewModel = authViewModel,
                 debateCreationViewModel = debateCreationViewModel,
-                toDebateCreationView = {navController.navigate(Screen.DebateCreation.route)}
+                toDebateCreationView = {navController.navigate(Screen.DebateCreation.route)},
+                toReportVentCardView = {navController.navigate(Screen.ReportVentCardScreen.route)},
+                toRequestVentCardDeletionView = {
+                    //TODO
+                }
             )
         }
         composable(Screen.BottomScreen.TimeLine.bottomRoute) {
@@ -290,6 +297,10 @@ fun Navigation(
                 },
                 toAnotherUserPageView = { user ->
                     navigateToUserPage(user, navController)
+                },
+                toReportVentCardView = {navController.navigate(Screen.ReportVentCardScreen.route)},
+                toRequestVentCardDeletionView = {
+                    navController.navigate(Screen.RequestVentCardDeletionScreen.route)
                 }
             )
         }
@@ -314,6 +325,9 @@ fun Navigation(
                 sharedDebateViewModel = sharedDebateViewModel,
                 toReportDebateView = {
                     navController.navigate(Screen.ReportDebateScreen.route)
+                },
+                toRequestDebateDeletionView = {
+                    navController.navigate(Screen.RequestDebateDeletionScreen.route)
                 }
             )
         }
@@ -361,6 +375,30 @@ fun Navigation(
             ReportDebateView(
                 toDebateView = {
                     navController.navigate(Screen.DebateScreen.route)
+                }
+            )
+        }
+
+        composable(Screen.RequestDebateDeletionScreen.route) {
+            RequestDebateDeletionView (
+                toDebateView = {
+                    navController.navigate(Screen.DebateScreen.route)
+                }
+            )
+        }
+
+        composable(Screen.ReportVentCardScreen.route) {
+            ReportVentCardView (
+                toVentCardView = {
+                    navController.navigate(Screen.BottomScreen.VentCards.route)
+                }
+            )
+        }
+
+        composable(Screen.RequestVentCardDeletionScreen.route) {
+            RequestVentCardDeletionView(
+                toMyPageView = {
+                    navController.navigate(Screen.BottomScreen.MyPage.route)
                 }
             )
         }

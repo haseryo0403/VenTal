@@ -41,6 +41,7 @@ fun timestampToDate(seconds: Long, nanoseconds: Int): Date {
 //
 //}
 
+@SuppressLint("SimpleDateFormat")
 fun formatTimeDifference(postedDate: Date): String {
     val now = Date()
     val diffInMillis = now.time - postedDate.time
@@ -58,6 +59,13 @@ fun formatTimeDifference(postedDate: Date): String {
 
     val diffInDays = calendarNow.get(Calendar.DAY_OF_YEAR) - calendarCreated.get(Calendar.DAY_OF_YEAR)
     return when {
+
+        // 異なる年の日付
+        calendarNow.get(Calendar.YEAR) != calendarCreated.get(Calendar.YEAR) -> {
+            val dateFormat = SimpleDateFormat("yyyy年M月d日")
+            dateFormat.format(postedDate)
+        }
+
         // 10分未満：1分単位
         diffInMinutes < 10 -> "${diffInMinutes}分前"
 

@@ -1,6 +1,7 @@
 package kimsy.rr.vental.ui.CommonComposable
 
 
+import android.app.Activity
 import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -26,13 +27,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
+import kimsy.rr.vental.data.User
+import kimsy.rr.vental.data.VentCard
 import kimsy.rr.vental.data.VentCardWithUser
+import kimsy.rr.vental.ui.commonUi.VentCardBottomSheet
 import kotlin.math.roundToInt
 
 /**
@@ -60,7 +65,9 @@ fun CardStack(modifier : Modifier = Modifier,
               onSwipeLeft : ( item : VentCardWithUser) -> Unit = {},
               onSwipeRight : ( item : VentCardWithUser) ->  Unit = {},
               onEmptyStack : () -> Unit = {},
-              onLessStack : () -> Unit = {}
+              onLessStack : () -> Unit = {},
+              toReportVentCardView: () -> Unit,
+              toRequestVentCardDeletionView: () -> Unit
 ){
     var j by remember { mutableStateOf(0)}
     val i by remember { derivedStateOf{items.size-1-j} }
@@ -151,7 +158,9 @@ fun CardStack(modifier : Modifier = Modifier,
                         scaleY = if (index < i) cardStackController.scale.value else 1f
                     )
                     .shadow(4.dp, RoundedCornerShape(10.dp)),
-                    item
+                    item,
+                    toReportVentCardView = toReportVentCardView,
+                    toRequestVentCardDeletionView = toRequestVentCardDeletionView
                 )
             }
         }
@@ -161,8 +170,28 @@ fun CardStack(modifier : Modifier = Modifier,
 @Composable
 fun Card(
     modifier: Modifier = Modifier,
-    item: VentCardWithUser = VentCardWithUser()
+    item: VentCardWithUser = VentCardWithUser(),
+    toReportVentCardView: () -> Unit,
+    toRequestVentCardDeletionView: () -> Unit
 ){
+    val activity = LocalContext.current as Activity
+    val currentUser = User.CurrentUserShareModel.getCurrentUserFromModel()
+
+    //TODO delete
+    val ventCard = VentCard(
+        swipeCardId = item.swipeCardId,
+        posterId = item.posterId,
+        swipeCardContent = item.swipeCardContent,
+        swipeCardImageURL = item.swipeCardImageURL,
+        likeCount = item.likeCount,
+        tags = item.tags,
+        swipeCardReportFlag = item.swipeCardReportFlag,
+        swipeCardDeletionRequestFlag = item.swipeCardDeletionRequestFlag,
+        debateCount = item.debateCount,
+        swipeCardCreatedDateTime = item.swipeCardCreatedDateTime
+    )
+
+
     Surface(
         modifier
     ){
@@ -198,6 +227,26 @@ fun Card(
                                     formatTimeDifference(it)
                                 } ?: "日付不明"
                             )
+                            IconButton(onClick = {
+                                activity.showAsBottomSheet { hideModal ->
+                                    if (currentUser != null) {
+                                        VentCardBottomSheet(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            ventCard = ventCard,
+                                            currentUserId = currentUser.uid,
+                                            toReportVentCardView = toReportVentCardView,
+                                            toRequestVentCardDeletionView = toRequestVentCardDeletionView,
+                                            hideModal = hideModal
+                                        )
+                                    }
+                                }
+
+                            }) {
+                                androidx.compose.material3.Icon(
+                                    painter = painterResource(id = R.drawable.baseline_more_vert_24),
+                                    contentDescription = "option"
+                                )
+                            }
                         }
                         androidx.compose.material3.Text(text = item.swipeCardContent)
                         item.tags.forEach {tag ->
