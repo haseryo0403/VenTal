@@ -49,11 +49,16 @@
     <string name="report_button">通報する</string>
     <string name="request_button">依頼する</string>
     <string name="report_success">通報が完了しました。順次対応いたします。今しばらくお待ちください。</string>
+    <string name="report_failure">通報に失敗しました。時間をあけて再度お試しください。</string>
     <string name="request_success">依頼が完了しました。順次対応いたします。今しばらくお待ちください。</string>
+    <string name="request_failure">依頼に失敗しました。時間をあけて再度お試しください。</string>
     <string name="to_do_request_debate_deletion">討論の削除を依頼</string>
     <string name="to_do_request_ventCard_deletion">カードの削除を依頼</string>
     <string name="to_do_report_debate">討論を通報</string>
     <string name="to_do_report_ventCard">カードを通報</string>
+
+<!--    profileEditView-->
+    <string name="update_user_fail">プロフィールの更新に失敗しました。時間をあけて再度お試しください。</string>
 
 
     <string name="app_name" translatable="false">Vental</string>

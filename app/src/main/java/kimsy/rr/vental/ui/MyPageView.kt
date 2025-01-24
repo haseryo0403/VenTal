@@ -52,6 +52,7 @@ import kimsy.rr.vental.ViewModel.SharedDebateViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.data.UserPageData
+import kimsy.rr.vental.ui.commonUi.ErrorView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -127,7 +128,11 @@ fun MyPageView(
                     }
                 }
                 Status.FAILURE -> {
-                    // TODO: Error Handling
+                    //TODO　データが取得できない場合の仮の討論数、フォロワー数を表示する
+                    ErrorView(retry = {
+                        viewModel.updateCurrentUser()
+                        viewModel.loadUserPageData()
+                    })
                 }
                 else -> {}
             }

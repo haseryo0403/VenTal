@@ -38,6 +38,7 @@ import kimsy.rr.vental.ViewModel.SharedDebateViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.DebateCard
+import kimsy.rr.vental.ui.commonUi.ErrorView
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
@@ -48,7 +49,8 @@ fun FollowPageView(
     toAnotherUserPageView: (user: User) -> Unit,
     toFollowListView: () -> Unit
 ){
-    val userNames = listOf("UserName1","UserName2","UserName3","UserName4","UserName5")
+    val followingUserState by viewModel.followingUserState.collectAsState()
+    val getDebateItemState by viewModel.getDebateItemsState.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.loadFollowingUserDebates()
@@ -60,21 +62,27 @@ fun FollowPageView(
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.background)
     ) {
+        if (followingUserState.status == Status.FAILURE || getDebateItemState.status == Status.FAILURE) {
+            ErrorView(retry = {
+                viewModel.loadFollowingUserDebates()
+            })
+        } else {
+            FollowingUserView(
+                viewModel = viewModel,
+                toAnotherUserPageView = toAnotherUserPageView,
+                toFollowListView = toFollowListView
+            )
 
-        FollowingUserView(
-            viewModel = viewModel,
-            toAnotherUserPageView = toAnotherUserPageView,
-            toFollowListView = toFollowListView
-        )
+            Divider()
 
-        Divider()
+            FollowUserDebateView(
+                viewModel = viewModel,
+                sharedDebateViewModel = sharedDebateViewModel,
+                toDebateView = toDebateView,
+                toAnotherUserPageView = toAnotherUserPageView
+            )
+        }
 
-        FollowUserDebateView(
-            viewModel = viewModel,
-            sharedDebateViewModel = sharedDebateViewModel,
-            toDebateView = toDebateView,
-            toAnotherUserPageView = toAnotherUserPageView
-        )
 
     }
 }
@@ -102,36 +110,7 @@ fun FollowingUserView(
                     )
                 }
             }
-//            Status.SUCCESS -> {
-//                if (!followingUserState.data.isNullOrEmpty()) {
-//                    LazyRow(
-//                        modifier = Modifier.weight(1f)
-//                    ){
-//                        items(followingUserState.data!!) { user ->
-//                            Column(
-//                                horizontalAlignment = Alignment.CenterHorizontally,
-//                                modifier = Modifier.padding(8.dp)
-//                            ) {
-//
-//                                Image(
-//                                    painter = rememberAsyncImagePainter(user.photoURL),
-//                                    contentDescription = null,
-//                                    modifier = Modifier
-//                                        .size(40.dp)
-//                                        .clip(CircleShape),
-//                                    contentScale = ContentScale.Crop
-//                                )
-//                                Text(text = user.name)
-//                            }
-//                        }
-//                    }
-//                    TextButton(onClick = { /*TODO*/ }) {
-//                        Text(text = "全て")
-//                    }
-//                } else {
-//                    Text(text = "フォローしてね")
-//                }
-//            }
+
             Status.SUCCESS -> {
                 // followingUserState.dataがnullでないことを確認
                 val users = followingUserState.data
@@ -163,6 +142,13 @@ fun FollowingUserView(
                     Text(text = "フォローしてね")
                 }
             }
+
+            Status.FAILURE -> {
+                ErrorView(retry = {
+                    viewModel.loadFollowingUserDebates()
+                })
+            }
+
             else -> {
                 Text(text = "あれれ？")
             }
@@ -223,8 +209,11 @@ fun FollowUserDebateView(
                                 }
                             }
                             Status.FAILURE -> {
-                                Text(text = "討論の取得に失敗しました。")
-                                viewModel.resetGetDebateItemState()
+//                                Text(text = "討論の取得に失敗しました。")
+//                                viewModel.resetGetDebateItemState()
+                                ErrorView(retry = {
+                                    viewModel.loadFollowingUserDebates()
+                                })
                             }
                             Status.SUCCESS -> {
                                 Text(text = "表示する討論がありません。フォローしてください。" )
@@ -254,7 +243,9 @@ fun FollowPageLoadingIndicator(viewModel: FollowPageViewModel) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
             }
-            Status.FAILURE -> Text(text = "討論の追加の取得に失敗しまいた。")
+            Status.FAILURE -> {
+                Text(text = "討論の追加の取得に失敗しまいた。")
+            }
             else -> {}
         }
     }

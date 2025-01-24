@@ -18,6 +18,7 @@ import kimsy.rr.vental.R
 import kimsy.rr.vental.ViewModel.NotificationSettingsViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.ui.CommonComposable.CustomCircularProgressIndicator
+import kimsy.rr.vental.ui.commonUi.ErrorView
 
 
 @Composable
@@ -36,13 +37,14 @@ fun NotificationSettingsView(
             .padding(16.dp)
     ) {
         item {
-            Text(text = "討論やアクティビティ")
 
             when (notificationSettingsState.status) {
                 Status.LOADING -> {
                     CustomCircularProgressIndicator()
                 }
                 Status.SUCCESS -> {
+                    Text(text = "討論やアクティビティ")
+
                     val settings = notificationSettingsState.data!!
                     ListItem(
                         headlineContent = { Text(text = stringResource(id = R.string.notification_settings_debate_start)) },
@@ -70,7 +72,9 @@ fun NotificationSettingsView(
                     )
                 }
                 Status.FAILURE -> {
-                    //TODO errorhandling
+                    ErrorView(retry = {
+                        notificationSettingsViewModel.loadNotificationSettings()
+                    })
                 }
                 else -> {}
             }

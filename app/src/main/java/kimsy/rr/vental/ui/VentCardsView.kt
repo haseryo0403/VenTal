@@ -66,8 +66,6 @@ fun SwipeCardsView(
             }
 
             loadCardsState.value.status == Status.FAILURE && (noCardsLeft || ventCards.isEmpty()) -> {
-//                Toast.makeText(context, "読み込みに失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
-//                ventCardsViewModel.resetState()
                 ErrorView(
                     retry = {
                         ventCardsViewModel.loadVentCards(user.uid)

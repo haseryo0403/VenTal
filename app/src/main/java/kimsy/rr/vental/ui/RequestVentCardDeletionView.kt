@@ -48,6 +48,10 @@ fun RequestVentCardDeletionView(
             toMyPageView()
             viewModel.resetState()
         }
+        Status.FAILURE -> {
+            Toast.makeText(LocalContext.current, stringResource(id = R.string.request_failure), Toast.LENGTH_LONG).show()
+            viewModel.resetState()
+        }
         else -> {}
     }
     LazyColumn(

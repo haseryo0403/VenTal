@@ -40,6 +40,7 @@ import kimsy.rr.vental.ViewModel.MyVentCardViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.ui.CommonComposable.formatTimeDifference
 import kimsy.rr.vental.ui.CommonComposable.showAsBottomSheet
+import kimsy.rr.vental.ui.commonUi.ErrorView
 import kimsy.rr.vental.ui.commonUi.VentCardBottomSheet
 
 @Composable
@@ -203,8 +204,14 @@ fun MyVentCardView(
                             }
                         }
                         Status.FAILURE -> {
-                            Text(text = "討論の取得に失敗しました。")
-                            viewModel.resetLoadVentCardState()
+                            ErrorView(retry = {
+                                viewModel.updateCurrentUser()
+                                viewModel.loadMyVentCards()
+                                scrollState.scrollToItem(
+                                    viewModel.ventCardSavedScrollIndex,
+                                    viewModel.ventCardSavedScrollOffset
+                                )
+                            })
                         }
                         else -> viewModel.resetLoadVentCardState()
                     }

@@ -1,6 +1,5 @@
 package kimsy.rr.vental.ui
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +37,7 @@ import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.CustomCircularProgressIndicator
+import kimsy.rr.vental.ui.commonUi.ErrorView
 
 @Composable
 fun NotificationsView(
@@ -72,9 +72,7 @@ fun NotificationsView(
             }
         }
         //戻るボタンで実行されてしまうと同じ内容をどんどんストックしてしまうため
-        Log.d("NV", "通知表示")
         if (notificationItems.isEmpty()) {
-            Log.d("NV", "通知表示からです")
             notificationsViewModel.loadNotificationItems()
         } else {
 
@@ -123,8 +121,21 @@ fun NotificationsView(
                             }
                         }
                         Status.FAILURE -> {
-                            //TODO error handling
-                            notificationsViewModel.resetState()
+                            ErrorView(retry = {
+                                if (notificationItems.isNotEmpty()) {
+                                    notificationItems.forEach { notificationItem ->
+                                        if (!notificationItem.notification.readFlag) {
+                                            notificationsViewModel.markNotificationAsRead(notificationItem)
+                                        }
+                                    }
+                                }
+                                //戻るボタンで実行されてしまうと同じ内容をどんどんストックしてしまうため
+                                if (notificationItems.isEmpty()) {
+                                    notificationsViewModel.loadNotificationItems()
+                                } else {
+
+                                }
+                            })
                         }
                         Status.SUCCESS -> {
                             Row(

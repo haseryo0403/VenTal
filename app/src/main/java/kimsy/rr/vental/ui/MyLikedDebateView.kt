@@ -25,6 +25,7 @@ import kimsy.rr.vental.ViewModel.SharedDebateViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.DebateCard
+import kimsy.rr.vental.ui.commonUi.ErrorView
 
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -101,7 +102,14 @@ fun MyLikedDebateView(
                                 }
                             }
                             Status.FAILURE -> {
-                                Text(text = "討論の取得に失敗しました。")
+                                ErrorView(retry = {
+                                    viewModel.updateCurrentUser()
+                                    viewModel.loadLikedDebates()
+                                    scrollState.scrollToItem(
+                                        viewModel.likedDebateItemSavedScrollIndex,
+                                        viewModel.likedDebateItemSavedScrollOffset
+                                    )
+                                })
                             }
                             else -> {}
                         }

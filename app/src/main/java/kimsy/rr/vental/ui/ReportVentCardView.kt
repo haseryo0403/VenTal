@@ -48,6 +48,10 @@ fun ReportVentCardView(
             toVentCardView()
             viewModel.resetState()
         }
+        Status.FAILURE -> {
+            Toast.makeText(LocalContext.current, stringResource(id = R.string.report_failure), Toast.LENGTH_LONG).show()
+            viewModel.resetState()
+        }
         else -> {}
     }
     LazyColumn(

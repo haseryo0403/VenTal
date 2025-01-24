@@ -25,6 +25,7 @@ import kimsy.rr.vental.ViewModel.SharedDebateViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.DebateCard
+import kimsy.rr.vental.ui.commonUi.ErrorView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -98,8 +99,16 @@ fun MyDebateView(
                                 }
                             }
                             Status.FAILURE -> {
-                                Text(text = "討論の取得に失敗しました。")
-                                viewModel.resetGetDebateItemState()
+                                ErrorView(retry = {
+                                    viewModel.updateCurrentUser()
+                                    viewModel.getMyPageDebateItems()
+                                    scrollState.scrollToItem(
+                                        viewModel.debateItemSavedScrollIndex,
+                                        viewModel.debateItemSavedScrollOffset
+                                    )
+                                })
+//                                Text(text = "討論の取得に失敗しました。")
+//                                viewModel.resetGetDebateItemState()
                             }
                             else -> viewModel.resetGetDebateItemState()
                         }

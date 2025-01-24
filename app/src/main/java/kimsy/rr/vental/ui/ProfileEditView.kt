@@ -2,6 +2,7 @@ package kimsy.rr.vental.ui
 
 import android.net.Uri
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -75,7 +76,7 @@ fun ProfileEditView(
             newProfileImageUri = null
         }
         Status.FAILURE -> {
-            //TODO errorhandling
+            Toast.makeText(LocalContext.current, stringResource(id = R.string.update_user_fail), Toast.LENGTH_LONG).show()
             profileEditViewModel.resetState()
         }
         else -> {}
@@ -101,8 +102,8 @@ fun ProfileEditView(
             ImagePermissionAndSelection(
                 context = context,
                 modifier = Modifier
-                        .size(104.dp)
-                        .clip(CircleShape),
+                    .size(104.dp)
+                    .clip(CircleShape),
                 onImageSelected = {newProfileImageUri = it}
             ) {
                 Image(
