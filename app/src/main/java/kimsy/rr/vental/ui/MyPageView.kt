@@ -44,15 +44,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
-import kimsy.rr.vental.ViewModel.MyDebateViewModel
-import kimsy.rr.vental.ViewModel.MyLikedDebateViewModel
-import kimsy.rr.vental.ViewModel.MyPageViewModel
-import kimsy.rr.vental.ViewModel.MyVentCardViewModel
-import kimsy.rr.vental.ViewModel.SharedDebateViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
-import kimsy.rr.vental.data.UserPageData
 import kimsy.rr.vental.ui.commonUi.ErrorView
+import kimsy.rr.vental.viewModel.MyDebateViewModel
+import kimsy.rr.vental.viewModel.MyLikedDebateViewModel
+import kimsy.rr.vental.viewModel.MyPageViewModel
+import kimsy.rr.vental.viewModel.MyVentCardViewModel
+import kimsy.rr.vental.viewModel.SharedDebateViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -73,7 +72,7 @@ fun MyPageView(
 
     val scrollState = rememberLazyListState()
 
-    val userPageDataState by viewModel.userPageDateState.collectAsState()
+    val debateCountsState by viewModel.debateCountsState.collectAsState()
 
     var selectedTabIndex by remember { mutableStateOf(0) }
 
@@ -109,15 +108,15 @@ fun MyPageView(
                 .height(accountContentHeight)
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            when (userPageDataState.status) {
+            when (debateCountsState.status) {
                 Status.LOADING -> {
                     // TODO: Loading
                 }
                 Status.SUCCESS -> {
-                    userPageDataState.data?.let {
+                    debateCountsState.data?.let {
                         currentUser?.let { user ->
                             AccountContent(
-                                userPageData = it,
+                                debateCounts = it,
                                 user = user,
                                 toProfileEditView = toProfileEditView,
                                 followUser = null,
@@ -213,14 +212,14 @@ fun MyPageView(
 
 @Composable
 fun AccountContent(
-    userPageData: UserPageData,
+    debateCounts: Int,
     user: User,
     toProfileEditView: (() -> Unit)?,
     followUser: (() -> Unit)?,
     unFollowUser: (() -> Unit)?,
     isFollowing: Boolean?
 ){
-    val debatesCount = userPageData.debatesCount
+//    val debateCounts = userPageData.debatesCount
 
     Row(
         modifier = Modifier
@@ -252,7 +251,7 @@ fun AccountContent(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Text(text = debatesCount.toString())
+                    Text(text = debateCounts.toString())
                     Text(text = "討論")
                 }
                 Column(

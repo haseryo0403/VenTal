@@ -20,8 +20,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import kimsy.rr.vental.ViewModel.MyLikedDebateViewModel
-import kimsy.rr.vental.ViewModel.SharedDebateViewModel
+import kimsy.rr.vental.viewModel.MyLikedDebateViewModel
+import kimsy.rr.vental.viewModel.SharedDebateViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.DebateCard

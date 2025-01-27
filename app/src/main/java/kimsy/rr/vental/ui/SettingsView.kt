@@ -25,7 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kimsy.rr.vental.R
-import kimsy.rr.vental.ViewModel.AuthViewModel
+import kimsy.rr.vental.viewModel.AuthViewModel
 
 @Composable
 fun SettingsItem(

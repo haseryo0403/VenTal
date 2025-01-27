@@ -23,9 +23,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import kimsy.rr.vental.ViewModel.AuthViewModel
-import kimsy.rr.vental.ViewModel.DebateCreationViewModel
-import kimsy.rr.vental.ViewModel.VentCardsViewModel
+import kimsy.rr.vental.viewModel.AuthViewModel
+import kimsy.rr.vental.viewModel.DebateCreationViewModel
+import kimsy.rr.vental.viewModel.VentCardsViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.CardStack

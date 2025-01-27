@@ -64,8 +64,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
-import kimsy.rr.vental.ViewModel.DebateViewModel
-import kimsy.rr.vental.ViewModel.SharedDebateViewModel
+import kimsy.rr.vental.viewModel.DebateViewModel
+import kimsy.rr.vental.viewModel.SharedDebateViewModel
 import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.DebateShareModel

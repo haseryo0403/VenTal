@@ -32,7 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import kimsy.rr.vental.R
-import kimsy.rr.vental.ViewModel.AuthViewModel
+import kimsy.rr.vental.viewModel.AuthViewModel
 
 @Composable
 fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {

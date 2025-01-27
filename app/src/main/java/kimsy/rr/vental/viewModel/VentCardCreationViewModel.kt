@@ -1,4 +1,4 @@
-package kimsy.rr.vental.ViewModel
+package kimsy.rr.vental.viewModel
 
 import android.content.Context
 import android.net.Uri

@@ -29,8 +29,8 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import com.google.firebase.firestore.DocumentSnapshot
 import kimsy.rr.vental.R
-import kimsy.rr.vental.ViewModel.NotificationsViewModel
-import kimsy.rr.vental.ViewModel.SharedDebateViewModel
+import kimsy.rr.vental.viewModel.NotificationsViewModel
+import kimsy.rr.vental.viewModel.SharedDebateViewModel
 import kimsy.rr.vental.data.NotificationItem
 import kimsy.rr.vental.data.NotificationType
 import kimsy.rr.vental.data.Resource

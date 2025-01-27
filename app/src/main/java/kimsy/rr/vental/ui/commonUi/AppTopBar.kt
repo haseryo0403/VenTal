@@ -34,8 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kimsy.rr.vental.R
 import kimsy.rr.vental.Screen
-import kimsy.rr.vental.ViewModel.NotificationsViewModel
-import kimsy.rr.vental.ViewModel.VentCardCreationViewModel
+import kimsy.rr.vental.viewModel.NotificationsViewModel
+import kimsy.rr.vental.viewModel.VentCardCreationViewModel
 import kimsy.rr.vental.data.Status
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

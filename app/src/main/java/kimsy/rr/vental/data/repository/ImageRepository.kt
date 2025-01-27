@@ -4,16 +4,11 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
-import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import kimsy.rr.vental.data.Resource
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withTimeout
-import java.io.IOException
 import java.util.UUID
-import java.util.concurrent.TimeoutException
 import javax.inject.Inject
 
 class ImageRepository @Inject constructor(
@@ -26,64 +21,41 @@ class ImageRepository @Inject constructor(
     suspend fun saveImageToStorage(
         uri: Uri,
         context: Context
-    ): Result<String> {
-        return try {
+    ): String {
+        val originalFileName = getFileName(context, uri) ?: "image"
+        val uniqueFileName = "${UUID.randomUUID()}_$originalFileName"
 
-            val originalFileName  = getFileName(context, uri) ?: "image"
-            val uniqueFileName = "${UUID.randomUUID()}_$originalFileName"
+        storageRef.child("images/$uniqueFileName").putFile(uri).await()
 
-            Log.d("TAG", "${storageRef.child("images/$uniqueFileName")}")
-            Log.d("TAG","uri is: $uri")
-
-            withTimeout(20000L){
-                storageRef.child("images/$uniqueFileName").putFile(uri).await()
-
-                val downloadUrl = storageRef.child("images/$uniqueFileName").downloadUrl.await().toString()
-                Log.d("IRepo", "URL get success: $downloadUrl")
-
-                Result.success(downloadUrl)
-            }
-        } catch (e: TimeoutException) {
-            Log.e("ImageRepository", "Failed to save image: ${e.message}", e)
-            Result.failure(e)
-        } catch (e: Exception) {
-            Log.e("ImageRepository", "Failed to save image: ${e.message}", e)
-            Result.failure(e)
-        }
+        return storageRef.child("images/$uniqueFileName").downloadUrl.await().toString()
     }
-
-    @SuppressLint("SuspiciousIndentation", "Recycle")
-    suspend fun saveImageToStorages(
-        uri: Uri,
-        context: Context
-    ): Resource<String> {
-        return try {
-            withTimeout(10000L){
-                val originalFileName  = getFileName(context, uri) ?: "image"
-                val uniqueFileName = "${UUID.randomUUID()}_$originalFileName"
-
-                Log.d("TAG", "${storageRef.child("images/$uniqueFileName")}")
-                Log.d("TAG","uri is: $uri")
-
-                withTimeout(20000L){
-                    storageRef.child("images/$uniqueFileName").putFile(uri).await()
-
-                    val downloadUrl = storageRef.child("images/$uniqueFileName").downloadUrl.await().toString()
-                    Log.d("IRepo", "URL get success: $downloadUrl")
-
-                    Resource.success(downloadUrl)
-    //                Result.success(downloadUrl)
-            }
-
-            }
-        } catch (e: IOException) {
-            Log.e("ImageRepository", "Failed to save image: ${e.message}", e)
-            Resource.failure(e.message)
-        } catch (e: Exception) {
-            Log.e("ImageRepository", "Failed to save image: ${e.message}", e)
-            Resource.failure(e.message)
-        }
-    }
+//    @SuppressLint("SuspiciousIndentation", "Recycle")
+//    suspend fun saveImageToStorages(
+//        uri: Uri,
+//        context: Context
+//    ): Resource<String> {
+//        return try {
+//            withTimeout(10000L){
+//                val originalFileName  = getFileName(context, uri) ?: "image"
+//                val uniqueFileName = "${UUID.randomUUID()}_$originalFileName"
+//
+//                withTimeout(20000L){
+//                    storageRef.child("images/$uniqueFileName").putFile(uri).await()
+//
+//                    val downloadUrl = storageRef.child("images/$uniqueFileName").downloadUrl.await().toString()
+//
+//                    Resource.success(downloadUrl)
+//            }
+//
+//            }
+//        } catch (e: IOException) {
+//            Log.e("ImageRepository", "Failed to save image: ${e.message}", e)
+//            Resource.failure(e.message)
+//        } catch (e: Exception) {
+//            Log.e("ImageRepository", "Failed to save image: ${e.message}", e)
+//            Resource.failure(e.message)
+//        }
+//    }
 
     @SuppressLint("Range")
     private fun getFileName(context: Context, uri: Uri): String? {

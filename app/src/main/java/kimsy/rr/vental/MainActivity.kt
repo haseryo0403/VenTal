@@ -33,7 +33,7 @@ import com.google.firebase.appcheck.FirebaseAppCheck
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
-import kimsy.rr.vental.ViewModel.AuthViewModel
+import kimsy.rr.vental.viewModel.AuthViewModel
 import kimsy.rr.vental.data.repository.UserRepository
 import kimsy.rr.vental.ui.SignInScreen
 import kimsy.rr.vental.ui.commonUi.MainView

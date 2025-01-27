@@ -60,6 +60,10 @@
 <!--    profileEditView-->
     <string name="update_user_fail">プロフィールの更新に失敗しました。時間をあけて再度お試しください。</string>
 
+    <!--    フォロー関連-->
+    <string name="follow_failure">フォロー/フォロー解除に失敗しました。時間をあけて再度お試しください。</string>
+
+
 
     <string name="app_name" translatable="false">Vental</string>
     <string name="like_fail">いいねに失敗しました。しばらく時間を置いて、再度お試しください。</string>

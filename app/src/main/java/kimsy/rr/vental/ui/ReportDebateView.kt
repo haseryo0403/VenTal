@@ -26,7 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kimsy.rr.vental.R
-import kimsy.rr.vental.ViewModel.ReportDebateViewModel
+import kimsy.rr.vental.viewModel.ReportDebateViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.ui.CommonComposable.CustomCircularProgressIndicator
 

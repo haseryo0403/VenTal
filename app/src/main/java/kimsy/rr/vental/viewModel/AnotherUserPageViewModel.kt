@@ -1,4 +1,4 @@
-package kimsy.rr.vental.ViewModel
+package kimsy.rr.vental.viewModel
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -10,15 +10,14 @@ import com.google.firebase.firestore.DocumentSnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kimsy.rr.vental.R
 import kimsy.rr.vental.UseCase.FollowUseCase
+import kimsy.rr.vental.UseCase.GetDebateCountsRelatedUserUseCase
 import kimsy.rr.vental.UseCase.GetDebatesRelatedUserUseCase
-import kimsy.rr.vental.UseCase.GetUserPageDataUseCase
 import kimsy.rr.vental.UseCase.ObserveFollowingUserIdUseCase
 import kimsy.rr.vental.UseCase.UnFollowUseCase
 import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
-import kimsy.rr.vental.data.UserPageData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -26,7 +25,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AnotherUserPageViewModel @Inject constructor(
-    private val getUserPageDataUseCase: GetUserPageDataUseCase,
+    private val getDebateCountsRelatedUserUseCase: GetDebateCountsRelatedUserUseCase,
     private val observeFollowingUserIdUseCase: ObserveFollowingUserIdUseCase,
     private val followUseCase: FollowUseCase,
     private val unFollowUseCase: UnFollowUseCase,
@@ -38,8 +37,8 @@ class AnotherUserPageViewModel @Inject constructor(
     private val _anotherUser = MutableStateFlow(User.AnotherUserShareModel.getAnotherUser())
     val anotherUser: StateFlow<User?> get() = _anotherUser
 
-    private val _userPageDataState = MutableStateFlow<Resource<UserPageData>>(Resource.idle())
-    val userPageDateState: StateFlow<Resource<UserPageData>> get() = _userPageDataState
+    private val _debateCountsState = MutableStateFlow<Resource<Int>>(Resource.idle())
+    val debateCountsState: StateFlow<Resource<Int>> get() = _debateCountsState
 
     private val _getDebateItemsState = MutableStateFlow<Resource<Pair<List<DebateItem>, DocumentSnapshot?>>>(
         Resource.idle())
@@ -47,9 +46,6 @@ class AnotherUserPageViewModel @Inject constructor(
 
     private val _debateItems = MutableStateFlow<List<DebateItem>>(emptyList())
     val debateItems: StateFlow<List<DebateItem>> get() = _debateItems
-
-    private val _anotherUserPageItems = MutableStateFlow<List<DebateItem>>(emptyList())
-    val anotherUserPageItems: StateFlow<List<DebateItem>> get() = _anotherUserPageItems
 
     private var lastVisible: DocumentSnapshot? = null
 
@@ -65,19 +61,11 @@ class AnotherUserPageViewModel @Inject constructor(
     private val _followState = MutableStateFlow<Resource<Unit>>(Resource.idle())
     val followState: StateFlow<Resource<Unit>> get() = _followState
 
-    var savedScrollIndex by mutableStateOf(0)
-    var savedScrollOffset by mutableStateOf(0)
-
-    fun setScrollState(index: Int, offset: Int) {
-        savedScrollIndex = index
-        savedScrollOffset = offset
-    }
-
     fun onRefresh() {
         viewModelScope.launch {
             _isRefreshing.value = true
             lastVisible = null
-//            getAnotherUserPageDebateItems()
+            getAnotherUserPageDebateItems()
         }
     }
 
@@ -92,12 +80,11 @@ class AnotherUserPageViewModel @Inject constructor(
 
     suspend fun loadUserPageData() {
         viewModelScope.launch {
-            _userPageDataState.value = Resource.loading()
+            _debateCountsState.value = Resource.loading()
             if (_anotherUser.value != null) {
-                val result = getUserPageDataUseCase.execute(_anotherUser.value!!.uid, true)
-                _userPageDataState.value = result
+                _debateCountsState.value = getDebateCountsRelatedUserUseCase.execute(_anotherUser.value!!.uid)
             } else {
-                _userPageDataState.value = Resource.failure("${R.string.no_user_found}")
+                _debateCountsState.value = Resource.failure("${R.string.no_user_found}")
             }
         }
     }

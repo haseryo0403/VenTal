@@ -51,9 +51,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
-import kimsy.rr.vental.ViewModel.AuthViewModel
-import kimsy.rr.vental.ViewModel.DebateCreationViewModel
-import kimsy.rr.vental.ViewModel.SharedDebateViewModel
+import kimsy.rr.vental.viewModel.AuthViewModel
+import kimsy.rr.vental.viewModel.DebateCreationViewModel
+import kimsy.rr.vental.viewModel.SharedDebateViewModel
 import kimsy.rr.vental.data.DebateWithUsers
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.ui.CommonComposable.ImagePermissionAndSelection

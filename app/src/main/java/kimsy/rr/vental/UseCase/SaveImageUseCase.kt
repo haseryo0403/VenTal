@@ -5,16 +5,18 @@ import android.net.Uri
 import kimsy.rr.vental.data.NetworkUtils
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.repository.ImageRepository
+import kimsy.rr.vental.data.repository.LogRepository
 import javax.inject.Inject
 
 class SaveImageUseCase @Inject constructor(
     private val imageRepository: ImageRepository,
-    private val networkUtils: NetworkUtils
-) {
+    networkUtils: NetworkUtils,
+    logRepository: LogRepository
+): BaseUseCase(networkUtils, logRepository) {
     suspend fun execute(uri: Uri, context: Context):Resource<String> {
-        if (!networkUtils.isOnline()) {
-            return Resource.failure("インターネットの接続を確認してください")
+        return executeWithLoggingAndNetworkCheck {
+            val downloadUrl = imageRepository.saveImageToStorage(uri, context)
+            Resource.success(downloadUrl)
         }
-        return imageRepository.saveImageToStorages(uri, context)
     }
 }

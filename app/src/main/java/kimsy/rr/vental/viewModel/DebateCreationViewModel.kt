@@ -1,8 +1,7 @@
-package kimsy.rr.vental.ViewModel
+package kimsy.rr.vental.viewModel
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -21,7 +20,6 @@ import kimsy.rr.vental.UseCase.SaveNotificationUseCase
 import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.DebateWithUsers
-import kimsy.rr.vental.data.NetworkUtils
 import kimsy.rr.vental.data.NotificationType
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
@@ -43,7 +41,6 @@ class DebateCreationViewModel @Inject constructor(
     private val messageCreationUseCase: MessageCreationUseCase,
     private val getUserDetailsUseCase: GetUserDetailsUseCase,
     private val getSwipeCardUseCase: GetSwipeCardUseCase,
-    private val networkUtils: NetworkUtils
 ): ViewModel() {
 
     private val _fetchRelatedDebateState = MutableStateFlow<Resource<List<DebateWithUsers>>>(Resource.idle())
@@ -54,16 +51,10 @@ class DebateCreationViewModel @Inject constructor(
 
     var ventCardWithUser by mutableStateOf<VentCardWithUser?>(null)
 
-    init {
-        Log.d("DCVM", "initialized")
-    }
-
-
     fun getRelatedDebates(ventCardWithUser: VentCardWithUser) {
         viewModelScope.launch {
             _fetchRelatedDebateState.value = Resource.loading()
             _fetchRelatedDebateState.value = getRelatedDebatesUseCase.execute(ventCardWithUser)
-
         }
     }
 
@@ -75,17 +66,13 @@ class DebateCreationViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
 
-            if (!networkUtils.isOnline()) {
-                _debateCreationState.value = Resource.failure("インターネットの接続を確認してください")
-                return@launch
-            }
-
             _debateCreationState.value = Resource.loading()
             val ventCard = ventCardWithUser ?: throw IllegalStateException("No vent card available")
 
             val debateValidation = debateValidate(ventCard)
 
             if (!debateValidation) {
+                _debateCreationState.value = Resource.failure()
                 return@launch
             }
 
@@ -94,13 +81,17 @@ class DebateCreationViewModel @Inject constructor(
                 if (imageURLState.status == Status.SUCCESS) imageURLState.data else null
             }
 
+            //TODO addDSCUCと合併する
+
             _debateCreationState.value =
                 debateCreationUseCase.execute(text, ventCard, debaterId, imageUrl)
 
             when (debateCreationState.value.status) {
                 Status.SUCCESS -> {
-                    //TODO 条件分岐
-                    addDebatingSwipeCardUseCase.execute(debaterId, ventCard.swipeCardId)
+                    val result = addDebatingSwipeCardUseCase.execute(debaterId, ventCard.swipeCardId)
+                    if (result.status == Status.FAILURE) {
+                        _debateCreationState.value = Resource.failure()
+                    }
                     val createdDebate = debateCreationState.value.data
                     if (createdDebate != null) {
                         createMessage(createdDebate, text)

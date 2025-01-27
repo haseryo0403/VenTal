@@ -1,4 +1,4 @@
-package kimsy.rr.vental.ViewModel
+package kimsy.rr.vental.viewModel
 
 import android.util.Log
 import androidx.compose.runtime.getValue

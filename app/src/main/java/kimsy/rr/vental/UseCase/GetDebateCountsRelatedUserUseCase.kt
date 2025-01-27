@@ -5,16 +5,18 @@ import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.repository.DebateRepository
 import kimsy.rr.vental.data.repository.LogRepository
 import javax.inject.Inject
-
-class AddDebatingSwipeCardUseCase @Inject constructor(
+class GetDebateCountsRelatedUserUseCase @Inject constructor(
     private val debateRepository: DebateRepository,
+    private val getUserDetailsUseCase: GetUserDetailsUseCase,
     networkUtils: NetworkUtils,
     logRepository: LogRepository
-): BaseUseCase(networkUtils, logRepository) {
-    suspend fun execute(debaterId: String, swipeCardId: String): Resource<Unit> {
+) : BaseUseCase(networkUtils, logRepository) {
+
+    suspend fun execute(userId: String): Resource<Int> {
         return executeWithLoggingAndNetworkCheck {
-            debateRepository.addDebatingSwipeCard(debaterId, swipeCardId)
-            Resource.success(Unit)
+            val debateCounts = debateRepository.getDebatesCountRelatedUser(userId)
+
+            Resource.success(debateCounts)
         }
     }
 }

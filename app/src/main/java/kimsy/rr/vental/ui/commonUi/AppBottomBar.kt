@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kimsy.rr.vental.R
-import kimsy.rr.vental.ViewModel.VentCardCreationViewModel
+import kimsy.rr.vental.viewModel.VentCardCreationViewModel
 import kimsy.rr.vental.screensInBottom
 import kimsy.rr.vental.ui.CommonComposable.ImagePermissionAndSelection
 import kotlin.math.roundToInt
