@@ -14,21 +14,6 @@ class ObserveFollowingUserIdUseCase @Inject constructor(
     logRepository: LogRepository
 ): BaseUseCase(networkUtils, logRepository) {
     suspend fun execute(currentUserId: String): Flow<Resource<List<String>>> {
-//        try {
-//            val networkState = checkNetwork()
-//            if (networkState.status != Status.SUCCESS) {
-//                emit(Resource.failure("インターネットの接続を確認してください"))
-//                return@flow
-//            }
-//            followRepository.observeFollowingUserIds(currentUserId).collect {followingIds ->
-//                emit(Resource.success(followingIds))
-//            }
-//        } catch(e: Exception) {
-//            //TODO 開発中はあまり使いたくないのでコメントに
-////            saveErrorLog(e)
-//            emit(Resource.failure(e.message))
-//        }
-//
         return executeFlowWithLoggingAndNetworkCheck {
             followRepository.observeFollowingUserIds(currentUserId)
                 .map { followingIds ->

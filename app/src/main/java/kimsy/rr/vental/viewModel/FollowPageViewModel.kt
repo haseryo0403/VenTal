@@ -1,6 +1,5 @@
 package kimsy.rr.vental.viewModel
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -32,14 +31,15 @@ class FollowPageViewModel @Inject constructor(
     private val followUseCase: FollowUseCase,
     private val unFollowUseCase: UnFollowUseCase
 ): ViewModel() {
+
     val currentUser = User.CurrentUserShareModel.getCurrentUserFromModel()
-//    private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel())
-//    val currentUser: StateFlow<User?> get() = _currentUser
+
+    private val _followingUser = MutableStateFlow<List<User>>(emptyList())
+    val followingUser: StateFlow<List<User>> get() = _followingUser
 
     private val _followingUserIds = MutableStateFlow<List<String>>(emptyList())
     val followingUserIds: StateFlow<List<String>> get() = _followingUserIds
 
-    //TODO observe
     private val _followingUserIdsState = MutableStateFlow<Resource<List<String>>>(Resource.idle())
     val followingUserIdsState: StateFlow<Resource<List<String>>> get() = _followingUserIdsState
 
@@ -66,8 +66,6 @@ class FollowPageViewModel @Inject constructor(
         Resource.idle())
     val getDebateItemsState: StateFlow<Resource<List<DebateItem>>> get() = _getDebateItemsState
 
-//    private var debateItemLastVisible: DocumentSnapshot? = null
-
     var hasFinishedLoadingAllDebateItems by mutableStateOf(false)
         private set
 
@@ -87,7 +85,7 @@ class FollowPageViewModel @Inject constructor(
             _getDebateItemsState.value = Resource.loading()
             val currentUserId = currentUser?.uid
             if (currentUserId == null) {
-                _getDebateItemsState.value = Resource.failure("User is not logged in.")
+                _getDebateItemsState.value = Resource.failure()
                 return@launch
             }
             val success = getFollowingUserIds(currentUserId)
@@ -99,7 +97,6 @@ class FollowPageViewModel @Inject constructor(
                     _getDebateItemsState.value = Resource.success(emptyList())
                     return@launch
                 } else {
-//                    getFollowingUserInfo()
                     val chunks = _followingUserIds.value.chunked(10)
                     chunks.forEach { chunk ->
                         _getDebateItemsState.value = loadDebateByUserIdsListUseCase.execute(
@@ -110,40 +107,19 @@ class FollowPageViewModel @Inject constructor(
                         )
                         when (_getDebateItemsState.value.status) {
                             Status.SUCCESS -> {
-                                Log.d("inchunk", _getDebateItemsState.value.data.toString())
                                 //TODO たぶん共通だとよくない
                                 _getDebateItemsState.value.data?.let { debateItems ->
-                                    //TODO いつ取得を止める？？
-                                    //                        if(debateItems.isEmpty()) {
-                                    //                            hasFinishedLoadingAllLikedDebateItems = true
-                                    //                        }
-                                    //
-                                    //                            if (_isRefreshing.value) {
-                                    //                                _loadingDebateItems = debateItems
-                                    //                                //TODO タイミングが早いから修正
-                                    //                                _isRefreshing.value = false
-                                    //                            } else {
                                     _loadingDebateItems = _loadingDebateItems + debateItems
-                                    //                            }
-
-                                    //TODO delete?
-                                    //                            _loadLikedDebateItemsState.value = Resource.idle()
                                 }
                             }
-
-                            Status.FAILURE -> {
-                                Log.d("TLVM", "failure")
-                            }
-
                             else -> {}
                         }
                     }
 
                 }
                 if (_loadingDebateItems.isNotEmpty()) {
-                    //TODO ソート
                     val sortedDebateItem =  _loadingDebateItems
-                        .filterNotNull() // null を除外
+                        .filterNotNull()
                         .sortedWith( compareBy<DebateItem> { it.debate.debateCreatedDatetime}.reversed() )
                     if (_isRefreshing.value) {
                         _debateItems.value = sortedDebateItem
@@ -153,6 +129,8 @@ class FollowPageViewModel @Inject constructor(
                     }
                     _loadingDebateItems = emptyList()
                     startAfterDate = Timestamp(end.seconds - 1, end.nanoseconds)
+                } else {
+                    hasFinishedLoadingAllDebateItems = true
                 }
             } else {
                 return@launch
@@ -168,6 +146,9 @@ class FollowPageViewModel @Inject constructor(
                 _followingUserState.value = Resource.loading()
                 val userIds = _followingUserIds.value
                 _followingUserState.value = getUserInfoByUserIdListUseCase.execute(userIds)
+                if (_followingUserState.value.status == Status.SUCCESS) {
+                    _followingUserState.value.data?.let{_followingUser.value = it}
+                }
             }
         }
     }
@@ -229,6 +210,11 @@ class FollowPageViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun setScrollState(index: Int, offset: Int) {
+        debateItemSavedScrollIndex = index
+        debateItemSavedScrollOffset = offset
     }
 
     fun resetGetDebateItemState() {

@@ -60,11 +60,16 @@
     <string name="to_do_report_debate">討論を通報</string>
     <string name="to_do_report_ventCard">カードを通報</string>
 
+    <!--    討論関連全般-->
+    <string name="get_extra_debate_failure">討論の追加の取得に失敗しまいた。</string>
+
     <!--    profileEditView-->
     <string name="update_user_fail">プロフィールの更新に失敗しました。時間をあけて再度お試しください。</string>
 
 <!--    フォロー関連-->
     <string name="follow_failure">フォロー/フォロー解除に失敗しました。時間をあけて再度お試しください。</string>
+    <string name="please_follow_to_show_debates">表示する討論がありません。フォローしてください。</string>
+    <string name="all">全て</string>
 
 
 
