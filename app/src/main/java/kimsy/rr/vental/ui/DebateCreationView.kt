@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -101,23 +102,26 @@ fun DebateCreationView(
             fetchRelatedDebateState.status == Status.SUCCESS && imageUri == null -> {
                 fetchRelatedDebateState.data?.let {
                     viewWithOutImage(
+                        sharedDebateViewModel = sharedDebateViewModel,
                         relatedDebateItems = it,
                         isKeyboardVisible = isKeyboardVisible,
                         context = context,
                         onImageSelected = {imageUri = it},
                         text = text,
-                        onTextChange = {text = it}
-                    ) {
-                        user?.let { currentUser ->
-                            debateCreationViewModel.handleDebateCreation(
-                                text, imageUri, currentUser.uid, context,
-                                onCreationSuccess = { createdDebateItem->
-                                    sharedDebateViewModel.setCurrentDebateItem(createdDebateItem)
-                                    toDebateView()
-                                }
-                            )
-                        }
-                    }
+                        onTextChange = {text = it},
+                        onSendClick = {
+                            user?.let { currentUser ->
+                                debateCreationViewModel.handleDebateCreation(
+                                    text, imageUri, currentUser.uid, context,
+                                    onCreationSuccess = { createdDebateItem->
+                                        sharedDebateViewModel.setCurrentDebateItem(createdDebateItem)
+                                        toDebateView()
+                                    }
+                                )
+                            }
+                        },
+                        toDebateView = toDebateView
+                    )
                 }
             }
             fetchRelatedDebateState.status == Status.SUCCESS && imageUri != null -> {
@@ -144,7 +148,6 @@ fun DebateCreationView(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun viewWithImage(
     imageUri: Uri,
@@ -238,13 +241,16 @@ fun viewWithImage(
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun viewWithOutImage(
+    sharedDebateViewModel: SharedDebateViewModel,
     relatedDebateItems: List<DebateItem>,
     isKeyboardVisible: Boolean,
     context: Context,
     onImageSelected: (Uri?) -> Unit,
     text: String,
     onTextChange: (String) -> Unit,
-    onSendClick: () -> Unit) {
+    onSendClick: () -> Unit,
+    toDebateView: () -> Unit
+) {
 
     Column(
         modifier = Modifier
@@ -260,12 +266,14 @@ fun viewWithOutImage(
             items(relatedDebateItems) { relatedDebateItem->
                 val debate = relatedDebateItem.debate
                 val debater = relatedDebateItem.debater
-                val poster = relatedDebateItem.poster
-                val ventCard = relatedDebateItem.ventCard
                 ElevatedCard(
                     modifier = Modifier
                         .fillMaxWidth(0.8f)
                         .padding(8.dp)
+                        .clickable {
+                            sharedDebateViewModel.setCurrentDebateItem(relatedDebateItem)
+                            toDebateView()
+                        }
                 ) {
                     Row(
                         modifier = Modifier
@@ -363,129 +371,3 @@ fun viewWithOutImage(
 
     }
 }
-
-//
-//@RequiresApi(Build.VERSION_CODES.TIRAMISU)
-//@Composable
-//fun viewWithOutImage(
-//    relatedDebates: List<DebateWithUsers>,
-//    isKeyboardVisible: Boolean,
-//    context: Context,
-//    onImageSelected: (Uri?) -> Unit,
-//    text: String,
-//    onTextChange: (String) -> Unit,
-//    onSendClick: () -> Unit) {
-//    Column(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .padding(vertical = 8.dp),
-//        horizontalAlignment = Alignment.CenterHorizontally
-//    ) {
-//
-//        //TODO　これをcarouselにしたい
-//        LazyColumn(
-//            modifier = Modifier.weight(1f)
-//        ) {
-//            items(relatedDebates) {relatedDebate->
-//                ElevatedCard(
-//                    modifier = Modifier
-//                        .fillMaxWidth(0.8f)
-//                        .padding(8.dp)
-//                ) {
-//                    Row(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(8.dp),
-//                        verticalAlignment = Alignment.CenterVertically,
-//                        horizontalArrangement = Arrangement.SpaceBetween
-//                    ){
-//                        Row(
-//                            verticalAlignment = Alignment.CenterVertically,
-//                        ){
-//                            Image(
-//                                painter = rememberAsyncImagePainter(relatedDebate.debaterImageURL),
-//                                contentDescription = null,
-//                                modifier = Modifier
-//                                    .size(48.dp)
-//                                    .clip(CircleShape),
-//                                contentScale = ContentScale.Crop
-//                            )
-//                            Text(text = relatedDebate.debaterName)
-//
-//                        }
-//                        Row(
-//                            verticalAlignment = Alignment.CenterVertically,
-//                        ) {
-//                            Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
-//                                contentDescription = "AccountIcon",
-//                                modifier = Modifier
-//                                    .size(40.dp)
-//                            )
-//                            Text(text = relatedDebate.debaterLikeCount.toString())
-//
-//                        }
-//                    }
-//
-//                    Image(painter = rememberAsyncImagePainter(relatedDebate.firstMessageImageURL),
-//                        contentDescription = "Image",
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(8.dp)
-//                            .clip(RoundedCornerShape(16.dp)),
-//                        contentScale = ContentScale.FillWidth
-//                    )
-//
-//                    Text(
-//                        text = relatedDebate.firstMessage,
-//                        style = MaterialTheme.typography.bodyLarge,
-//                        modifier = Modifier.padding(8.dp)
-//                    )
-//                }
-//            }
-//        }
-//        if (relatedDebates.size <3) {
-//            Column(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//            ) {
-//                Row(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(8.dp)
-//                        .heightIn(max = if (isKeyboardVisible) 160.dp else 48.dp),
-//                    verticalAlignment = Alignment.Bottom,
-//                    horizontalArrangement = Arrangement.SpaceBetween
-//                ) {
-//
-//                    ImagePermissionAndSelection(
-//                        context = context,
-//                        modifier = Modifier.padding(start = 8.dp),
-//                        onImageSelected = onImageSelected
-//                    ){
-//                        Icon(
-//                            painter = painterResource(id = R.drawable.baseline_image_24),
-//                            modifier = Modifier.size(40.dp),
-//                            contentDescription = "add Image"
-//                        )
-//                    }
-//
-//                    MaxLengthOutlinedTextField(
-//                        value = text,
-//                        onValueChange = onTextChange,
-//                        maxLength = 140,
-//                        modifier = Modifier.weight(1f)
-//                    )
-//
-//                    IconButton(onClick = onSendClick) {
-//                        Icon(imageVector = Icons.Default.Send, contentDescription = "Send")
-//                    }
-//                }
-//            }
-//        } else {
-//            //TODO 戻るボタンで表示されないようにする
-//            Toast.makeText(context, "討論が上限数に達したため、これ以上作成できません。関連討論にタップして移動できます", Toast.LENGTH_SHORT).show()
-//        }
-//
-//    }
-//}
-//

@@ -40,9 +40,6 @@ class DebateCreationViewModel @Inject constructor(
     private val getUserDetailsUseCase: GetUserDetailsUseCase
 ): ViewModel() {
 
-//    private val _fetchRelatedDebateState = MutableStateFlow<Resource<List<DebateWithUsers>>>(Resource.idle())
-//    val fetchRelatedDebateState: StateFlow<Resource<List<DebateWithUsers>>> get() = _fetchRelatedDebateState
-
     private val _fetchRelatedDebateState = MutableStateFlow<Resource<List<DebateItem>>>(Resource.idle())
     val fetchRelatedDebateState: StateFlow<Resource<List<DebateItem>>> get() = _fetchRelatedDebateState
 
@@ -68,9 +65,6 @@ class DebateCreationViewModel @Inject constructor(
             _debateCreationState.value = Resource.loading()
             //TODO Fix ventCardWithUserじゃなくなったらいらない
             val ventCard = ventCard ?: throw IllegalStateException("No vent card available")
-
-            //Usercaseにまとめるvalidate, saveImageUseCase, debatecreation
-            //よって構成はdebate作成のために情報集め、作成に成功したらuser側のリストに反映、メッセージを登録、画面遷移
 
             //関連debateの数を確認。３未満ならtrue
             val debateValidation = debateValidate(ventCard)
