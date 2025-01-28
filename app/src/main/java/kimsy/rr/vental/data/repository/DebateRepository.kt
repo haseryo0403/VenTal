@@ -16,7 +16,7 @@ import kimsy.rr.vental.data.DebateLikeData
 import kimsy.rr.vental.data.LikeStatus
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.UserType
-import kimsy.rr.vental.data.VentCardWithUser
+import kimsy.rr.vental.data.VentCard
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
 import java.io.IOException
@@ -39,15 +39,15 @@ class DebateRepository @Inject constructor(
         return debate ?: throw NoSuchElementException("Debate with ID $debateId not found")
     }
 
-    suspend fun fetchRelatedDebates(ventCardWithUser: VentCardWithUser): Resource<List<Debate>> {
+    suspend fun fetchRelatedDebates(ventCard: VentCard): Resource<List<Debate>> {
         return try {
             Log.d("DR", "fetchRD was called")
             withTimeout(10000L) {
                 val query = db
                     .collection("users")
-                    .document(ventCardWithUser.posterId)
+                    .document(ventCard.posterId)
                     .collection("swipeCards")
-                    .document(ventCardWithUser.swipeCardId)
+                    .document(ventCard.swipeCardId)
                     .collection("debates")
 
                 val querySnapshot = query.get().await()

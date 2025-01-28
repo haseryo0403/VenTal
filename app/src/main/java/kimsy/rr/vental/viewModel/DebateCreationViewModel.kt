@@ -12,7 +12,6 @@ import kimsy.rr.vental.UseCase.AddDebatingSwipeCardUseCase
 import kimsy.rr.vental.UseCase.DebateCreationUseCase
 import kimsy.rr.vental.UseCase.DebateValidationUseCase
 import kimsy.rr.vental.UseCase.GetRelatedDebatesUseCase
-import kimsy.rr.vental.UseCase.GetSwipeCardUseCase
 import kimsy.rr.vental.UseCase.GetUserDetailsUseCase
 import kimsy.rr.vental.UseCase.MessageCreationUseCase
 import kimsy.rr.vental.UseCase.SaveImageUseCase
@@ -24,7 +23,7 @@ import kimsy.rr.vental.data.NotificationType
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
-import kimsy.rr.vental.data.VentCardWithUser
+import kimsy.rr.vental.data.VentCard
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -39,8 +38,7 @@ class DebateCreationViewModel @Inject constructor(
     private val saveNotificationUseCase: SaveNotificationUseCase,
     private val saveImageUseCase: SaveImageUseCase,
     private val messageCreationUseCase: MessageCreationUseCase,
-    private val getUserDetailsUseCase: GetUserDetailsUseCase,
-    private val getSwipeCardUseCase: GetSwipeCardUseCase,
+    private val getUserDetailsUseCase: GetUserDetailsUseCase
 ): ViewModel() {
 
     private val _fetchRelatedDebateState = MutableStateFlow<Resource<List<DebateWithUsers>>>(Resource.idle())
@@ -49,12 +47,12 @@ class DebateCreationViewModel @Inject constructor(
     private val _debateCreationState = MutableStateFlow<Resource<Debate>>(Resource.idle())
     val debateCreationState: StateFlow<Resource<Debate>> get() = _debateCreationState
 
-    var ventCardWithUser by mutableStateOf<VentCardWithUser?>(null)
+    var ventCard by mutableStateOf<VentCard?>(null)
 
-    fun getRelatedDebates(ventCardWithUser: VentCardWithUser) {
+    fun getRelatedDebates(ventCard: VentCard) {
         viewModelScope.launch {
             _fetchRelatedDebateState.value = Resource.loading()
-            _fetchRelatedDebateState.value = getRelatedDebatesUseCase.execute(ventCardWithUser)
+            _fetchRelatedDebateState.value = getRelatedDebatesUseCase.execute(ventCard)
         }
     }
 
@@ -67,7 +65,7 @@ class DebateCreationViewModel @Inject constructor(
         viewModelScope.launch {
             _debateCreationState.value = Resource.loading()
             //TODO Fix ventCardWithUserじゃなくなったらいらない
-            val ventCard = ventCardWithUser ?: throw IllegalStateException("No vent card available")
+            val ventCard = ventCard ?: throw IllegalStateException("No vent card available")
 
             //Usercaseにまとめるvalidate, saveImageUseCase, debatecreation
             //よって構成はdebate作成のために情報集め、作成に成功したらuser側のリストに反映、メッセージを登録、画面遷移
@@ -98,8 +96,7 @@ class DebateCreationViewModel @Inject constructor(
         }
     }
 
-    //TODO FIX to ventCard without user
-    private suspend fun debateValidate(ventCard: VentCardWithUser): Boolean {
+    private suspend fun debateValidate(ventCard: VentCard): Boolean {
         val validationResult = debateValidationUseCase.execute(ventCard.posterId, ventCard.swipeCardId)
         return when (validationResult.status) {
             Status.SUCCESS -> validationResult.data?: false
@@ -110,7 +107,7 @@ class DebateCreationViewModel @Inject constructor(
     private suspend fun onDebateCreationSuccess(
         text: String,
         debaterId: String,
-        ventCard: VentCardWithUser,
+        ventCard: VentCard,
         onCreationSuccess: (DebateItem) -> Unit
     ) {
         val result = addDebatingSwipeCardUseCase.execute(debaterId, ventCard.swipeCardId)
@@ -124,12 +121,8 @@ class DebateCreationViewModel @Inject constructor(
         val debater = getUser(debaterId)
         val poster = getUser(ventCard.posterId)
 
-        //TODO delete ventCardがwithUserになってしまっているため。修正して削除
-        val ventCard2 =
-            getSwipeCardUseCase.execute(ventCard.posterId, ventCard.swipeCardId).data
-
-        if (createdDebate != null && debater != null && poster != null && ventCard2 != null) {
-            val createdDebateItem = DebateItem(createdDebate, ventCard2, poster, debater, null)
+        if (createdDebate != null && debater != null && poster != null) {
+            val createdDebateItem = DebateItem(createdDebate, ventCard, poster, debater, null)
             onCreationSuccess(createdDebateItem)
             handleNotification(
                 debaterId,
@@ -159,13 +152,6 @@ class DebateCreationViewModel @Inject constructor(
                 }
                 else -> {}
             }
-//            messageCreationState
-//                .onSuccess {
-//
-//                }
-//                .onFailure {
-//                    _debateCreationState.value = Resource.failure(it.message)
-//                }
         }
     }
 

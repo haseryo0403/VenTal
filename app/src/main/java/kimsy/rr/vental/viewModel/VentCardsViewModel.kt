@@ -13,7 +13,7 @@ import kimsy.rr.vental.UseCase.HandleLikeActionUseCase
 import kimsy.rr.vental.UseCase.LoadVentCardsUseCase
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
-import kimsy.rr.vental.data.VentCardWithUser
+import kimsy.rr.vental.data.VentCardItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -27,11 +27,18 @@ class VentCardsViewModel @Inject constructor(
     var hasFinishedLoadingAllCards by mutableStateOf(false)
         private set
 
-    private val _ventCards = mutableStateListOf<VentCardWithUser>()
-    val ventCards: List<VentCardWithUser> get() = _ventCards
+    private val _ventCardItems = mutableStateListOf<VentCardItem>()
+    val ventCardItems: List<VentCardItem> get() = _ventCardItems
+//
+//    private val _ventCards = mutableStateListOf<VentCardWithUser>()
+//    val ventCards: List<VentCardWithUser> get() = _ventCards
 
-    private val _loadCardsState = MutableStateFlow<Resource<Pair<List<VentCardWithUser>, DocumentSnapshot?>>>(Resource.idle())
-    val loadCardsState: StateFlow<Resource<Pair<List<VentCardWithUser>, DocumentSnapshot?>>> get() = _loadCardsState
+
+    private val _loadCardsState = MutableStateFlow<Resource<Pair<List<VentCardItem>, DocumentSnapshot?>>>(Resource.idle())
+    val loadCardsState: StateFlow<Resource<Pair<List<VentCardItem>, DocumentSnapshot?>>> get() = _loadCardsState
+
+//    private val _loadCardsState = MutableStateFlow<Resource<Pair<List<VentCardWithUser>, DocumentSnapshot?>>>(Resource.idle())
+//    val loadCardsState: StateFlow<Resource<Pair<List<VentCardWithUser>, DocumentSnapshot?>>> get() = _loadCardsState
 
     private val _likeState = MutableStateFlow<Resource<Unit>>(Resource.idle())
     val likeState: StateFlow<Resource<Unit>> get() = _likeState
@@ -40,17 +47,17 @@ class VentCardsViewModel @Inject constructor(
 
     fun loadVentCards(userId: String) {
         viewModelScope.launch {
-            if (ventCards.isEmpty()) {
+            if (ventCardItems.isEmpty()) {
                 _loadCardsState.value = Resource.loading()
             }
             _loadCardsState.value = loadVentCardsUseCase.execute(userId, lastVisible)
             when(_loadCardsState.value.status) {
                 Status.SUCCESS -> {
-                    _loadCardsState.value.data?. let { (cards, newLastVisible) ->
-                        if (cards.isEmpty()) {
+                    _loadCardsState.value.data?. let { (ventCardItems, newLastVisible) ->
+                        if (ventCardItems.isEmpty()) {
                             hasFinishedLoadingAllCards = true
                         }
-                        _ventCards.addAll(cards)
+                        _ventCardItems.addAll(ventCardItems)
                         lastVisible = newLastVisible
                     }
                 }

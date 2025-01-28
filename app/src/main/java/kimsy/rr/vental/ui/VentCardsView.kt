@@ -23,13 +23,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import kimsy.rr.vental.viewModel.AuthViewModel
-import kimsy.rr.vental.viewModel.DebateCreationViewModel
-import kimsy.rr.vental.viewModel.VentCardsViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.CardStack
 import kimsy.rr.vental.ui.commonUi.ErrorView
+import kimsy.rr.vental.viewModel.AuthViewModel
+import kimsy.rr.vental.viewModel.DebateCreationViewModel
+import kimsy.rr.vental.viewModel.VentCardsViewModel
 
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -51,7 +51,7 @@ fun SwipeCardsView(
     LaunchedEffect(user.uid) {
         ventCardsViewModel.loadVentCards(user.uid)
     }
-    val ventCards by remember { derivedStateOf { ventCardsViewModel.ventCards } }
+    val ventCardItems by remember { derivedStateOf { ventCardsViewModel.ventCardItems } }
 
     val loadCardsState = ventCardsViewModel.loadCardsState.collectAsState()
     val likeCardState = ventCardsViewModel.likeState.collectAsState()
@@ -65,7 +65,7 @@ fun SwipeCardsView(
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
 
-            loadCardsState.value.status == Status.FAILURE && (noCardsLeft || ventCards.isEmpty()) -> {
+            loadCardsState.value.status == Status.FAILURE && (noCardsLeft || ventCardItems.isEmpty()) -> {
                 ErrorView(
                     retry = {
                         ventCardsViewModel.loadVentCards(user.uid)
@@ -73,7 +73,7 @@ fun SwipeCardsView(
                 )
             }
 
-            loadCardsState.value.status == Status.SUCCESS && (noCardsLeft || ventCards.isEmpty()) -> {
+            loadCardsState.value.status == Status.SUCCESS && (noCardsLeft || ventCardItems.isEmpty()) -> {
                 Text(text = "No ventCards available", modifier = Modifier.align(Alignment.Center)) // TODO: デザインを追加
             }
 
@@ -83,15 +83,15 @@ fun SwipeCardsView(
 
             else -> {
                 // ここに共通のCardStackを配置
-                if (ventCards.isNotEmpty()) {
+                if (ventCardItems.isNotEmpty()) {
                     Log.d("ventcardview", "ventCard is not empty")
-                    Log.d("ventcardview", "${ventCards}")
+                    Log.d("ventcardview", "${ventCardItems}")
 
 
                     CardStack(
                         modifier = Modifier,
                         enableButtons = true,
-                        items = ventCards,
+                        ventCardItems = ventCardItems,
                         onSwipeRight = { ventCard ->
                             ventCardsViewModel.handleLikeAction(
                                 userId = user.uid,
@@ -100,7 +100,7 @@ fun SwipeCardsView(
                             )
                         },
                         onSwipeLeft = { ventCard ->
-                            debateCreationViewModel.ventCardWithUser = ventCard
+                            debateCreationViewModel.ventCard = ventCard
                             Log.e("VCV", "ventCardId: ${ventCard.swipeCardId}")
                             debateCreationViewModel.getRelatedDebates(ventCard)
                             toDebateCreationView()
@@ -127,3 +127,100 @@ fun SwipeCardsView(
 
     }
 }
+//
+//
+//@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+//@OptIn(ExperimentalMaterialApi::class)
+//@Composable
+//fun SwipeCardsView(
+//    ventCardsViewModel: VentCardsViewModel = hiltViewModel(),
+//    debateCreationViewModel: DebateCreationViewModel,
+//    context: Context,
+//    toDebateCreationView: () -> Unit,
+//    toReportVentCardView: () -> Unit,
+//    toRequestVentCardDeletionView: () -> Unit,
+//    authViewModel: AuthViewModel
+//){
+//    var noCardsLeft by remember { mutableStateOf(false) }
+//    val user by authViewModel.currentUser.observeAsState(User())
+//
+//    // LaunchedEffectを使用して画面遷移時にのみloadVentCardsを呼び出す
+//    LaunchedEffect(user.uid) {
+//        ventCardsViewModel.loadVentCards(user.uid)
+//    }
+//    val ventCards by remember { derivedStateOf { ventCardsViewModel.ventCards } }
+//
+//    val loadCardsState = ventCardsViewModel.loadCardsState.collectAsState()
+//    val likeCardState = ventCardsViewModel.likeState.collectAsState()
+//
+//    Box(
+//        modifier = Modifier.fillMaxSize()
+//    ) {
+//
+//        when {
+//            loadCardsState.value.status == Status.LOADING -> {
+//                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+//            }
+//
+//            loadCardsState.value.status == Status.FAILURE && (noCardsLeft || ventCards.isEmpty()) -> {
+//                ErrorView(
+//                    retry = {
+//                        ventCardsViewModel.loadVentCards(user.uid)
+//                    }
+//                )
+//            }
+//
+//            loadCardsState.value.status == Status.SUCCESS && (noCardsLeft || ventCards.isEmpty()) -> {
+//                Text(text = "No ventCards available", modifier = Modifier.align(Alignment.Center)) // TODO: デザインを追加
+//            }
+//
+//            loadCardsState.value.status == Status.IDLE -> {
+//                Text(text = "EROORRRRRRRRRRR")
+//            }
+//
+//            else -> {
+//                // ここに共通のCardStackを配置
+//                if (ventCards.isNotEmpty()) {
+//                    Log.d("ventcardview", "ventCard is not empty")
+//                    Log.d("ventcardview", "${ventCards}")
+//
+//
+//                    CardStack(
+//                        modifier = Modifier,
+//                        enableButtons = true,
+//                        ventCardItems = ventCards,
+//                        onSwipeRight = { ventCard ->
+//                            ventCardsViewModel.handleLikeAction(
+//                                userId = user.uid,
+//                                posterId = ventCard.posterId,
+//                                ventCardId = ventCard.swipeCardId
+//                            )
+//                        },
+//                        onSwipeLeft = { ventCard ->
+//                            debateCreationViewModel.ventCardWithUser = ventCard
+//                            Log.e("VCV", "ventCardId: ${ventCard.swipeCardId}")
+//                            debateCreationViewModel.getRelatedDebates(ventCard)
+//                            toDebateCreationView()
+//                        },
+//                        onEmptyStack = {
+//                            noCardsLeft = true
+//                        },
+//                        onLessStack = {
+//                            ventCardsViewModel.loadVentCards(user.uid)
+//                        },
+//                        toReportVentCardView = toReportVentCardView,
+//                        toRequestVentCardDeletionView = toRequestVentCardDeletionView
+//                    )
+//                } else {
+//                    Log.d("ventcardview", "ventCard is empty")
+//                }
+//            }
+//        }
+//
+//        if (likeCardState.value.status == Status.FAILURE) {
+//            Toast.makeText(context, "いいねに失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
+//            ventCardsViewModel.resetState()
+//        }
+//
+//    }
+//}
