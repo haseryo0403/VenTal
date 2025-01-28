@@ -46,7 +46,7 @@ class DebateCreationViewModel @Inject constructor(
     private val _debateCreationState = MutableStateFlow<Resource<Debate>>(Resource.idle())
     val debateCreationState: StateFlow<Resource<Debate>> get() = _debateCreationState
 
-    var ventCard by mutableStateOf<VentCard?>(null)
+    var ventCard by mutableStateOf(VentCard())
 
     fun getRelatedDebates(ventCard: VentCard) {
         viewModelScope.launch {
@@ -63,8 +63,6 @@ class DebateCreationViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             _debateCreationState.value = Resource.loading()
-            //TODO Fix ventCardWithUserじゃなくなったらいらない
-            val ventCard = ventCard ?: throw IllegalStateException("No vent card available")
 
             //関連debateの数を確認。３未満ならtrue
             val debateValidation = debateValidate(ventCard)
