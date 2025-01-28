@@ -79,8 +79,8 @@ class DebateViewModel @Inject constructor(
                 )
             }
             if (messageCreationState != null) {
-                messageCreationState
-                    .onSuccess {
+                when(messageCreationState.status) {
+                    Status.SUCCESS -> {
                         _createMessageState.value = Resource.success(Unit)
                         currentUser?.let { user ->
                             saveNotificationUseCase.execute(
@@ -91,9 +91,26 @@ class DebateViewModel @Inject constructor(
                                 text)
                         }
                     }
-                    .onFailure {
-                        _createMessageState.value = Resource.failure(it.message)
+                    Status.FAILURE -> {
+                        _createMessageState.value = Resource.failure(messageCreationState.message)
                     }
+                    else -> {}
+                }
+//                messageCreationState
+//                    .onSuccess {
+//                        _createMessageState.value = Resource.success(Unit)
+//                        currentUser?.let { user ->
+//                            saveNotificationUseCase.execute(
+//                                fromUserId = user.uid,
+//                                if (user.uid == debate.posterId) debate.debaterId else debate.posterId,
+//                                debate.debateId,
+//                                NotificationType.DEBATEMESSAGE,
+//                                text)
+//                        }
+//                    }
+//                    .onFailure {
+//                        _createMessageState.value = Resource.failure(it.message)
+//                    }
             }
         }
     }

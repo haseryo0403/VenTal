@@ -154,12 +154,6 @@ class AnotherUserPageViewModel @Inject constructor(
         }
     }
 
-
-//
-//    fun updateAnotherUser() {
-//        _anotherUser.value = User.AnotherUserShareModel.getAnotherUser()
-//    }
-
     fun resetGetDebateItemState() {
         _getDebateItemsState.value = Resource.idle()
     }

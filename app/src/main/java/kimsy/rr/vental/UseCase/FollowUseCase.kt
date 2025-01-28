@@ -9,6 +9,7 @@ import javax.inject.Inject
 
 class FollowUseCase @Inject constructor(
     private val followRepository: FollowRepository,
+    private val db: FirebaseFirestore,
     networkUtils: NetworkUtils,
     logRepository: LogRepository
 ): BaseUseCase(networkUtils, logRepository) {
@@ -17,11 +18,7 @@ class FollowUseCase @Inject constructor(
         toUserId: String
     ): Resource<Unit> {
         return executeWithLoggingAndNetworkCheck {
-            //DEbateVIEWと他人ページだけ
-            //TODO repositoryでfollowの状況を取得して条件を分岐 OR UIでボタンを２種類用意するので、そこのonclickでVMのfollowとunfollowの関数を配置。
-            //前者コードが完結。矛盾が起こりにくい。後者コードが多くなる。ただ、簡単。follow状況把握のクエリいらなくなるので早い。x
-            //後者にする
-            FirebaseFirestore.getInstance().runTransaction {  transaction ->
+            db.runTransaction {  transaction ->
                 followRepository.addUserIdToFollowingUserId(
                     fromUserId = fromUserId,
                     toUserId = toUserId,

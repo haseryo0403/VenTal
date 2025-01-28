@@ -15,9 +15,9 @@ import javax.inject.Inject
 class MessageRepository @Inject constructor(
     private val db: FirebaseFirestore
 ) {
-    suspend fun sendMessage (posterId: String, swipeCardId: String, debateId: String, message: Message): Result<Unit>{
-        return try {
-            withTimeout(10000L) {
+    suspend fun sendMessage (posterId: String, swipeCardId: String, debateId: String, message: Message){
+//        return try {
+//            withTimeout(10000L) {
                 val docRef = db
                     .collection("users")
                     .document(posterId)
@@ -31,12 +31,12 @@ class MessageRepository @Inject constructor(
                     .await()
 
                 Result.success(Unit)
-            }
-        } catch (e: IOException) {
-            Result.failure(e)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+//            }
+//        } catch (e: IOException) {
+//            Result.failure(e)
+//        } catch (e: Exception) {
+//            Result.failure(e)
+//        }
     }
 
     suspend fun fetchMessages (posterId: String, swipeCardId: String, debateId: String): Resource<List<Message>> {

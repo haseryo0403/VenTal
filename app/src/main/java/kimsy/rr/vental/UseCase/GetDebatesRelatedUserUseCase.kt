@@ -25,6 +25,7 @@ class GetDebatesRelatedUserUseCase @Inject constructor(
             val result = debateRepository.fetch10DebatesRelatedUser(userId, lastVisible)
             val debates = result.first
             val newLastVisible = result.second
+            //処理速度向上のためにasync
             val relatedDebateItems = coroutineScope {
                 debates.map { debate ->
                     async {

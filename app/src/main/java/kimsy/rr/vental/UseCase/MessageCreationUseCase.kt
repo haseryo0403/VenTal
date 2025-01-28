@@ -3,13 +3,18 @@ package kimsy.rr.vental.UseCase
 import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.DebateWithUsers
 import kimsy.rr.vental.data.Message
+import kimsy.rr.vental.data.NetworkUtils
+import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.UserType
+import kimsy.rr.vental.data.repository.LogRepository
 import kimsy.rr.vental.data.repository.MessageRepository
 import javax.inject.Inject
 
 class MessageCreationUseCase @Inject constructor(
-    private val messageRepository: MessageRepository
-) {
+    private val messageRepository: MessageRepository,
+    networkUtils: NetworkUtils,
+    logRepository: LogRepository
+): BaseUseCase(networkUtils, logRepository) {
     suspend fun execute(
         debate: Debate?,
         debateWithUsers: DebateWithUsers?,
@@ -17,8 +22,8 @@ class MessageCreationUseCase @Inject constructor(
         debateId: String,
         text: String,
         messageImageURL: String?
-    ): Result<Unit> {
-        return try {
+    ): Resource<Unit> {
+        return executeWithLoggingAndNetworkCheck {
             val userType = when {
                 debate != null -> {
                     if (userId == debate.posterId) UserType.POSTER else UserType.DEBATER
@@ -31,8 +36,7 @@ class MessageCreationUseCase @Inject constructor(
 
             val message = createMessageInstance(text, messageImageURL, userType)
             messageRepository.sendMessage(debate?.posterId ?: debateWithUsers?.posterId!!, debate?.swipeCardId ?: debateWithUsers?.swipeCardId!!, debateId, message)
-        } catch (e: Exception) {
-            Result.failure(e)
+            Resource.success(Unit)
         }
     }
 
