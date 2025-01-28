@@ -18,7 +18,6 @@ import kimsy.rr.vental.UseCase.SaveImageUseCase
 import kimsy.rr.vental.UseCase.SaveNotificationUseCase
 import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.DebateItem
-import kimsy.rr.vental.data.DebateWithUsers
 import kimsy.rr.vental.data.NotificationType
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
@@ -41,8 +40,11 @@ class DebateCreationViewModel @Inject constructor(
     private val getUserDetailsUseCase: GetUserDetailsUseCase
 ): ViewModel() {
 
-    private val _fetchRelatedDebateState = MutableStateFlow<Resource<List<DebateWithUsers>>>(Resource.idle())
-    val fetchRelatedDebateState: StateFlow<Resource<List<DebateWithUsers>>> get() = _fetchRelatedDebateState
+//    private val _fetchRelatedDebateState = MutableStateFlow<Resource<List<DebateWithUsers>>>(Resource.idle())
+//    val fetchRelatedDebateState: StateFlow<Resource<List<DebateWithUsers>>> get() = _fetchRelatedDebateState
+
+    private val _fetchRelatedDebateState = MutableStateFlow<Resource<List<DebateItem>>>(Resource.idle())
+    val fetchRelatedDebateState: StateFlow<Resource<List<DebateItem>>> get() = _fetchRelatedDebateState
 
     private val _debateCreationState = MutableStateFlow<Resource<Debate>>(Resource.idle())
     val debateCreationState: StateFlow<Resource<Debate>> get() = _debateCreationState
@@ -139,8 +141,6 @@ class DebateCreationViewModel @Inject constructor(
         viewModelScope.launch {
             val messageCreationState = messageCreationUseCase.execute(
                 debate = createdDebate,
-                //TODO delete
-                debateWithUsers = null,
                 userId = createdDebate.debaterId,
                 debateId = createdDebate.debateId,
                 text = text,

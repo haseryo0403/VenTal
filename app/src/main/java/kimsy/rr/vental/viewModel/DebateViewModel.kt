@@ -71,7 +71,6 @@ class DebateViewModel @Inject constructor(
                 messageCreationUseCase.execute(
                     debate = debate,
                     //TODO delete
-                    debateWithUsers = null,
                     userId = it.uid,
                     debateId = debate.debateId,
                     text = text,

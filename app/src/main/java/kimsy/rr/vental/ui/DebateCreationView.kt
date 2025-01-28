@@ -51,15 +51,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
-import kimsy.rr.vental.viewModel.AuthViewModel
-import kimsy.rr.vental.viewModel.DebateCreationViewModel
-import kimsy.rr.vental.viewModel.SharedDebateViewModel
-import kimsy.rr.vental.data.DebateWithUsers
+import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.ui.CommonComposable.ImagePermissionAndSelection
 import kimsy.rr.vental.ui.CommonComposable.MaxLengthOutlinedTextField
 import kimsy.rr.vental.ui.CommonComposable.MaxLengthTextField
 import kimsy.rr.vental.ui.commonUi.ErrorView
+import kimsy.rr.vental.viewModel.AuthViewModel
+import kimsy.rr.vental.viewModel.DebateCreationViewModel
+import kimsy.rr.vental.viewModel.SharedDebateViewModel
 
 @OptIn(ExperimentalLayoutApi::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -101,7 +101,7 @@ fun DebateCreationView(
             fetchRelatedDebateState.status == Status.SUCCESS && imageUri == null -> {
                 fetchRelatedDebateState.data?.let {
                     viewWithOutImage(
-                        relatedDebates = it,
+                        relatedDebateItems = it,
                         isKeyboardVisible = isKeyboardVisible,
                         context = context,
                         onImageSelected = {imageUri = it},
@@ -238,13 +238,14 @@ fun viewWithImage(
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun viewWithOutImage(
-    relatedDebates: List<DebateWithUsers>,
+    relatedDebateItems: List<DebateItem>,
     isKeyboardVisible: Boolean,
     context: Context,
     onImageSelected: (Uri?) -> Unit,
     text: String,
     onTextChange: (String) -> Unit,
     onSendClick: () -> Unit) {
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -256,7 +257,11 @@ fun viewWithOutImage(
         LazyColumn(
             modifier = Modifier.weight(1f)
         ) {
-            items(relatedDebates) {relatedDebate->
+            items(relatedDebateItems) { relatedDebateItem->
+                val debate = relatedDebateItem.debate
+                val debater = relatedDebateItem.debater
+                val poster = relatedDebateItem.poster
+                val ventCard = relatedDebateItem.ventCard
                 ElevatedCard(
                     modifier = Modifier
                         .fillMaxWidth(0.8f)
@@ -273,14 +278,14 @@ fun viewWithOutImage(
                             verticalAlignment = Alignment.CenterVertically,
                         ){
                             Image(
-                                painter = rememberAsyncImagePainter(relatedDebate.debaterImageURL),
+                                painter = rememberAsyncImagePainter(debater.photoURL),
                                 contentDescription = null,
                                 modifier = Modifier
                                     .size(48.dp)
                                     .clip(CircleShape),
                                 contentScale = ContentScale.Crop
                             )
-                            Text(text = relatedDebate.debaterName)
+                            Text(text = debater.name)
 
                         }
                         Row(
@@ -291,12 +296,12 @@ fun viewWithOutImage(
                                 modifier = Modifier
                                     .size(40.dp)
                             )
-                            Text(text = relatedDebate.debaterLikeCount.toString())
+                            Text(text = debate.debaterLikeCount.toString())
 
                         }
                     }
 
-                    Image(painter = rememberAsyncImagePainter(relatedDebate.firstMessageImageURL),
+                    Image(painter = rememberAsyncImagePainter(debate.firstMessageImageURL),
                         contentDescription = "Image",
                         modifier = Modifier
                             .fillMaxWidth()
@@ -306,14 +311,14 @@ fun viewWithOutImage(
                     )
 
                     Text(
-                        text = relatedDebate.firstMessage,
+                        text = debate.firstMessage,
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.padding(8.dp)
                     )
                 }
             }
         }
-        if (relatedDebates.size <3) {
+        if (relatedDebateItems.size <3) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -359,3 +364,128 @@ fun viewWithOutImage(
     }
 }
 
+//
+//@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+//@Composable
+//fun viewWithOutImage(
+//    relatedDebates: List<DebateWithUsers>,
+//    isKeyboardVisible: Boolean,
+//    context: Context,
+//    onImageSelected: (Uri?) -> Unit,
+//    text: String,
+//    onTextChange: (String) -> Unit,
+//    onSendClick: () -> Unit) {
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .padding(vertical = 8.dp),
+//        horizontalAlignment = Alignment.CenterHorizontally
+//    ) {
+//
+//        //TODO　これをcarouselにしたい
+//        LazyColumn(
+//            modifier = Modifier.weight(1f)
+//        ) {
+//            items(relatedDebates) {relatedDebate->
+//                ElevatedCard(
+//                    modifier = Modifier
+//                        .fillMaxWidth(0.8f)
+//                        .padding(8.dp)
+//                ) {
+//                    Row(
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(8.dp),
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        horizontalArrangement = Arrangement.SpaceBetween
+//                    ){
+//                        Row(
+//                            verticalAlignment = Alignment.CenterVertically,
+//                        ){
+//                            Image(
+//                                painter = rememberAsyncImagePainter(relatedDebate.debaterImageURL),
+//                                contentDescription = null,
+//                                modifier = Modifier
+//                                    .size(48.dp)
+//                                    .clip(CircleShape),
+//                                contentScale = ContentScale.Crop
+//                            )
+//                            Text(text = relatedDebate.debaterName)
+//
+//                        }
+//                        Row(
+//                            verticalAlignment = Alignment.CenterVertically,
+//                        ) {
+//                            Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
+//                                contentDescription = "AccountIcon",
+//                                modifier = Modifier
+//                                    .size(40.dp)
+//                            )
+//                            Text(text = relatedDebate.debaterLikeCount.toString())
+//
+//                        }
+//                    }
+//
+//                    Image(painter = rememberAsyncImagePainter(relatedDebate.firstMessageImageURL),
+//                        contentDescription = "Image",
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(8.dp)
+//                            .clip(RoundedCornerShape(16.dp)),
+//                        contentScale = ContentScale.FillWidth
+//                    )
+//
+//                    Text(
+//                        text = relatedDebate.firstMessage,
+//                        style = MaterialTheme.typography.bodyLarge,
+//                        modifier = Modifier.padding(8.dp)
+//                    )
+//                }
+//            }
+//        }
+//        if (relatedDebates.size <3) {
+//            Column(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//            ) {
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(8.dp)
+//                        .heightIn(max = if (isKeyboardVisible) 160.dp else 48.dp),
+//                    verticalAlignment = Alignment.Bottom,
+//                    horizontalArrangement = Arrangement.SpaceBetween
+//                ) {
+//
+//                    ImagePermissionAndSelection(
+//                        context = context,
+//                        modifier = Modifier.padding(start = 8.dp),
+//                        onImageSelected = onImageSelected
+//                    ){
+//                        Icon(
+//                            painter = painterResource(id = R.drawable.baseline_image_24),
+//                            modifier = Modifier.size(40.dp),
+//                            contentDescription = "add Image"
+//                        )
+//                    }
+//
+//                    MaxLengthOutlinedTextField(
+//                        value = text,
+//                        onValueChange = onTextChange,
+//                        maxLength = 140,
+//                        modifier = Modifier.weight(1f)
+//                    )
+//
+//                    IconButton(onClick = onSendClick) {
+//                        Icon(imageVector = Icons.Default.Send, contentDescription = "Send")
+//                    }
+//                }
+//            }
+//        } else {
+//            //TODO 戻るボタンで表示されないようにする
+//            Toast.makeText(context, "討論が上限数に達したため、これ以上作成できません。関連討論にタップして移動できます", Toast.LENGTH_SHORT).show()
+//        }
+//
+//    }
+//}
+//

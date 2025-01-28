@@ -1,7 +1,6 @@
 package kimsy.rr.vental.UseCase
 
 import kimsy.rr.vental.data.Debate
-import kimsy.rr.vental.data.DebateWithUsers
 import kimsy.rr.vental.data.Message
 import kimsy.rr.vental.data.NetworkUtils
 import kimsy.rr.vental.data.Resource
@@ -17,7 +16,6 @@ class MessageCreationUseCase @Inject constructor(
 ): BaseUseCase(networkUtils, logRepository) {
     suspend fun execute(
         debate: Debate?,
-        debateWithUsers: DebateWithUsers?,
         userId: String,
         debateId: String,
         text: String,
@@ -28,14 +26,11 @@ class MessageCreationUseCase @Inject constructor(
                 debate != null -> {
                     if (userId == debate.posterId) UserType.POSTER else UserType.DEBATER
                 }
-                debateWithUsers != null -> {
-                    if (userId == debateWithUsers.posterId) UserType.POSTER else UserType.DEBATER
-                }
                 else -> throw IllegalArgumentException("Either debate or debateWithUsers must be provided.")
             }
 
             val message = createMessageInstance(text, messageImageURL, userType)
-            messageRepository.sendMessage(debate?.posterId ?: debateWithUsers?.posterId!!, debate?.swipeCardId ?: debateWithUsers?.swipeCardId!!, debateId, message)
+            messageRepository.sendMessage(debate.posterId, debate.swipeCardId, debateId, message)
             Resource.success(Unit)
         }
     }

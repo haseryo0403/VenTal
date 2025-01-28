@@ -19,7 +19,6 @@ import kimsy.rr.vental.data.UserType
 import kimsy.rr.vental.data.VentCard
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeout
-import java.io.IOException
 import java.util.Calendar
 import javax.inject.Inject
 
@@ -39,29 +38,45 @@ class DebateRepository @Inject constructor(
         return debate ?: throw NoSuchElementException("Debate with ID $debateId not found")
     }
 
-    suspend fun fetchRelatedDebates(ventCard: VentCard): Resource<List<Debate>> {
-        return try {
-            Log.d("DR", "fetchRD was called")
-            withTimeout(10000L) {
-                val query = db
-                    .collection("users")
-                    .document(ventCard.posterId)
-                    .collection("swipeCards")
-                    .document(ventCard.swipeCardId)
-                    .collection("debates")
+    suspend fun fetchRelatedDebates(ventCard: VentCard): List<Debate> {
+        val query = db
+            .collection("users")
+            .document(ventCard.posterId)
+            .collection("swipeCards")
+            .document(ventCard.swipeCardId)
+            .collection("debates")
 
-                val querySnapshot = query.get().await()
-                val debates = querySnapshot.documents.mapNotNull { document->
-                    document.toObject(Debate::class.java)
-                }
-                Resource.success(debates)
-            }
-        } catch (e: IOException) {
-            Resource.failure(e.message)
-        } catch (e: Exception) {
-            Resource.failure(e.message)
+        val querySnapshot = query.get().await()
+        val debates = querySnapshot.documents.mapNotNull { document ->
+            document.toObject(Debate::class.java)
         }
+        return debates
     }
+//
+//    suspend fun fetchRelatedDebates(ventCard: VentCard): Resource<List<Debate>> {
+//        return try {
+//            Log.d("DR", "fetchRD was called")
+//            withTimeout(10000L) {
+//                val query = db
+//                    .collection("users")
+//                    .document(ventCard.posterId)
+//                    .collection("swipeCards")
+//                    .document(ventCard.swipeCardId)
+//                    .collection("debates")
+//
+//                val querySnapshot = query.get().await()
+//                val debates = querySnapshot.documents.mapNotNull { document->
+//                    document.toObject(Debate::class.java)
+//                }
+//                Resource.success(debates)
+//            }
+//        } catch (e: IOException) {
+//            Resource.failure(e.message)
+//        } catch (e: Exception) {
+//            Resource.failure(e.message)
+//        }
+//    }
+//
     suspend fun getRelatedDebatesCount(posterId: String, swipeCardId: String): Int{
         return withTimeout(10000L) {
             val query = db

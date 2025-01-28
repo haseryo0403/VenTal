@@ -29,16 +29,9 @@ class VentCardsViewModel @Inject constructor(
 
     private val _ventCardItems = mutableStateListOf<VentCardItem>()
     val ventCardItems: List<VentCardItem> get() = _ventCardItems
-//
-//    private val _ventCards = mutableStateListOf<VentCardWithUser>()
-//    val ventCards: List<VentCardWithUser> get() = _ventCards
-
 
     private val _loadCardsState = MutableStateFlow<Resource<Pair<List<VentCardItem>, DocumentSnapshot?>>>(Resource.idle())
     val loadCardsState: StateFlow<Resource<Pair<List<VentCardItem>, DocumentSnapshot?>>> get() = _loadCardsState
-
-//    private val _loadCardsState = MutableStateFlow<Resource<Pair<List<VentCardWithUser>, DocumentSnapshot?>>>(Resource.idle())
-//    val loadCardsState: StateFlow<Resource<Pair<List<VentCardWithUser>, DocumentSnapshot?>>> get() = _loadCardsState
 
     private val _likeState = MutableStateFlow<Resource<Unit>>(Resource.idle())
     val likeState: StateFlow<Resource<Unit>> get() = _likeState
