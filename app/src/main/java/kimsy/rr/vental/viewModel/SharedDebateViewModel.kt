@@ -28,7 +28,8 @@ class SharedDebateViewModel @Inject constructor(
     private val generateDebateItemByDebateIdUseCase: GenerateDebateItemByDebateIdUseCase
 
 ): ViewModel() {
-    val currentUser = User.CurrentUserShareModel.getCurrentUserFromModel()
+    private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel()?: User())
+    val currentUser: StateFlow<User> get() = _currentUser
 
     private val _currentDebateItem = MutableStateFlow<DebateItem?>(null)
         val currentDebateItem: StateFlow<DebateItem?> get() = _currentDebateItem
@@ -51,9 +52,7 @@ class SharedDebateViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
 
-            val result = currentUser?.let {
-                handleDebateLikeActionUseCase.execute(fromUserId = it.uid, debateItem, userType)
-            } ?: Resource.failure("User not logged in")
+            val result = handleDebateLikeActionUseCase.execute(fromUserId = _currentUser.value.uid, debateItem, userType)
 
             _likeState.update { currentState ->
                 currentState.toMutableMap().apply {
@@ -77,8 +76,7 @@ class SharedDebateViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             _generateDebateItemState.value = Resource.loading()
-            _generateDebateItemState.value =
-                currentUser?.let { generateDebateItemByDebateIdUseCase.execute(debateId, it.uid) }!!
+            _generateDebateItemState.value = generateDebateItemByDebateIdUseCase.execute(debateId, _currentUser.value.uid)
                 when (_generateDebateItemState.value.status) {
                     Status.SUCCESS -> {
                         _generateDebateItemState.value.data?.let { setCurrentDebateItem(it) }

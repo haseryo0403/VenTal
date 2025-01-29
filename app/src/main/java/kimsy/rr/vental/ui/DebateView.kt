@@ -64,8 +64,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
-import kimsy.rr.vental.viewModel.DebateViewModel
-import kimsy.rr.vental.viewModel.SharedDebateViewModel
 import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.DebateShareModel
@@ -80,6 +78,8 @@ import kimsy.rr.vental.ui.CommonComposable.MessageItem
 import kimsy.rr.vental.ui.CommonComposable.formatTimeDifference
 import kimsy.rr.vental.ui.CommonComposable.showAsBottomSheet
 import kimsy.rr.vental.ui.commonUi.ErrorView
+import kimsy.rr.vental.viewModel.DebateViewModel
+import kimsy.rr.vental.viewModel.SharedDebateViewModel
 
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -221,7 +221,7 @@ fun DebateView(
                                         DebateBottomSheet(
                                             modifier = Modifier.fillMaxWidth(),
                                             debate = debate,
-                                            currentUserId = currentUser.uid,
+                                            currentUserId = currentUser.value.uid,
                                             toReportDebateView = toReportDebateView,
                                             toRequestDebateDeletionView = toRequestDebateDeletionView,
                                             hideModal = hideModal

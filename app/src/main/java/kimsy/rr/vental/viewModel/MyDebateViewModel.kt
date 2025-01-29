@@ -1,6 +1,5 @@
 package kimsy.rr.vental.viewModel
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.DocumentSnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kimsy.rr.vental.R
 import kimsy.rr.vental.UseCase.GetDebatesRelatedUserUseCase
 import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.Resource
@@ -24,8 +22,8 @@ class MyDebateViewModel @Inject constructor(
     private val getDebatesRelatedUserUseCase: GetDebatesRelatedUserUseCase
 ): ViewModel() {
 
-    private val _currentUser = MutableStateFlow<User?>(User.CurrentUserShareModel.getCurrentUserFromModel())
-    val currentUser: StateFlow<User?> get() = _currentUser
+    private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel()?: User())
+    val currentUser: StateFlow<User> get() = _currentUser
 
     private val _myPageItems = MutableStateFlow<List<DebateItem>>(emptyList())
     val myPageItems: StateFlow<List<DebateItem>> get() = _myPageItems
@@ -72,12 +70,9 @@ class MyDebateViewModel @Inject constructor(
     suspend fun getMyPageDebateItems() {
         viewModelScope.launch {
             _getDebateItemsState.value = Resource.loading()
-            _getDebateItemsState.value =
-                currentUser.value?.let { getDebatesRelatedUserUseCase.execute(debateItemLastVisible, it.uid) } ?: Resource.failure(
-                    R.string.no_user_found.toString())
+            _getDebateItemsState.value = getDebatesRelatedUserUseCase.execute(debateItemLastVisible, _currentUser.value.uid)
             when (_getDebateItemsState.value.status) {
                 Status.SUCCESS -> {
-                    Log.d("TLVM", "success")
                     _getDebateItemsState.value.data?.let { (myPageItems, newLastVisible) ->
                         if(myPageItems.isEmpty()) {
                             hasFinishedLoadingAllDebateItems = true
@@ -91,9 +86,6 @@ class MyDebateViewModel @Inject constructor(
                         debateItemLastVisible = newLastVisible
                     }
                 }
-                Status.FAILURE -> {
-                    Log.d("TLVM", "failure")
-                }
                 else -> {}
             }
         }
@@ -101,7 +93,7 @@ class MyDebateViewModel @Inject constructor(
 
 
     fun updateCurrentUser() {
-        _currentUser.value = User.CurrentUserShareModel.getCurrentUserFromModel()
+        _currentUser.value = User.CurrentUserShareModel.getCurrentUserFromModel()?: User()
     }
 
 

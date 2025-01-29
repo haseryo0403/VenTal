@@ -22,6 +22,7 @@ class GetDebatesRelatedUserUseCase @Inject constructor(
         userId: String
     ): Resource<Pair<List<DebateItem>, DocumentSnapshot?>> {
         return executeWithLoggingAndNetworkCheck {
+            validateUserId(userId)
             val result = debateRepository.fetch10DebatesRelatedUser(userId, lastVisible)
             val debates = result.first
             val newLastVisible = result.second

@@ -1,6 +1,5 @@
 package kimsy.rr.vental.viewModel
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.DocumentSnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kimsy.rr.vental.R
 import kimsy.rr.vental.UseCase.LoadVentCardsRelatedUserUseCase
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
@@ -24,10 +22,9 @@ class MyVentCardViewModel @Inject constructor(
     private val loadVentCardsRelatedUserUseCase: LoadVentCardsRelatedUserUseCase
 ): ViewModel() {
 
-    private val _currentUser = MutableStateFlow<User?>(User.CurrentUserShareModel.getCurrentUserFromModel())
-    val currentUser: StateFlow<User?> get() = _currentUser
+    private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel()?: User())
+    val currentUser: StateFlow<User> get() = _currentUser
 
-    //index 1のventCards用
     var ventCardSavedScrollIndex by mutableStateOf(0)
     var ventCardSavedScrollOffset by mutableStateOf(0)
 
@@ -61,14 +58,10 @@ class MyVentCardViewModel @Inject constructor(
     suspend fun loadMyVentCards() {
         viewModelScope.launch {
             _loadVentCardState.value = Resource.loading()
-            _loadVentCardState.value =
-                _currentUser.value?.let {
-                    loadVentCardsRelatedUserUseCase.execute(it.uid, ventCardLastVisible)
-                }?: Resource.failure(R.string.no_user_found.toString())
+            _loadVentCardState.value = loadVentCardsRelatedUserUseCase.execute(_currentUser.value.uid, ventCardLastVisible)
 
             when (_loadVentCardState.value.status) {
                 Status.SUCCESS -> {
-                    Log.d("TLVM", "success")
                     _loadVentCardState.value.data?.let { (ventCards, newLastVisible) ->
                         if(ventCards.isEmpty()) {
                             hasFinishedLoadingAllVentCards = true
@@ -88,7 +81,7 @@ class MyVentCardViewModel @Inject constructor(
     }
 
     fun updateCurrentUser() {
-        _currentUser.value = User.CurrentUserShareModel.getCurrentUserFromModel()
+        _currentUser.value = User.CurrentUserShareModel.getCurrentUserFromModel()?: User()
     }
 
     fun  resetLoadVentCardState() {

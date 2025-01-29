@@ -3,7 +3,6 @@ package kimsy.rr.vental.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kimsy.rr.vental.R
 import kimsy.rr.vental.UseCase.GetDebateCountsRelatedUserUseCase
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.User
@@ -17,25 +16,20 @@ class MyPageViewModel @Inject constructor(
     private val getDebateCountsRelatedUserUseCase: GetDebateCountsRelatedUserUseCase
     ): ViewModel() {
 
-    private val _currentUser = MutableStateFlow<User?>(User.CurrentUserShareModel.getCurrentUserFromModel())
-    val currentUser: StateFlow<User?> get() = _currentUser
+    private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel()?: User())
+    val currentUser: StateFlow<User> get() = _currentUser
 
     private val _debateCountsState = MutableStateFlow<Resource<Int>>(Resource.idle())
         val debateCountsState: StateFlow<Resource<Int>> get() = _debateCountsState
 
-    //myPageではすでにcurrentUserを持っているのでUserPageDataのuserは使わない
     suspend fun loadUserPageData() {
         viewModelScope.launch {
             _debateCountsState.value = Resource.loading()
-            if (currentUser.value != null) {
-                _debateCountsState.value = getDebateCountsRelatedUserUseCase.execute(currentUser.value!!.uid)
-            } else {
-                _debateCountsState.value = Resource.failure("${R.string.no_user_found}")
-            }
+            _debateCountsState.value = getDebateCountsRelatedUserUseCase.execute(currentUser.value.uid)
         }
     }
 
     fun updateCurrentUser() {
-        _currentUser.value = User.CurrentUserShareModel.getCurrentUserFromModel()
+        _currentUser.value = User.CurrentUserShareModel.getCurrentUserFromModel()?: User()
     }
 }

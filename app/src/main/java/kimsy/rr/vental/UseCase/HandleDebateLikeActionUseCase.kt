@@ -1,7 +1,6 @@
 package kimsy.rr.vental.UseCase
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresExtension
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Transaction
@@ -14,7 +13,6 @@ import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.UserType
 import kimsy.rr.vental.data.repository.DebateRepository
 import kimsy.rr.vental.data.repository.LogRepository
-import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
 class HandleDebateLikeActionUseCase @Inject constructor(
@@ -29,24 +27,22 @@ class HandleDebateLikeActionUseCase @Inject constructor(
         userType: UserType
     ): Resource<DebateItem> {
         return executeWithLoggingAndNetworkCheck {
-            withTimeout(10000L) {
+            validateUserId(fromUserId)
 
-                val likeState = debateRepository
-                    .fetchLikeState(
-                        debateId = debateItem.debate.debateId,
-                        fromUserId = fromUserId
-                    )
+            val likeState = debateRepository
+                .fetchLikeState(
+                    debateId = debateItem.debate.debateId,
+                    fromUserId = fromUserId
+                )
 
-                val debateContext =
-                    likeState.data?.let { DebateContext(fromUserId, it, debateItem, userType) }
+            val debateContext =
+                likeState.data?.let { DebateContext(fromUserId, it, debateItem, userType) }
 
-                when (likeState.status) {
-                    Status.SUCCESS -> debateContext?.let { handleSuccess(it) } ?: Resource.failure("無効なデータ")
-                    Status.FAILURE -> Resource.failure(likeState.message)
-                    else -> Resource.failure("無効なステータスが返されました")
-                }
+            when (likeState.status) {
+                Status.SUCCESS -> debateContext?.let { handleSuccess(it) } ?: Resource.failure("無効なデータ")
+                Status.FAILURE -> Resource.failure(likeState.message)
+                else -> Resource.failure("無効なステータスが返されました")
             }
-
         }
     }
 
@@ -56,7 +52,6 @@ class HandleDebateLikeActionUseCase @Inject constructor(
         debateContext: DebateContext
     ): Resource<DebateItem> {
         val debateLikeData = DebateLikeData(userType = debateContext.userType)
-        return try {
             FirebaseFirestore.getInstance().runTransaction { transaction ->
                 when (debateContext.likeStatus) {
                     LikeStatus.LIKE_NOT_EXIST -> handleLikeNotExist(debateContext, debateLikeData, transaction)
@@ -66,12 +61,8 @@ class HandleDebateLikeActionUseCase @Inject constructor(
             }
             val updatedDebateItem = createUpdatedDebateItem(debateContext.debateItem, debateContext.userType)
             // トランザクションが成功した場合
-            Resource.success(updatedDebateItem)
-        } catch (e: Exception) {
-            // エラーが発生した場合
-            Log.e("HandleLikeActionUseCase", "Error during transaction: $e")
-            Resource.failure(e.message)
-        }
+            return Resource.success(updatedDebateItem)
+
     }
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)

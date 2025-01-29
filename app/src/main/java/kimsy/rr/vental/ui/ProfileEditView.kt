@@ -15,7 +15,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -37,15 +36,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
-import kimsy.rr.vental.viewModel.ProfileEditViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.CustomLinearProgressIndicator
 import kimsy.rr.vental.ui.CommonComposable.ImagePermissionAndSelection
+import kimsy.rr.vental.viewModel.ProfileEditViewModel
 
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileEditView(
     profileEditViewModel: ProfileEditViewModel = hiltViewModel(),

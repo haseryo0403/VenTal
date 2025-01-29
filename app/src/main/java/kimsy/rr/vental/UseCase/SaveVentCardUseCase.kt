@@ -6,14 +6,16 @@ import kimsy.rr.vental.data.NetworkUtils
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.VentCard
+import kimsy.rr.vental.data.repository.LogRepository
 import kimsy.rr.vental.data.repository.VentCardRepository
 import javax.inject.Inject
 
 class SaveVentCardUseCase @Inject constructor(
     private val saveImageUseCase: SaveImageUseCase,
     private val ventCardRepository: VentCardRepository,
-    private val networkUtils: NetworkUtils
-) {
+    networkUtils: NetworkUtils,
+    logRepository: LogRepository
+): BaseUseCase(networkUtils, logRepository) {
     suspend fun execute(
         posterId: String,
         content: String,
@@ -21,19 +23,13 @@ class SaveVentCardUseCase @Inject constructor(
         tags: List<String>,
         context: Context
     ): Resource<Unit> {
-        return try {
-
-            if (!networkUtils.isOnline()) {
-                return Resource.failure("インターネットの接続を確認してください")
-            }
-
+        return executeWithLoggingAndNetworkCheck {
+            validateUserId(posterId)
             if (selectedImageUri == null) {
                 saveVentCardWithoutImage(posterId, content, tags)
             } else {
                 saveVentCardWithImage(posterId, content, selectedImageUri, tags, context)
             }
-        } catch (e: Exception) {
-            Resource.failure(message = e.message ?: "VentCardの保存に失敗しました")
         }
     }
 

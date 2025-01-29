@@ -17,9 +17,10 @@ import javax.inject.Inject
 class RequestVentCardDeletionViewModel @Inject constructor(
     private val requestDeletionUseCase: RequestDeletionUseCase
 ): ViewModel() {
-    val currentUser = User.CurrentUserShareModel.getCurrentUserFromModel()
+    private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel()?: User())
+    val currentUser: StateFlow<User> get() = _currentUser
 
-    val deleteRequestedVentCard = VentCardShareModel.getDeleteRequestedVentCardFromModel()
+    private val deleteRequestedVentCard = VentCardShareModel.getDeleteRequestedVentCardFromModel()
 
     private val _requestState = MutableStateFlow<Resource<Unit>>(Resource.idle())
     val requestState: StateFlow<Resource<Unit>> get() = _requestState
@@ -31,8 +32,8 @@ class RequestVentCardDeletionViewModel @Inject constructor(
             _requestState.value = Resource.loading()
 
             val requestedVentCard = deleteRequestedVentCard
-            val currentUserId = currentUser?.uid
-            if (requestedVentCard == null || currentUserId == null) {
+            val currentUserId = currentUser.value.uid
+            if (requestedVentCard == null) {
                 _requestState.value = Resource.failure()
                 return@launch
             }

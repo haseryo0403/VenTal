@@ -27,6 +27,7 @@ class ReportUseCase @Inject constructor(
         reportFlag: Boolean
     ): Resource<Unit> {
         return executeWithLoggingAndNetworkCheck {
+            validateUserId(requesterId)
             val result = when(entityType) {
                 EntityType.DEBATE -> {
                     if (ventCardId == null) {

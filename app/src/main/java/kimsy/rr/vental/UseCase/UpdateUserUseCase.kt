@@ -16,6 +16,7 @@ class UpdateUserUseCase @Inject constructor(
         user: User
     ): Resource<Unit> {
         return executeWithLoggingAndNetworkCheck {
+            validateUserId(user.uid)
             userRepository.updateUser(user)
             Resource.success(Unit)
         }

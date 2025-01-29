@@ -99,5 +99,12 @@ open class BaseUseCase @Inject constructor(
         }
     }
 
+    // ユーザーIDが空でないかをチェックする関数
+    protected fun validateUserId(userId: String) {
+        if (userId.isEmpty()) {
+            throw IllegalArgumentException("ユーザーIDが空です")
+        }
+    }
+
 
 }

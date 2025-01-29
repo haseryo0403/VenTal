@@ -14,6 +14,7 @@ class SetNotificationSettingsUseCase @Inject constructor(
 ): BaseUseCase(networkUtils, logRepository) {
     suspend fun execute(userId: String, notificationSettings: NotificationSettings): Resource<Unit> {
         return executeWithLoggingAndNetworkCheck {
+            validateUserId(userId)
             notificationSettingsRepository.updateNotificationSettings(userId, notificationSettings)
             Resource.success(Unit)
         }

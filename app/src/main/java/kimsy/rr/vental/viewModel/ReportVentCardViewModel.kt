@@ -18,12 +18,13 @@ class ReportVentCardViewModel @Inject constructor(
     private val reportUseCase: ReportUseCase
 ): ViewModel(){
 
-    val reportedVentCard = VentCardShareModel.getReportedVentCardFromModel()
+    private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel()?: User())
+    val currentUser: StateFlow<User> get() = _currentUser
+
+    private val reportedVentCard = VentCardShareModel.getReportedVentCardFromModel()
 
     private val _reportState = MutableStateFlow<Resource<Unit>>(Resource.idle())
     val reportState: StateFlow<Resource<Unit>> get() = _reportState
-
-    val currentUser = User.CurrentUserShareModel.getCurrentUserFromModel()
 
     fun reportVentCard(
         reasonInt: Int
@@ -32,8 +33,8 @@ class ReportVentCardViewModel @Inject constructor(
             _reportState.value = Resource.loading()
 
             val reportedVentCard = reportedVentCard
-            val currentUserId = currentUser?.uid
-            if (reportedVentCard == null || currentUserId == null) {
+            val currentUserId = currentUser.value.uid
+            if (reportedVentCard == null) {
                 _reportState.value = Resource.failure()
                 return@launch
             }

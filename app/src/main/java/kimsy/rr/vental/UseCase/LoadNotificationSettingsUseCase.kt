@@ -16,6 +16,7 @@ class LoadNotificationSettingsUseCase @Inject constructor(
         currentUserId: String,
     ): Resource<NotificationSettings> {
         return executeWithLoggingAndNetworkCheck {
+            validateUserId(currentUserId)
             val result = notificationSettingsRepository.getNotificationSettings(currentUserId)
             Resource.success(result)
         }

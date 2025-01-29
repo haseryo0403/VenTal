@@ -17,9 +17,10 @@ import javax.inject.Inject
 class RequestDebateDeletionViewModel @Inject constructor(
     private val requestDeletionUseCase: RequestDeletionUseCase
 ):ViewModel() {
-    val currentUser = User.CurrentUserShareModel.getCurrentUserFromModel()
+    private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel()?: User())
+    val currentUser: StateFlow<User> get() = _currentUser
 
-    val deleteRequestedDebate = DebateShareModel.getDeleteRequestedDebateFromModel()
+    private val deleteRequestedDebate = DebateShareModel.getDeleteRequestedDebateFromModel()
 
     private val _requestState = MutableStateFlow<Resource<Unit>>(Resource.idle())
     val requestState: StateFlow<Resource<Unit>> get() = _requestState
@@ -31,8 +32,8 @@ class RequestDebateDeletionViewModel @Inject constructor(
             _requestState.value = Resource.loading()
 
             val requestedDebate = deleteRequestedDebate
-            val currentUserId = currentUser?.uid
-            if (requestedDebate == null || currentUserId == null) {
+            val currentUserId = currentUser.value.uid
+            if (requestedDebate == null) {
                 _requestState.value = Resource.failure()
                 return@launch
             }

@@ -144,37 +144,29 @@ suspend fun getVentCardItems(
         return Pair(ventCardItems, newLastVisible)
 }
 
-    suspend fun likeVentCard(userId: String, posterId: String, ventCardId: String): Resource<Unit>{
-        return try {
-            Log.d("VCR", "likeVentCard called")
+    suspend fun likeVentCard(userId: String, posterId: String, ventCardId: String){
+        val likeData = mapOf(
+            "ventCardId" to ventCardId,
+            "likedDate" to FieldValue.serverTimestamp()
+        )
+        val docRefOnUser = db
+            .collection("users")
+            .document(userId)
+            .collection("likedSwipeCards")
+            .document(ventCardId)
 
-            val likeData = mapOf(
-                "ventCardId" to ventCardId,
-                "likedDate" to FieldValue.serverTimestamp()
-            )
-            val docRefOnUser = db
-                .collection("users")
-                .document(userId)
-                .collection("likedSwipeCards")
-                .document(ventCardId)
+        val docRefOnSwipeCard = db
+            .collection("users")
+            .document(posterId)
+            .collection("swipeCards")
+            .document(ventCardId)
 
-            val docRefOnSwipeCard = db
-                .collection("users")
-                .document(posterId)
-                .collection("swipeCards")
-                .document(ventCardId)
+        docRefOnUser
+            .set(likeData)
+            .await()
 
-            docRefOnUser
-                .set(likeData)
-                .await()
-
-            docRefOnSwipeCard
-                .update("likeCount", FieldValue.increment(1)).await()
-
-            Resource.success(Unit)
-        } catch (e: Exception) {
-            Resource.failure(e.message)
-        }
+        docRefOnSwipeCard
+            .update("likeCount", FieldValue.increment(1)).await()
     }
 
     suspend fun disLikeVentCard(userId: String, ventCardId: String): Resource<Unit> {
@@ -182,21 +174,15 @@ suspend fun getVentCardItems(
         return Resource.success(Unit)
     }
 
-    suspend fun checkIfLiked(userId: String, ventCardId: String): Result<Boolean> {
-        return try {
-            val docRef = db
-                .collection("users")
-                .document(userId)
-                .collection("likedSwipeCards")
-                .document(ventCardId)
+    suspend fun checkIfLiked(userId: String, ventCardId: String): Boolean {
+        val docRef = db
+            .collection("users")
+            .document(userId)
+            .collection("likedSwipeCards")
+            .document(ventCardId)
 
-            val docSnapshot = docRef.get().await()
-            val isLiked = docSnapshot.exists()
-            Result.success(isLiked)
-
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        val docSnapshot = docRef.get().await()
+        return docSnapshot.exists()
     }
 
     suspend fun fetchLikedVentCardIds(userId: String): Resource<List<LikedVentCard>>{

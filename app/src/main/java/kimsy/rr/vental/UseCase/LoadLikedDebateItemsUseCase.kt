@@ -21,6 +21,7 @@ class LoadLikedDebateItemsUseCase @Inject constructor(
         currentUserId: String
     ): Resource<List<DebateItem>> {
         return executeWithLoggingAndNetworkCheck {
+            validateUserId(currentUserId)
             val debates = debateRepository.fetch10DebatesByIdList(likedDebateIds)
             val debateItems = coroutineScope {
                 debates.map { debate ->

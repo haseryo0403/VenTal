@@ -1,13 +1,11 @@
 package kimsy.rr.vental.viewModel
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kimsy.rr.vental.R
 import kimsy.rr.vental.UseCase.LoadLikedDebateIdsUseCase
 import kimsy.rr.vental.UseCase.LoadLikedDebateItemsUseCase
 import kimsy.rr.vental.data.DebateItem
@@ -26,8 +24,8 @@ class MyLikedDebateViewModel @Inject constructor(
     private val loadLikedDebateItemsUseCase: LoadLikedDebateItemsUseCase
 ): ViewModel(){
 
-    private val _currentUser = MutableStateFlow<User?>(User.CurrentUserShareModel.getCurrentUserFromModel())
-    val currentUser: StateFlow<User?> get() = _currentUser
+    private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel()?: User())
+    val currentUser: StateFlow<User> get() = _currentUser
 
     var likedDebateItemSavedScrollIndex by mutableStateOf(0)
     var likedDebateItemSavedScrollOffset by mutableStateOf(0)
@@ -55,16 +53,8 @@ class MyLikedDebateViewModel @Inject constructor(
         viewModelScope.launch {
             _isRefreshing.value = true
             currentLikedDebateIdsIndex = 0
-//            if (hasFinishedLoadingAllLikedDebateItems) {
-//                delay(500)
-//                _isRefreshing.value = false
-//            } else {
-//                loadLikedDebates()
-//            }
             hasFinishedLoadingAllLikedDebateItems = false
             loadLikedDebates()
-
-
         }
     }
 
@@ -74,12 +64,6 @@ class MyLikedDebateViewModel @Inject constructor(
     }
 
     fun onLikeSuccess(debateItem: DebateItem) {
-//        val myPageItemindex = _myPageItems.value.indexOfFirst { it.debate.debateId == debateItem.debate.debateId }
-//        if (myPageItemindex != -1) {
-//            _myPageItems.value = _myPageItems.value.toMutableList().apply {
-//                this[myPageItemindex] = debateItem
-//            }
-//        }
         val likedDebateItemIndex = _likedDebateItems.value.indexOfFirst { it.debate.debateId == debateItem.debate.debateId }
         if (likedDebateItemIndex != -1) {
             _likedDebateItems.value = _likedDebateItems.value.toMutableList().apply {
@@ -95,10 +79,9 @@ class MyLikedDebateViewModel @Inject constructor(
                 return@launch
             }
             _loadLikedDebateItemsState.value = Resource.loading()
-            val likedDebateIdsState = _currentUser.value?.let { loadLikedDebateIdsUseCase.execute(it.uid) }?: Resource.failure(
-                R.string.no_user_found.toString())
+            val likedDebateIdsState = loadLikedDebateIdsUseCase.execute(_currentUser.value.uid)
             if (likedDebateIdsState.status == Status.SUCCESS) {
-                val likedDebateIds = likedDebateIdsState.data!!
+                val likedDebateIds = likedDebateIdsState.data?: emptyList()
                 likedDebateIdsSplitBy10 = SplitList(likedDebateIds, 10)
             } else {
                 _loadLikedDebateItemsState.value = Resource.failure("status not success")
@@ -106,15 +89,12 @@ class MyLikedDebateViewModel @Inject constructor(
             }
 
             _loadLikedDebateItemsState.value =
-                _currentUser.value?.let {
-                    loadLikedDebateItemsUseCase.execute(likedDebateIdsSplitBy10[currentLikedDebateIdsIndex], it.uid)
-                }?: Resource.failure(R.string.no_user_found.toString())
+                    loadLikedDebateItemsUseCase.execute(likedDebateIdsSplitBy10[currentLikedDebateIdsIndex], _currentUser.value.uid)
 
             when (_loadLikedDebateItemsState.value.status) {
                 Status.SUCCESS -> {
-                    Log.d("TLVM", "success")
                     _loadLikedDebateItemsState.value.data?.let { likedDebateItems ->
-                        //TODO delete
+
                         if(likedDebateItems.isEmpty()) {
                             hasFinishedLoadingAllLikedDebateItems = true
                         }
@@ -133,16 +113,13 @@ class MyLikedDebateViewModel @Inject constructor(
                         _loadLikedDebateItemsState.value = Resource.idle()
                     }
                 }
-                Status.FAILURE -> {
-                    Log.d("TLVM", "failure")
-                }
                 else -> {}
             }
         }
     }
 
     fun updateCurrentUser() {
-        _currentUser.value = User.CurrentUserShareModel.getCurrentUserFromModel()
+        _currentUser.value = User.CurrentUserShareModel.getCurrentUserFromModel()?: User()
     }
 
 }

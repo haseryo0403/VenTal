@@ -19,12 +19,13 @@ class ReportDebateViewModel @Inject constructor(
 
 ): ViewModel() {
 
-    val reportedDebate = DebateShareModel.getReportedDebateFromModel()
+    private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel()?: User())
+    val currentUser: StateFlow<User> get() = _currentUser
+
+    private val reportedDebate = DebateShareModel.getReportedDebateFromModel()
 
     private val _reportState = MutableStateFlow<Resource<Unit>>(Resource.idle())
     val reportState: StateFlow<Resource<Unit>> get() = _reportState
-
-    val currentUser = User.CurrentUserShareModel.getCurrentUserFromModel()
 
     fun reportDebate(
         reasonInt: Int
@@ -33,8 +34,8 @@ class ReportDebateViewModel @Inject constructor(
             _reportState.value = Resource.loading()
 
             val reportedDebate = reportedDebate
-            val currentUserId = currentUser?.uid
-            if (reportedDebate == null || currentUserId == null) {
+            val currentUserId = currentUser.value.uid
+            if (reportedDebate == null) {
                 _reportState.value = Resource.failure()
                 return@launch
             }

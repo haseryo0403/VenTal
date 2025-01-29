@@ -25,6 +25,7 @@ class GenerateDebateItemByDebateIdUseCase @Inject constructor(
         currentUserId: String
     ): Resource<DebateItem> {
         return executeWithLoggingAndNetworkCheck {
+            validateUserId(currentUserId)
             val debate = getDebateByDebateId(debateId)
             val ventCard = getVentCard(debate)
             val poster = getPosterInfo(debate)
@@ -39,7 +40,7 @@ class GenerateDebateItemByDebateIdUseCase @Inject constructor(
             if (ventCard != null && poster != null && debater != null) {
                 Resource.success(DebateItem(debate, ventCard, poster, debater, likeUserType))
             } else {
-                Resource.failure("")
+                Resource.failure()
             }
         }
     }

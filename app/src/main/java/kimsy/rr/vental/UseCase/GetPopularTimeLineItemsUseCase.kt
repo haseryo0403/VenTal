@@ -5,7 +5,6 @@ import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.NetworkUtils
 import kimsy.rr.vental.data.Resource
-import kimsy.rr.vental.data.User
 import kimsy.rr.vental.data.repository.DebateRepository
 import kimsy.rr.vental.data.repository.LogRepository
 import kotlinx.coroutines.async
@@ -21,12 +20,13 @@ class GetPopularTimeLineItemsUseCase @Inject constructor(
     ): BaseUseCase(networkUtils, logRepository) {
     suspend fun execute(
         lastVisible: DocumentSnapshot?,
-        currentUser: User
+        currentUserId: String
     ): Resource<Pair<List<DebateItem>, DocumentSnapshot?>> {
         return executeWithLoggingAndNetworkCheck {
+            validateUserId(currentUserId)
             val result = debateRepository.fetchPopular10Debates(lastVisible)
 
-            val timeLineItems = generateDebateItem(result.first, currentUser.uid)
+            val timeLineItems = generateDebateItem(result.first, currentUserId)
 
             val newLastVisible = result.second
 

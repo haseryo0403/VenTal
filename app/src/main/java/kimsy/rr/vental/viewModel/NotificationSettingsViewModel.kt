@@ -20,7 +20,8 @@ class NotificationSettingsViewModel @Inject constructor(
     private val setNotificationSettingsUseCase: SetNotificationSettingsUseCase
 ): ViewModel() {
 
-    val currentUser = User.CurrentUserShareModel.getCurrentUserFromModel()
+    private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel()?: User())
+    val currentUser: StateFlow<User> get() = _currentUser
 
     private val _notificationSettingsState = MutableStateFlow<Resource<NotificationSettings>>(
         Resource.idle())
@@ -29,30 +30,41 @@ class NotificationSettingsViewModel @Inject constructor(
     suspend fun loadNotificationSettings() {
         viewModelScope.launch {
             _notificationSettingsState.value = Resource.loading()
-            if (currentUser == null) {
-                _notificationSettingsState.value = Resource.failure("user not found")
-            } else {
-                _notificationSettingsState.value = loadNotificationSettingsUseCase.execute(currentUser.uid)
-            }
+            _notificationSettingsState.value = loadNotificationSettingsUseCase.execute(currentUser.value.uid)
+//            if (currentUser == null) {
+//                _notificationSettingsState.value = Resource.failure("user not found")
+//            } else {
+//                _notificationSettingsState.value = loadNotificationSettingsUseCase.execute(currentUser.uid)
+//            }
         }
     }
 
     fun updateNotificationSettings(notificationSettings: NotificationSettings) {
         viewModelScope.launch {
-            if (currentUser == null) {
-                _notificationSettingsState.value = Resource.failure("user not found")
-            } else {
-                val result = setNotificationSettingsUseCase.execute(currentUser.uid, notificationSettings)
-                when(result.status) {
-                    Status.SUCCESS -> {
-                        _notificationSettingsState.value = Resource.success(notificationSettings)
-                    }
-                    Status.FAILURE -> {
-                        _notificationSettingsState.value = Resource.failure("update fail")
-                    }
-                    else -> {}
+            val result = setNotificationSettingsUseCase.execute(currentUser.value.uid, notificationSettings)
+            when(result.status) {
+                Status.SUCCESS -> {
+                    _notificationSettingsState.value = Resource.success(notificationSettings)
                 }
+                Status.FAILURE -> {
+                    _notificationSettingsState.value = Resource.failure("update fail")
+                }
+                else -> {}
             }
+//            if (currentUser == null) {
+//                _notificationSettingsState.value = Resource.failure("user not found")
+//            } else {
+//                val result = setNotificationSettingsUseCase.execute(currentUser.uid, notificationSettings)
+//                when(result.status) {
+//                    Status.SUCCESS -> {
+//                        _notificationSettingsState.value = Resource.success(notificationSettings)
+//                    }
+//                    Status.FAILURE -> {
+//                        _notificationSettingsState.value = Resource.failure("update fail")
+//                    }
+//                    else -> {}
+//                }
+//            }
         }
     }
 

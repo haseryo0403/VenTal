@@ -15,6 +15,7 @@ class LoadLikedDebateIdsUseCase @Inject constructor(
         userId: String
     ): Resource<List<String>> {
         return executeWithLoggingAndNetworkCheck {
+            validateUserId(userId)
             val likedDebateIds = debateRepository.fetchLikedDebateIds(userId)
             Resource.success(likedDebateIds)
         }

@@ -16,6 +16,7 @@ class MarkNotificationAsReadUseCase @Inject constructor(
         notificationId: String
     ): Resource<Unit> {
         return executeWithLoggingAndNetworkCheck {
+            validateUserId(currentUserId)
             notificationRepository.markNotificationAsRead(currentUserId, notificationId)
             Resource.success(Unit)
         }

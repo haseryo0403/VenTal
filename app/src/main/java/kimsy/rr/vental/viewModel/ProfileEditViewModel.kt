@@ -21,7 +21,8 @@ class ProfileEditViewModel @Inject constructor(
     private val saveImageUseCase: SaveImageUseCase
 ): ViewModel() {
 
-    val currentUser = User.CurrentUserShareModel.getCurrentUserFromModel()
+    private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel()?: User())
+    val currentUser: StateFlow<User> get() = _currentUser
 
     private val _updateUserState = MutableStateFlow<Resource<Unit>>(Resource.idle())
     val updateUserState: StateFlow<Resource<Unit>> get() = _updateUserState
@@ -33,18 +34,14 @@ class ProfileEditViewModel @Inject constructor(
                 val imageURLState = saveImageUseCase.execute(imageUri, context)
                 if (imageURLState.status == Status.SUCCESS) imageURLState.data else null
             }
-            val user = currentUser?.copy(
+            val user = currentUser.value.copy(
                 name = name,
-                photoURL = imageUrl?: currentUser.photoURL,
+                photoURL = imageUrl?: currentUser.value.photoURL,
                 selfIntroduction = selfIntroduction
             )
-            if (user != null) {
-                _updateUserState.value = updateUserUseCase.execute(user)
-                if (_updateUserState.value.status == Status.SUCCESS) {
-                    User.CurrentUserShareModel.setCurrentUserToModel(user)
-                }
-            } else {
-                _updateUserState.value = Resource.failure("不明なエラー")
+            _updateUserState.value = updateUserUseCase.execute(user)
+            if (_updateUserState.value.status == Status.SUCCESS) {
+                User.CurrentUserShareModel.setCurrentUserToModel(user)
             }
         }
     }

@@ -1,6 +1,5 @@
 package kimsy.rr.vental.viewModel
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -26,7 +25,9 @@ class NotificationsViewModel @Inject constructor(
     private val observeNotificationCountUseCase: ObserveNotificationCountUseCase,
     private val markNotificationAsReadUseCase: MarkNotificationAsReadUseCase
 ): ViewModel() {
-    val currentUser = User.CurrentUserShareModel.getCurrentUserFromModel()
+
+    private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel()?: User())
+    val currentUser: StateFlow<User> get() = _currentUser
 
     private val _loadNotificationDataState = MutableStateFlow<Resource<Pair<List<NotificationItem>, DocumentSnapshot?>>>(Resource.idle())
     val loadNotificationDataState: StateFlow<Resource<Pair<List<NotificationItem>, DocumentSnapshot?>>> get() = _loadNotificationDataState
@@ -45,14 +46,10 @@ class NotificationsViewModel @Inject constructor(
     suspend fun loadNotificationItems() {
         viewModelScope.launch {
             _loadNotificationDataState.value = Resource.loading()
-            _loadNotificationDataState.value =
-                currentUser?.let {
-                    loadNotificationUseCase.execute(currentUser.uid, lastVisible)
-                }?: Resource.failure("no user found")
+            _loadNotificationDataState.value = loadNotificationUseCase.execute(currentUser.value.uid, lastVisible)
 
             when (_loadNotificationDataState.value.status) {
                 Status.SUCCESS -> {
-                    Log.d("TLVM", "success")
                     _loadNotificationDataState.value.data?.let { (notificationItems, newLastVisible) ->
                         if (notificationItems.isEmpty()) {
                             hasFinishedLoadingAllItems = true
@@ -69,21 +66,16 @@ class NotificationsViewModel @Inject constructor(
 
     fun observeNotificationCount() {
         viewModelScope.launch {
-            currentUser?.let {
-                observeNotificationCountUseCase.execute(it.uid)
-                    .collect{ resource ->
-                        _notificationCountState.value = resource
-                    }
-            }
+            observeNotificationCountUseCase.execute(_currentUser.value.uid)
+                .collect{ resource ->
+                    _notificationCountState.value = resource
+                }
         }
     }
 
     fun markNotificationAsRead(notificationItem: NotificationItem) {
         viewModelScope.launch {
-            currentUser?.let {
-                Log.d("NVM", "mNAR called")
-                markNotificationAsReadUseCase.execute(it.uid, notificationItem.notification.notificationId)
-            }
+            markNotificationAsReadUseCase.execute(_currentUser.value.uid, notificationItem.notification.notificationId)
         }
     }
 

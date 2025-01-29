@@ -21,6 +21,7 @@ class LoadNotificationUseCase @Inject constructor(
         lastVisible: DocumentSnapshot?
     ): Resource<Pair<List<NotificationItem>, DocumentSnapshot?>> {
         return executeWithLoggingAndNetworkCheck {
+            validateUserId(currentUserId)
             val notificationSettings = notificationSettingsRepository.getNotificationSettings(currentUserId)
             val result = notificationRepository.loadNotificationsData(currentUserId, lastVisible, notificationSettings)
             val notificationsData = result.first

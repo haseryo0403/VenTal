@@ -30,6 +30,7 @@ class RequestDeletionUseCase @Inject constructor(
     ): Resource<Unit> {
 
         return executeWithLoggingAndNetworkCheck {
+            validateUserId(requesterId)
            val result = when(entityType) {
                 EntityType.DEBATE -> {
                     if (ventCardId == null) {
