@@ -15,8 +15,6 @@ import javax.inject.Inject
 
 class GetRecentTimeLineItemsUseCase @Inject constructor(
     private val debateRepository: DebateRepository,
-    private val getUserDetailsUseCase: GetUserDetailsUseCase,
-    private val getSwipeCardUseCase: GetSwipeCardUseCase,
     private val generateDebateItemUseCase: GenerateDebateItemUseCase,
     networkUtils: NetworkUtils,
     logRepository: LogRepository

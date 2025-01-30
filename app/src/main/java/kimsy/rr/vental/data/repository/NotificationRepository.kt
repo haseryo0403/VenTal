@@ -1,6 +1,5 @@
 package kimsy.rr.vental.data.repository
 
-import android.util.Log
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -11,7 +10,6 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
 
@@ -22,25 +20,16 @@ class NotificationRepository @Inject constructor(
     suspend fun saveNotificationData(
         notificationData: NotificationData,
         toUserId: String
-    ): Result<Unit> {
-        return try {
-            Log.d("NR", "saveNotificationData called")
-            withTimeout(10000L) {
-                val docRef = db
-                    .collection("users")
-                    .document(toUserId)
-                    .collection("notifications")
-                    .document()
+    ){
+        val docRef = db
+            .collection("users")
+            .document(toUserId)
+            .collection("notifications")
+            .document()
 
-                val notificationDataWithId = notificationData.copy(notificationId = docRef.id)
+        val notificationDataWithId = notificationData.copy(notificationId = docRef.id)
 
-                docRef.set(notificationDataWithId).await()
-//                docRef.add(notificationData).await()
-                Result.success(Unit)
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        docRef.set(notificationDataWithId).await()
     }
 
     suspend fun loadNotificationsData(

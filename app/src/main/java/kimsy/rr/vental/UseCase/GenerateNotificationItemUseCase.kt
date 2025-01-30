@@ -9,6 +9,7 @@ import javax.inject.Inject
 class GenerateNotificationItemUseCase @Inject constructor(
     private val getUerDetailsUseCase: GetUserDetailsUseCase
 ) {
+    //UseCaseからのみ使用されるのでここではtry catchしない
     suspend fun execute(notificationData: NotificationData): NotificationItem? {
         val user = getUserInfo(notificationData.fromUserId)
         return if (user != null) NotificationItem(notificationData, user) else null

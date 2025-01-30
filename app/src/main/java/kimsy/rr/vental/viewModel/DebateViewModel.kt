@@ -70,7 +70,6 @@ class DebateViewModel @Inject constructor(
             val messageCreationState = currentUser?.let {
                 messageCreationUseCase.execute(
                     debate = debate,
-                    //TODO delete
                     userId = it.uid,
                     debateId = debate.debateId,
                     text = text,

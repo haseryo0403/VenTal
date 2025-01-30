@@ -27,8 +27,10 @@ class SaveVentCardUseCase @Inject constructor(
             validateUserId(posterId)
             if (selectedImageUri == null) {
                 saveVentCardWithoutImage(posterId, content, tags)
+                Resource.success(Unit)
             } else {
                 saveVentCardWithImage(posterId, content, selectedImageUri, tags, context)
+                Resource.success(Unit)
             }
         }
     }
@@ -37,14 +39,14 @@ class SaveVentCardUseCase @Inject constructor(
         posterId: String,
         content: String,
         tags: List<String>
-    ): Resource<Unit> {
+    ){
         val ventCard = VentCard.createVentCard(
             posterId = posterId,
             swipeCardContent = content,
             swipeCardImageURL = "",
             tags = tags
         )
-        return ventCardRepository.saveVentCardToFireStore(ventCard)
+        ventCardRepository.saveVentCardToFireStore(ventCard)
     }
 
     private suspend fun saveVentCardWithImage(
@@ -53,7 +55,7 @@ class SaveVentCardUseCase @Inject constructor(
         imageUri: Uri,
         tags: List<String>,
         context: Context
-    ): Resource<Unit> {
+    ){
         val imageResourceURL = saveImageUseCase.execute(imageUri, context)
         return when (imageResourceURL.status) {
             Status.SUCCESS  -> {
@@ -63,11 +65,9 @@ class SaveVentCardUseCase @Inject constructor(
                     swipeCardImageURL = imageResourceURL.data ?: "",
                     tags = tags
                 )
-                return ventCardRepository.saveVentCardToFireStore(ventCard)
+                ventCardRepository.saveVentCardToFireStore(ventCard)
             }
-            Status.FAILURE -> Resource.failure(message = imageResourceURL.message)
-            Status.LOADING -> Resource.loading()
-            Status.IDLE -> Resource.idle()
+            else -> {}
         }
     }
 }

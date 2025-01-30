@@ -12,7 +12,6 @@ import kimsy.rr.vental.data.User
 import kimsy.rr.vental.data.VentCard
 import kimsy.rr.vental.data.VentCardItem
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
 
@@ -21,26 +20,18 @@ class VentCardRepository @Inject constructor(
 ) {
     suspend fun saveVentCardToFireStore(
         ventCard: VentCard
-    ): Resource<Unit>{
-        return try {
-            withTimeout(10000L){
-                val query = db
-                    .collection("users")
-                    .document(ventCard.posterId)
-                    .collection("swipeCards")
+    ){
+        val query = db
+            .collection("users")
+            .document(ventCard.posterId)
+            .collection("swipeCards")
 
-                val docRef = query
-                    .document()
+        val docRef = query
+            .document()
 
-                val ventCardWithId = ventCard.copy(swipeCardId = docRef.id)
+        val ventCardWithId = ventCard.copy(swipeCardId = docRef.id)
 
-                docRef.set(ventCardWithId).await()
-
-                Resource.success(Unit)
-            }
-        } catch (e : Exception) {
-            Resource.failure(e.message)
-        }
+        docRef.set(ventCardWithId).await()
     }
 
     suspend fun fetchUserVentCards(
@@ -185,55 +176,39 @@ suspend fun getVentCardItems(
         return docSnapshot.exists()
     }
 
-    suspend fun fetchLikedVentCardIds(userId: String): Resource<List<LikedVentCard>>{
-        return try {
-            withTimeout(10000L) {
-                val docRef = db
-                    .collection("users")
-                    .document(userId)
-                    .collection("likedSwipeCards")
+    suspend fun fetchLikedVentCardIds(userId: String): List<LikedVentCard>{
+        val docRef = db
+            .collection("users")
+            .document(userId)
+            .collection("likedSwipeCards")
 
-                val likedVentCardsSnapshot = docRef
-                    .get()
-                    .await()
+        val likedVentCardsSnapshot = docRef
+            .get()
+            .await()
 
-                val result = likedVentCardsSnapshot.documents.mapNotNull {document->
-                    document.toObject(LikedVentCard::class.java)
-                }
-                Resource.success(result)
-            }
-
-        } catch (e: Exception) {
-            Log.e("Firestore", "Error fetching liked vent cards", e)
-            Resource.failure("Error fetching liked vent cards: ${e.message}")
+        val result = likedVentCardsSnapshot.documents.mapNotNull {document->
+            document.toObject(LikedVentCard::class.java)
         }
-    }
-    suspend fun fetchDebatingVentCardIds(userId: String): Resource<List<DebatingVentCard>> {
-        return try {
-            withTimeout(10000L) {
-                val docRef = db
-                    .collection("users")
-                    .document(userId)
-                    .collection("debatingSwipeCards")
-
-                val debatingVentCardsSnapshot = docRef
-                    .get()
-                    .await()
-
-                val result = debatingVentCardsSnapshot.documents.mapNotNull { document ->
-                    document.toObject(DebatingVentCard::class.java)
-                }
-                Resource.success(result)
-            }
-        } catch (e: Exception) {
-            Log.e("Firestore", "Error fetching debating vent cards", e)
-            Resource.failure("Error fetching debating vent cards: ${e.message}")
-        }
+        return result
     }
 
-    suspend fun fetchVentCard(posterId: String ,ventCardId: String): Resource<VentCard> {
-        return try {
-            withTimeout(10000L) {
+    suspend fun fetchDebatingVentCardIds(userId: String): List<DebatingVentCard> {
+        val docRef = db
+            .collection("users")
+            .document(userId)
+            .collection("debatingSwipeCards")
+
+        val debatingVentCardsSnapshot = docRef
+            .get()
+            .await()
+
+        val result = debatingVentCardsSnapshot.documents.mapNotNull { document ->
+            document.toObject(DebatingVentCard::class.java)
+        }
+        return result
+    }
+
+    suspend fun fetchVentCard(posterId: String ,ventCardId: String): VentCard {
                 val docRef = db
                     .collection("users")
                     .document(posterId)
@@ -246,16 +221,7 @@ suspend fun getVentCardItems(
                     ?.copy(
                     swipeCardCreatedDateTime = ventCardSnapshot.getTimestamp("swipeCardCreatedDateTime")!!.toDate()
                 )
-                if (ventCard != null) {
-                    Resource.success(ventCard)
-                } else {
-                    Resource.failure("カードが見つかりません")
-                }
-            }
-        } catch (e: Exception) {
-            Log.e("VCR", "error")
-            Resource.failure(e.message)
-        }
+                return ventCard?: throw NoSuchElementException("VentCard が見つかりません: posterId=$posterId, ventCardId=$ventCardId")
     }
 
     suspend fun updateReportFlag(

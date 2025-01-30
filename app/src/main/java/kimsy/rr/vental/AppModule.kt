@@ -69,11 +69,9 @@ object AppModule {
     @Provides
     @Singleton
     fun provideImageRepository(
-        firebaseFirestore: FirebaseFirestore,
-        firebaseStorage: FirebaseStorage,
         storageReference: StorageReference
     ): ImageRepository{
-        return ImageRepository(firebaseFirestore,firebaseStorage,storageReference)
+        return ImageRepository(storageReference)
     }
     @Provides
     @Singleton

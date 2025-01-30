@@ -8,7 +8,6 @@ import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.data.UserType
-import kimsy.rr.vental.data.VentCard
 import kimsy.rr.vental.data.repository.DebateRepository
 import kimsy.rr.vental.data.repository.LogRepository
 import javax.inject.Inject
@@ -27,7 +26,7 @@ class GenerateDebateItemByDebateIdUseCase @Inject constructor(
         return executeWithLoggingAndNetworkCheck {
             validateUserId(currentUserId)
             val debate = getDebateByDebateId(debateId)
-            val ventCard = getVentCard(debate)
+            val ventCard = getSwipeCardUseCase.execute(debate.posterId, debate.swipeCardId)
             val poster = getPosterInfo(debate)
             val debater = getDebaterInfo(debate)
             val likeState = debateRepository.fetchLikeState(currentUserId, debateId)
@@ -37,7 +36,7 @@ class GenerateDebateItemByDebateIdUseCase @Inject constructor(
                 else -> null
             }
 
-            if (ventCard != null && poster != null && debater != null) {
+            if (poster != null && debater != null) {
                 Resource.success(DebateItem(debate, ventCard, poster, debater, likeUserType))
             } else {
                 Resource.failure()
@@ -57,10 +56,10 @@ class GenerateDebateItemByDebateIdUseCase @Inject constructor(
         }
     }
 
-    private suspend fun getVentCard(debate: Debate): VentCard? {
-        val ventCardResource = getSwipeCardUseCase.execute(debate.posterId, debate.swipeCardId)
-        return ventCardResource.data.takeIf { ventCardResource.status == Status.SUCCESS }
-    }
+//    private suspend fun getVentCard(debate: Debate): VentCard? {
+//        val ventCardResource = getSwipeCardUseCase.execute(debate.posterId, debate.swipeCardId)
+//        return ventCardResource.data.takeIf { ventCardResource.status == Status.SUCCESS }
+//    }
 
     private suspend fun getPosterInfo(debate: Debate): User? {
         val fetchPosterInfoState = getUserDetailsUseCase.execute(debate.posterId)

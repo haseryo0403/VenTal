@@ -1,6 +1,5 @@
 package kimsy.rr.vental.UseCase
 
-import android.util.Log
 import com.google.firebase.Timestamp
 import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.NetworkUtils
@@ -28,7 +27,6 @@ class LoadDebateByUserIdsListUseCase @Inject constructor(
             val debates = debateRepository.fetchDebateByUserIdList(
                 userIds, startAfterDate, endAtDate
             )
-            Log.d("LDBULUC", debates.toString())
             val debateItem = coroutineScope {
                 debates.map { debate ->
                     async {

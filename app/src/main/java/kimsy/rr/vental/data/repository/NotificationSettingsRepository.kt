@@ -33,6 +33,16 @@ class NotificationSettingsRepository @Inject constructor(
             .await()
     }
 
+//    suspend fun setNotificationSettings (userId: String){
+//        val defaultNotificationSettings = NotificationSettings()
+//        db
+//            .collection("notificationSettings")
+//            .document(userId)
+//            .set(defaultNotificationSettings)
+//            .await()
+//
+//        Result.success(Unit)
+//    }
     suspend fun setNotificationSettings (userId: String):Result<Unit> {
         return try {
             val defaultNotificationSettings = NotificationSettings()
@@ -49,4 +59,6 @@ class NotificationSettingsRepository @Inject constructor(
             Result.failure(e)
         }
     }
+
+
 }

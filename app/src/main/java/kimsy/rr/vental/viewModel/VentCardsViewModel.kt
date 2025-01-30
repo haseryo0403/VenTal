@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.DocumentSnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kimsy.rr.vental.UseCase.HandleLikeActionUseCase
+import kimsy.rr.vental.UseCase.HandleVentCardLikeActionUseCase
 import kimsy.rr.vental.UseCase.LoadVentCardsUseCase
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
@@ -22,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class VentCardsViewModel @Inject constructor(
     private val loadVentCardsUseCase: LoadVentCardsUseCase,
-    private val handleLikeActionUseCase: HandleLikeActionUseCase
+    private val handleVentCardLikeActionUseCase: HandleVentCardLikeActionUseCase
 ) : ViewModel() {
     var hasFinishedLoadingAllCards by mutableStateOf(false)
         private set
@@ -65,7 +65,7 @@ class VentCardsViewModel @Inject constructor(
 
     fun handleLikeAction(userId: String, posterId: String, ventCardId: String) {
         viewModelScope.launch {
-            _likeState.value  = handleLikeActionUseCase.execute(userId, posterId, ventCardId)
+            _likeState.value  = handleVentCardLikeActionUseCase.execute(userId, posterId, ventCardId)
         }
     }
 }

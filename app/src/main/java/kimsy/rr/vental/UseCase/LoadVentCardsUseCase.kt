@@ -3,7 +3,6 @@ package kimsy.rr.vental.UseCase
 import com.google.firebase.firestore.DocumentSnapshot
 import kimsy.rr.vental.data.NetworkUtils
 import kimsy.rr.vental.data.Resource
-import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.VentCardItem
 import kimsy.rr.vental.data.repository.LogRepository
 import kimsy.rr.vental.data.repository.VentCardRepository
@@ -21,18 +20,13 @@ class LoadVentCardsUseCase @Inject constructor(
         return executeWithLoggingAndNetworkCheck {
             val likedVentCard = ventCardRepository.fetchLikedVentCardIds(currentUserId)
             val debatingVentCard = ventCardRepository.fetchDebatingVentCardIds(currentUserId)
-
-            if (likedVentCard.status == Status.FAILURE || debatingVentCard.status == Status.FAILURE) {
-                Resource.failure("Failed to fetch necessary data for vent cards.")
-            } else {
-                val ventCardItem = ventCardRepository.getVentCardItems(
-                    currentUserId,
-                    likedVentCard.data ?: emptyList(),
-                    debatingVentCard.data ?: emptyList(),
-                    lastVisible
-                )
-                Resource.success(ventCardItem)
-            }
+            val ventCardItem = ventCardRepository.getVentCardItems(
+                currentUserId,
+                likedVentCard,
+                debatingVentCard,
+                lastVisible
+            )
+            Resource.success(ventCardItem)
         }
     }
 }

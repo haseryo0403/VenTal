@@ -1,5 +1,6 @@
 package kimsy.rr.vental.UseCase
 
+import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresExtension
 import com.google.firebase.firestore.FirebaseFirestore
@@ -47,6 +48,7 @@ class HandleDebateLikeActionUseCase @Inject constructor(
     }
 
 
+    @SuppressLint("SuspiciousIndentation")
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     private suspend fun handleSuccess(
         debateContext: DebateContext

@@ -18,7 +18,6 @@ class GetRelatedDebatesUseCase @Inject constructor(
     networkUtils: NetworkUtils,
     logRepository: LogRepository
 ): BaseUseCase(networkUtils, logRepository) {
-
     suspend fun execute(
         ventCard: VentCard
     ): Resource<List<DebateItem>> {

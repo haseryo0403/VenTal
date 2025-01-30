@@ -6,7 +6,7 @@ import kimsy.rr.vental.data.repository.LogRepository
 import kimsy.rr.vental.data.repository.VentCardRepository
 import javax.inject.Inject
 
-class HandleLikeActionUseCase @Inject constructor(
+class HandleVentCardLikeActionUseCase @Inject constructor(
     private val ventCardRepository: VentCardRepository,
     networkUtils: NetworkUtils,
     logRepository: LogRepository
