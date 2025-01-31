@@ -18,6 +18,7 @@ class FollowUseCase @Inject constructor(
         toUserId: String
     ): Resource<Unit> {
         return executeWithLoggingAndNetworkCheck {
+            validateUserId(fromUserId)
             db.runTransaction {  transaction ->
                 followRepository.addUserIdToFollowingUserId(
                     fromUserId = fromUserId,

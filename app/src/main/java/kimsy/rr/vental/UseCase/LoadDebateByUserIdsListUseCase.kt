@@ -24,6 +24,7 @@ class LoadDebateByUserIdsListUseCase @Inject constructor(
         endAtDate: Timestamp
     ): Resource<List<DebateItem>> {
         return executeWithLoggingAndNetworkCheck {
+            validateUserId(currentUserId)
             val debates = debateRepository.fetchDebateByUserIdList(
                 userIds, startAfterDate, endAtDate
             )

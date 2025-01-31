@@ -15,6 +15,7 @@ class ObserveFollowingUserIdUseCase @Inject constructor(
 ): BaseUseCase(networkUtils, logRepository) {
     suspend fun execute(currentUserId: String): Flow<Resource<List<String>>> {
         return executeFlowWithLoggingAndNetworkCheck {
+            validateUserId(currentUserId)
             followRepository.observeFollowingUserIds(currentUserId)
                 .map { followingIds ->
                     Resource.success(followingIds)

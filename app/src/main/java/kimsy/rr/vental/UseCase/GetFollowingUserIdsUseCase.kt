@@ -13,6 +13,7 @@ class GetFollowingUserIdsUseCase  @Inject constructor(
 ): BaseUseCase(networkUtils, logRepository) {
     suspend fun execute(userId: String): Resource<List<String>> {
         return executeWithLoggingAndNetworkCheck {
+            validateUserId(userId)
             val followingUserIds = userRepository.fetchFollowingUserIds(userId)
             Resource.success(followingUserIds)
         }

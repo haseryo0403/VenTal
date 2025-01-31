@@ -9,8 +9,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -40,9 +38,14 @@ class AuthViewModel @Inject constructor(
 
     ) : ViewModel() {
 
-        //?を入れてみた
-    private val _currentUser = MutableLiveData<User>()
-    val currentUser: LiveData<User> get() = _currentUser
+//        //?を入れてみた
+//    private val _currentUser = MutableLiveData<User>()
+//    val currentUser: LiveData<User> get() = _currentUser
+
+    private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel()?: User())
+    val currentUser: StateFlow<User> get() = _currentUser
+
+    val currentUserId = _currentUser.value.uid
 
     // 状態管理用の変数
     var isLoading by mutableStateOf(false)
@@ -53,8 +56,6 @@ class AuthViewModel @Inject constructor(
     }
 
     //TODO これとエラーメッセージを統合できそう？しなくてもいいかもだけど
-//    private val _authResult = MutableLiveData<Boolean>()
-//    val authResult: LiveData<Boolean> = _authResult
 
     private val _authResult = MutableStateFlow(false)
     val authResult: StateFlow<Boolean> get() = _authResult

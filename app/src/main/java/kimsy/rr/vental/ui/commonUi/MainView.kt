@@ -38,18 +38,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kimsy.rr.vental.Screen
-import kimsy.rr.vental.viewModel.AnotherUserPageViewModel
-import kimsy.rr.vental.viewModel.AuthViewModel
-import kimsy.rr.vental.viewModel.DebateCreationViewModel
-import kimsy.rr.vental.viewModel.FollowPageViewModel
-import kimsy.rr.vental.viewModel.MyDebateViewModel
-import kimsy.rr.vental.viewModel.MyLikedDebateViewModel
-import kimsy.rr.vental.viewModel.MyPageViewModel
-import kimsy.rr.vental.viewModel.MyVentCardViewModel
-import kimsy.rr.vental.viewModel.NotificationsViewModel
-import kimsy.rr.vental.viewModel.SharedDebateViewModel
-import kimsy.rr.vental.viewModel.TimeLineViewModel
-import kimsy.rr.vental.viewModel.VentCardCreationViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.otherScreen
@@ -72,6 +60,18 @@ import kimsy.rr.vental.ui.SettingsView
 import kimsy.rr.vental.ui.SwipeCardsView
 import kimsy.rr.vental.ui.TimeLineView
 import kimsy.rr.vental.ui.VentCardCreationView
+import kimsy.rr.vental.viewModel.AnotherUserPageViewModel
+import kimsy.rr.vental.viewModel.AuthViewModel
+import kimsy.rr.vental.viewModel.DebateCreationViewModel
+import kimsy.rr.vental.viewModel.FollowPageViewModel
+import kimsy.rr.vental.viewModel.MyDebateViewModel
+import kimsy.rr.vental.viewModel.MyLikedDebateViewModel
+import kimsy.rr.vental.viewModel.MyPageViewModel
+import kimsy.rr.vental.viewModel.MyVentCardViewModel
+import kimsy.rr.vental.viewModel.NotificationsViewModel
+import kimsy.rr.vental.viewModel.SharedDebateViewModel
+import kimsy.rr.vental.viewModel.TimeLineViewModel
+import kimsy.rr.vental.viewModel.VentCardCreationViewModel
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -226,11 +226,8 @@ fun Navigation(
 
 
         composable(Screen.BottomScreen.VentCards.bottomRoute) {
-            Log.d("Navigation", "to MSCD")
-//            MySwipeCardDemo(authViewModel = authViewModel)
             SwipeCardsView(
                 context = context,
-                authViewModel = authViewModel,
                 debateCreationViewModel = debateCreationViewModel,
                 toDebateCreationView = {navController.navigate(Screen.DebateCreation.route)},
                 toReportVentCardView = {navController.navigate(Screen.ReportVentCardScreen.route)},
@@ -242,7 +239,6 @@ fun Navigation(
         composable(Screen.BottomScreen.TimeLine.bottomRoute) {
             TimeLineView(
                 toDebateView = {
-                    Log.d("MV", "to DebateScreen")
                     navController.navigate(Screen.DebateScreen.route)
                 },
                 toAnotherUserPageView = { user ->
@@ -253,7 +249,6 @@ fun Navigation(
             )
         }
         composable(Screen.BottomScreen.Follows.bottomRoute) {
-            Log.d("Navigation", "to Follows")
             FollowPageView(
                 viewModel = followPageViewModel,
                 sharedDebateViewModel = sharedDebateViewModel,
@@ -269,7 +264,6 @@ fun Navigation(
             )
         }
         composable(Screen.Notifications.route) {
-            Log.d("Navigation", "to Noti")
             NotificationsView(
                 sharedDebateViewModel = sharedDebateViewModel,
                 notificationsViewModel = notificationsViewModel,
@@ -282,7 +276,6 @@ fun Navigation(
             )
         }
         composable(Screen.BottomScreen.MyPage.bottomRoute) {
-//            val viewModel = MyPageViewModel()
             MyPageView(
                 sharedDebateViewModel = sharedDebateViewModel,
                 viewModel = myPageViewModel,
@@ -311,7 +304,6 @@ fun Navigation(
         composable(Screen.DebateCreation.route) {
             DebateCreationView(
                 context = context,
-                authViewModel = authViewModel,
                 debateCreationViewModel = debateCreationViewModel,
                 sharedDebateViewModel = sharedDebateViewModel,
                 toDebateView = {

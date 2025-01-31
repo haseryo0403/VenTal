@@ -416,7 +416,7 @@ fun DebateContent(
                     Status.SUCCESS -> {
                         val followingUserIds = followingUserIdsState.data
                         if (currentUser != null) {
-                            if (followingUserIds != null && poster.uid != currentUser.uid) {
+                            if (followingUserIds != null && poster.uid != currentUser.value.uid) {
                                 if (!followingUserIds.contains(poster.uid)){
                                     OutlinedButton(
                                         onClick = {

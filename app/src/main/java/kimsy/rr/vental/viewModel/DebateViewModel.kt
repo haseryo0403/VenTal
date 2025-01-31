@@ -34,7 +34,10 @@ class DebateViewModel @Inject constructor(
     private val unFollowUseCase: UnFollowUseCase
     ): ViewModel() {
 
-    val currentUser = User.CurrentUserShareModel.getCurrentUserFromModel()
+    private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel()?: User())
+    val currentUser: StateFlow<User> get() = _currentUser
+
+    val currentUserId = _currentUser.value.uid
 
     private val _fetchMessageState = MutableStateFlow<Resource<List<Message>>>(Resource.idle())
     val fetchMessageState: StateFlow<Resource<List<Message>>> get() = _fetchMessageState
@@ -67,45 +70,38 @@ class DebateViewModel @Inject constructor(
                 val imageURLState = saveImageUseCase.execute(imageUri, context)
                 if (imageURLState.status == Status.SUCCESS) imageURLState.data else null
             }
-            val messageCreationState = currentUser?.let {
+            val messageCreationState =
                 messageCreationUseCase.execute(
                     debate = debate,
-                    userId = it.uid,
+                    userId = currentUserId,
                     debateId = debate.debateId,
                     text = text,
                     messageImageURL = imageUrl
                 )
-            }
-            if (messageCreationState != null) {
-                when(messageCreationState.status) {
-                    Status.SUCCESS -> {
-                        _createMessageState.value = Resource.success(Unit)
-                        currentUser?.let { user ->
-                            saveNotificationUseCase.execute(
-                                fromUserId = user.uid,
-                                if (user.uid == debate.posterId) debate.debaterId else debate.posterId,
-                                debate.debateId,
-                                NotificationType.DEBATEMESSAGE,
-                                text)
-                        }
-                    }
-                    Status.FAILURE -> {
-                        _createMessageState.value = Resource.failure(messageCreationState.message)
-                    }
-                    else -> {}
+            when(messageCreationState.status) {
+                Status.SUCCESS -> {
+                    _createMessageState.value = Resource.success(Unit)
+                        saveNotificationUseCase.execute(
+                            fromUserId = currentUserId,
+                            if (currentUserId == debate.posterId) debate.debaterId else debate.posterId,
+                            debate.debateId,
+                            NotificationType.DEBATEMESSAGE,
+                            text)
                 }
+                Status.FAILURE -> {
+                    _createMessageState.value = Resource.failure(messageCreationState.message)
+                }
+                else -> {}
             }
         }
     }
 
     fun observeFollowingUserIds() {
         viewModelScope.launch {
-            currentUser?.let {
-                observeFollowingUserIdUseCase.execute(it.uid)
-                    .collect{ resource ->
-                        _followingUserIdsState.value = resource
-                    }
-            }
+            observeFollowingUserIdUseCase.execute(currentUserId)
+                .collect{ resource ->
+                    _followingUserIdsState.value = resource
+                }
         }
     }
 
@@ -113,9 +109,7 @@ class DebateViewModel @Inject constructor(
         viewModelScope.launch {
             _followState.value = Resource.loading()
             if (_followingUserIdsState.value.status == Status.SUCCESS) {
-                currentUser?.let {
-                    _followState.value = followUseCase.execute(it.uid, toUserId)
-                }
+                _followState.value = followUseCase.execute(currentUserId, toUserId)
             }
         }
     }
@@ -125,9 +119,7 @@ class DebateViewModel @Inject constructor(
             //一旦フォローアンフォロー共有State
             _followState.value = Resource.loading()
             if (_followingUserIdsState.value.status == Status.SUCCESS) {
-                currentUser?.let {
-                    _followState.value = unFollowUseCase.execute(it.uid, toUserId)
-                }
+                _followState.value = unFollowUseCase.execute(currentUserId, toUserId)
             }
         }
     }

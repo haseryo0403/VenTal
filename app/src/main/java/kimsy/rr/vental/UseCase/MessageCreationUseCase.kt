@@ -22,6 +22,7 @@ class MessageCreationUseCase @Inject constructor(
         messageImageURL: String?
     ): Resource<Unit> {
         return executeWithLoggingAndNetworkCheck {
+            validateUserId(userId)
             val userType = when {
                 debate != null -> {
                     if (userId == debate.posterId) UserType.POSTER else UserType.DEBATER

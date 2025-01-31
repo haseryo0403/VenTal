@@ -22,6 +22,7 @@ class SaveNotificationUseCase @Inject constructor(
         body: String
         ): Resource<Unit> {
         return executeWithLoggingAndNetworkCheck {
+            validateUserId(fromUserId)
             val notificationData = NotificationData.createNotification(fromUserId, targetItemId, notificationType, body)
             // 通知をデータベースに保存
             notificationRepository.saveNotificationData(notificationData, toUserId)

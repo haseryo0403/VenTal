@@ -32,7 +32,10 @@ class AnotherUserPageViewModel @Inject constructor(
     private val getDebatesRelatedUserUseCase: GetDebatesRelatedUserUseCase
 ): ViewModel() {
 
-    val currentUser = User.CurrentUserShareModel.getCurrentUserFromModel()
+    private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel()?: User())
+    val currentUser: StateFlow<User> get() = _currentUser
+
+    val currentUserId = _currentUser.value.uid
 
     private val _anotherUser = MutableStateFlow(User.AnotherUserShareModel.getAnotherUser())
     val anotherUser: StateFlow<User?> get() = _anotherUser
@@ -91,12 +94,10 @@ class AnotherUserPageViewModel @Inject constructor(
 
     fun observeFollowingUserIds() {
         viewModelScope.launch {
-            currentUser?.let {
-                observeFollowingUserIdUseCase.execute(it.uid)
-                    .collect{ resource ->
-                        _followingUserIdsState.value = resource
-                    }
-            }
+            observeFollowingUserIdUseCase.execute(currentUserId)
+                .collect{ resource ->
+                    _followingUserIdsState.value = resource
+                }
         }
     }
 
@@ -104,9 +105,7 @@ class AnotherUserPageViewModel @Inject constructor(
         viewModelScope.launch {
             _followState.value = Resource.loading()
             if (_followingUserIdsState.value.status == Status.SUCCESS) {
-                currentUser?.let {
-                    _followState.value = followUseCase.execute(it.uid, toUserId)
-                }
+                _followState.value = followUseCase.execute(currentUserId, toUserId)
             }
         }
     }
@@ -116,9 +115,7 @@ class AnotherUserPageViewModel @Inject constructor(
             //一旦フォローアンフォロー共有State
             _followState.value = Resource.loading()
             if (_followingUserIdsState.value.status == Status.SUCCESS) {
-                currentUser?.let {
-                    _followState.value = unFollowUseCase.execute(it.uid, toUserId)
-                }
+                _followState.value = unFollowUseCase.execute(currentUserId, toUserId)
             }
         }
     }
@@ -145,9 +142,6 @@ class AnotherUserPageViewModel @Inject constructor(
                         }
                         lastVisible = newLastVisible
                     }
-                }
-                Status.FAILURE -> {
-                    Log.d("TLVM", "failure")
                 }
                 else -> {}
             }

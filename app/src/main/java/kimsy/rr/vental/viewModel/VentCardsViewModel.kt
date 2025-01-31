@@ -13,6 +13,7 @@ import kimsy.rr.vental.UseCase.HandleVentCardLikeActionUseCase
 import kimsy.rr.vental.UseCase.LoadVentCardsUseCase
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
+import kimsy.rr.vental.data.User
 import kimsy.rr.vental.data.VentCardItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +25,10 @@ class VentCardsViewModel @Inject constructor(
     private val loadVentCardsUseCase: LoadVentCardsUseCase,
     private val handleVentCardLikeActionUseCase: HandleVentCardLikeActionUseCase
 ) : ViewModel() {
+
+    private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel()?: User())
+    val currentUser: StateFlow<User> get() = _currentUser
+
     var hasFinishedLoadingAllCards by mutableStateOf(false)
         private set
 

@@ -32,7 +32,10 @@ class FollowPageViewModel @Inject constructor(
     private val unFollowUseCase: UnFollowUseCase
 ): ViewModel() {
 
-    val currentUser = User.CurrentUserShareModel.getCurrentUserFromModel()
+    private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel()?: User())
+    val currentUser: StateFlow<User> get() = _currentUser
+
+    val currentUserId = _currentUser.value.uid
 
     private val _followingUser = MutableStateFlow<List<User>>(emptyList())
     val followingUser: StateFlow<List<User>> get() = _followingUser
@@ -83,11 +86,6 @@ class FollowPageViewModel @Inject constructor(
     suspend fun loadFollowingUserDebates() {
         viewModelScope.launch {
             _getDebateItemsState.value = Resource.loading()
-            val currentUserId = currentUser?.uid
-            if (currentUserId == null) {
-                _getDebateItemsState.value = Resource.failure()
-                return@launch
-            }
             val success = getFollowingUserIds(currentUserId)
             if (success) {
                 val start = startAfterDate?: Timestamp(Timestamp.now().seconds + 1, Timestamp.now().nanoseconds)
@@ -154,19 +152,19 @@ class FollowPageViewModel @Inject constructor(
     }
 
     private suspend fun getFollowingUserIds(currentUserId: String): Boolean {
-            val getFollowingUserIdsState = getFollowingUserIdsUseCase.execute(currentUserId)
-            return when (getFollowingUserIdsState.status) {
-                Status.SUCCESS -> {
-                    _followingUserIds.value = getFollowingUserIdsState.data?: emptyList()
-                    getFollowingUserInfo()
-                    true
-                }
-
-                else -> {
-                    _getDebateItemsState.value = Resource.failure()
-                    false
-                }
+        val getFollowingUserIdsState = getFollowingUserIdsUseCase.execute(currentUserId)
+        return when (getFollowingUserIdsState.status) {
+            Status.SUCCESS -> {
+                _followingUserIds.value = getFollowingUserIdsState.data?: emptyList()
+                getFollowingUserInfo()
+                true
             }
+
+            else -> {
+                _getDebateItemsState.value = Resource.failure()
+                false
+            }
+        }
     }
 
     fun onLikeSuccess(debateItem: DebateItem) {
@@ -180,12 +178,10 @@ class FollowPageViewModel @Inject constructor(
 
     fun observeFollowingUserIds() {
         viewModelScope.launch {
-            currentUser?.let {
-                observeFollowingUserIdUseCase.execute(it.uid)
-                    .collect{ resource ->
-                        _followingUserIdsState.value = resource
-                    }
-            }
+            observeFollowingUserIdUseCase.execute(currentUserId)
+                .collect{ resource ->
+                    _followingUserIdsState.value = resource
+                }
         }
     }
 
@@ -193,9 +189,7 @@ class FollowPageViewModel @Inject constructor(
         viewModelScope.launch {
             _followState.value = Resource.loading()
             if (_followingUserIdsState.value.status == Status.SUCCESS) {
-                currentUser?.let {
-                    _followState.value = followUseCase.execute(it.uid, toUserId)
-                }
+                _followState.value = followUseCase.execute(currentUserId, toUserId)
             }
         }
     }
@@ -205,9 +199,7 @@ class FollowPageViewModel @Inject constructor(
             //一旦フォローアンフォロー共有State
             _followState.value = Resource.loading()
             if (_followingUserIdsState.value.status == Status.SUCCESS) {
-                currentUser?.let {
-                    _followState.value = unFollowUseCase.execute(it.uid, toUserId)
-                }
+                _followState.value = unFollowUseCase.execute(currentUserId, toUserId)
             }
         }
     }

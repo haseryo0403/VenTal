@@ -39,7 +39,6 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -58,7 +57,6 @@ import kimsy.rr.vental.ui.CommonComposable.ImagePermissionAndSelection
 import kimsy.rr.vental.ui.CommonComposable.MaxLengthOutlinedTextField
 import kimsy.rr.vental.ui.CommonComposable.MaxLengthTextField
 import kimsy.rr.vental.ui.commonUi.ErrorView
-import kimsy.rr.vental.viewModel.AuthViewModel
 import kimsy.rr.vental.viewModel.DebateCreationViewModel
 import kimsy.rr.vental.viewModel.SharedDebateViewModel
 
@@ -67,12 +65,11 @@ import kimsy.rr.vental.viewModel.SharedDebateViewModel
 @Composable
 fun DebateCreationView(
     context: Context,
-    authViewModel: AuthViewModel,
     debateCreationViewModel: DebateCreationViewModel,
     sharedDebateViewModel: SharedDebateViewModel,
     toDebateView: () -> Unit
 ){
-    val user by authViewModel.currentUser.observeAsState()
+    val currentUser by debateCreationViewModel.currentUser.collectAsState()
     val fetchRelatedDebateState by debateCreationViewModel.fetchRelatedDebateState.collectAsState()
     val debateCreationState by debateCreationViewModel.debateCreationState.collectAsState()
     var text by remember { mutableStateOf("") }
@@ -85,8 +82,6 @@ fun DebateCreationView(
         when {
 
             fetchRelatedDebateState.status == Status.FAILURE-> {
-//                Toast.makeText(context, "読み込みに失敗しました。通信環境の良いところで再度お試しください。", Toast.LENGTH_LONG).show()
-//                debateCreationViewModel.resetFetchRelatedDebateState()
                 ErrorView(retry = null)
             }
 
@@ -110,7 +105,7 @@ fun DebateCreationView(
                         text = text,
                         onTextChange = {text = it},
                         onSendClick = {
-                            user?.let { currentUser ->
+                            currentUser?.let { currentUser ->
                                 debateCreationViewModel.handleDebateCreation(
                                     text, imageUri, currentUser.uid, context,
                                     onCreationSuccess = { createdDebateItem->
@@ -131,7 +126,7 @@ fun DebateCreationView(
                     text = text,
                     onTextChange = {text = it}
                 ) {
-                    user?.let { currentUser ->
+                    currentUser?.let { currentUser ->
                         debateCreationViewModel.handleDebateCreation(
                             text, imageUri, currentUser.uid, context,
                             onCreationSuccess = { createdDebateItem->

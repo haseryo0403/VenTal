@@ -40,6 +40,9 @@ class DebateCreationViewModel @Inject constructor(
     private val getUserDetailsUseCase: GetUserDetailsUseCase
 ): ViewModel() {
 
+    private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel()?: User())
+    val currentUser: StateFlow<User> get() = _currentUser
+
     private val _fetchRelatedDebateState = MutableStateFlow<Resource<List<DebateItem>>>(Resource.idle())
     val fetchRelatedDebateState: StateFlow<Resource<List<DebateItem>>> get() = _fetchRelatedDebateState
 

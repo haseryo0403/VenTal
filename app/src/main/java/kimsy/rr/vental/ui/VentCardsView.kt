@@ -16,7 +16,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -24,10 +23,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import kimsy.rr.vental.data.Status
-import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.CardStack
 import kimsy.rr.vental.ui.commonUi.ErrorView
-import kimsy.rr.vental.viewModel.AuthViewModel
 import kimsy.rr.vental.viewModel.DebateCreationViewModel
 import kimsy.rr.vental.viewModel.VentCardsViewModel
 
@@ -42,14 +39,13 @@ fun SwipeCardsView(
     toDebateCreationView: () -> Unit,
     toReportVentCardView: () -> Unit,
     toRequestVentCardDeletionView: () -> Unit,
-    authViewModel: AuthViewModel
 ){
     var noCardsLeft by remember { mutableStateOf(false) }
-    val user by authViewModel.currentUser.observeAsState(User())
+    val currentUser by ventCardsViewModel.currentUser.collectAsState()
 
     // LaunchedEffectを使用して画面遷移時にのみloadVentCardsを呼び出す
-    LaunchedEffect(user.uid) {
-        ventCardsViewModel.loadVentCards(user.uid)
+    LaunchedEffect(currentUser.uid) {
+        ventCardsViewModel.loadVentCards(currentUser.uid)
     }
     val ventCardItems by remember { derivedStateOf { ventCardsViewModel.ventCardItems } }
 
@@ -68,7 +64,7 @@ fun SwipeCardsView(
             loadCardsState.value.status == Status.FAILURE && (noCardsLeft || ventCardItems.isEmpty()) -> {
                 ErrorView(
                     retry = {
-                        ventCardsViewModel.loadVentCards(user.uid)
+                        ventCardsViewModel.loadVentCards(currentUser.uid)
                     }
                 )
             }
@@ -94,7 +90,7 @@ fun SwipeCardsView(
                         ventCardItems = ventCardItems,
                         onSwipeRight = { ventCard ->
                             ventCardsViewModel.handleLikeAction(
-                                userId = user.uid,
+                                userId = currentUser.uid,
                                 posterId = ventCard.posterId,
                                 ventCardId = ventCard.swipeCardId
                             )
@@ -109,7 +105,7 @@ fun SwipeCardsView(
                             noCardsLeft = true
                         },
                         onLessStack = {
-                            ventCardsViewModel.loadVentCards(user.uid)
+                            ventCardsViewModel.loadVentCards(currentUser.uid)
                         },
                         toReportVentCardView = toReportVentCardView,
                         toRequestVentCardDeletionView = toRequestVentCardDeletionView
