@@ -3,22 +3,21 @@ package kimsy.rr.vental.viewModel
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.common.api.ApiException
 import kimsy.rr.vental.UseCase.FinishMainActivityUseCase
+import kimsy.rr.vental.UseCase.GetGoogleIdTokenUseCase
 import kimsy.rr.vental.UseCase.LoadCurrentUserUseCase
 import kimsy.rr.vental.UseCase.SaveDeviceTokenUseCase
 import kimsy.rr.vental.UseCase.SaveUserUseCase
 import kimsy.rr.vental.UseCase.SignInAndFetchUserUseCase
 import kimsy.rr.vental.UseCase.SignOutUseCase
+import kimsy.rr.vental.data.Resource
+import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.data.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,14 +32,9 @@ class AuthViewModel @Inject constructor(
     private val signInAndFetchUserUseCase: SignInAndFetchUserUseCase,
     private val signOutUseCase: SignOutUseCase,
     private val finishMainActivityUseCase: FinishMainActivityUseCase,
-    private val saveUserUseCase: SaveUserUseCase
-
-
+    private val saveUserUseCase: SaveUserUseCase,
+    private val getGoogleIdTokenUseCase: GetGoogleIdTokenUseCase
     ) : ViewModel() {
-
-//        //?を入れてみた
-//    private val _currentUser = MutableLiveData<User>()
-//    val currentUser: LiveData<User> get() = _currentUser
 
     private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel()?: User())
     val currentUser: StateFlow<User> get() = _currentUser
@@ -55,123 +49,122 @@ class AuthViewModel @Inject constructor(
         isLoading = loading
     }
 
-    //TODO これとエラーメッセージを統合できそう？しなくてもいいかもだけど
+    //trueですでにFirebaseにユーザーがあるか、新規ユーザー登録が完了したということ
+    private val _authState = MutableStateFlow<Resource<Boolean>>(Resource.idle())
+    val authState: StateFlow<Resource<Boolean>> get() = _authState
 
-    private val _authResult = MutableStateFlow(false)
-    val authResult: StateFlow<Boolean> get() = _authResult
-
-    private val _errorMessage = mutableStateOf<String?>(null)
-    val errorMessage: State<String?> = _errorMessage
+    private val _signOutState = MutableStateFlow<Resource<Unit>>(Resource.idle())
+    val signOutState: StateFlow<Resource<Unit>> get() = _signOutState
 
     init {
-        Log.d("AVM","AVM is initialized")
         loadCurrentUser()
     }
 
     // Googleサインインを開始するメソッド
     fun signInWithGoogle(activityResultLauncher: ActivityResultLauncher<Intent>) {
         isLoading = true
-        Log.d("TAG","signInWith Google executed")
+        _authState.value = Resource.loading()
         userRepository.signInWithGoogle(activityResultLauncher)
     }
 
     fun handleSignInResult(data: Intent?) {
-        val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-        try {
-            val account = task.getResult(ApiException::class.java)
-            val idToken = account?.idToken
-            if (idToken != null) {
-                firebaseAuthWithGoogle(idToken)
-            } else {
-                Log.e("TAG","idToken is null")
-                _errorMessage.value = "idToken is null"
+        viewModelScope.launch {
+            val googleIdTokenState = getGoogleIdTokenUseCase.execute(data)
+            when(googleIdTokenState.status) {
+                Status.SUCCESS -> {
+                    if (googleIdTokenState.data != null) {
+                        firebaseAuthWithGoogle(googleIdTokenState.data)
+                    } else {
+                        _authState.value = Resource.failure()
+                    }
+                }
+                Status.FAILURE -> {
+                    _authState.value = Resource.failure()
+                }
+                else -> {}
             }
-        } catch (e: ApiException) {
-            Log.e("TAG", "Google sign-in failed: ${e.statusCode}")
-            setErrorMessage(e.message)
         }
     }
 
     private fun firebaseAuthWithGoogle(idToken: String) {
         viewModelScope.launch {
-            signInAndFetchUserUseCase.execute(idToken)
-                .onSuccess {user->
+            val signInState = signInAndFetchUserUseCase.execute(idToken)
+            when(signInState.status) {
+                Status.SUCCESS -> {
+                    val user = signInState.data
                     if (user == null) {
                         saveNewUser()
                     } else {
-                        _authResult.value = true
+                        _authState.value = Resource.success(true)
                     }
-                }.onFailure {exception->
-                    Log.e("AVM", "signInAndFetchUserUseCase.execute failure")
-                    _authResult.value = false
-                    setErrorMessage(exception.message)
-
                 }
+                Status.FAILURE -> {
+                    _authState.value = Resource.failure()
+                }
+                else -> {}
+            }
         }
     }
 
     private fun saveNewUser() {
         viewModelScope.launch {
-            saveUserUseCase.execute()
-                .onSuccess {
-                    _authResult.value = true
+            val saveUserState = saveUserUseCase.execute()
+            when(saveUserState.status) {
+                Status.SUCCESS -> {
+                    _authState.value = Resource.success(true)
                 }
-                .onFailure {exception->
-                    _authResult.value = false
-                    setErrorMessage(exception.message)
+                Status.FAILURE -> {
+                    _authState.value = Resource.failure()
                 }
+                else -> {}
+            }
         }
     }
 
     private fun saveDeviceToken() {
         viewModelScope.launch {
-            currentUser.value?.let { saveDeviceTokenUseCase.execute(it.uid) }
+            saveDeviceTokenUseCase.execute(_currentUser.value.uid)
         }
     }
 
     @SuppressLint("SuspiciousIndentation")
     fun loadCurrentUser(){
-        Log.d("TAG　AuthViewModel", "load Current User")
         viewModelScope.launch {
-            //FireStoreからユーザー取得
-            loadCurrentUserUseCase.execute()
-                .onSuccess {user->
-                    Log.e("AVM", "loadUser Onsuccess")
+            val loadCurrentUserState = loadCurrentUserUseCase.execute()
+            when(loadCurrentUserState.status) {
+                Status.SUCCESS -> {
+                    val user = loadCurrentUserState.data
                     if (user != null) {
                         _currentUser.value = user
                         User.CurrentUserShareModel.setCurrentUserToModel(user)
                         saveDeviceToken()
                     }
-                }.onFailure {exception->
-                    setErrorMessage(exception.message)
-//                    Log.e("AVM", "${exception.message}")
                 }
+                Status.FAILURE -> {
+                    _authState.value = Resource.failure()
+                }
+                else -> {}
+            }
         }
     }
 
+    @SuppressLint("SuspiciousIndentation")
     fun signOut(context: Context) {
         viewModelScope.launch {
-            signOutUseCase.execute()
-                .onSuccess {
-                    Log.d("AVM", "Sign out success")
-                    finishMainActivityUseCase.execute(context)
-                }
-                .onFailure {exception->
-                    Log.e("SignOut", "Sign Out failed")
-                    setErrorMessage(exception.message)
+            _signOutState.value = signOutUseCase.execute()
+                when(_signOutState.value.status) {
+                    Status.SUCCESS -> {
+                        finishMainActivityUseCase.execute(context)
+                    }
+                    else -> {
 
+                    }
                 }
         }
     }
 
-    private fun setErrorMessage(message: String?) {
-        isLoading = false
-        _errorMessage.value = message?: "不明なエラーが発生しました"
-    }
-
-    // エラーメッセージのリセット
-    fun resetErrorMessage() {
-        _errorMessage.value = null
+    fun resetState() {
+        _authState.value = Resource.idle()
     }
 
 }

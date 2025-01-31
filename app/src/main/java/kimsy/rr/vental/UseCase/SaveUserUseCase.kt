@@ -1,6 +1,8 @@
 package kimsy.rr.vental.UseCase
 
 import kimsy.rr.vental.data.NetworkUtils
+import kimsy.rr.vental.data.Resource
+import kimsy.rr.vental.data.repository.LogRepository
 import kimsy.rr.vental.data.repository.NotificationSettingsRepository
 import kimsy.rr.vental.data.repository.UserRepository
 import javax.inject.Inject
@@ -8,36 +10,14 @@ import javax.inject.Inject
 class SaveUserUseCase @Inject constructor(
     private val userRepository: UserRepository,
     private val notificationSettingsRepository: NotificationSettingsRepository,
-    private val networkUtils: NetworkUtils
-) {
-    suspend fun execute(): Result<Unit> {
-        return try {
-
-            if (!networkUtils.isOnline()) {
-                return Result.failure(Exception("インターネット接続エラー"))
-            }
-
-            userRepository.saveUserToFirestore().fold(
-                onSuccess = { newUserId ->
-                    saveNotificationSettings(newUserId)
-                },
-                onFailure = { error ->
-                    Result.failure(error)
-                }
-            )
-        } catch (e: Exception) {
-            Result.failure(e)
+    networkUtils: NetworkUtils,
+    logRepository: LogRepository
+): BaseUseCase(networkUtils, logRepository) {
+    suspend fun execute(): Resource<Unit> {
+        return executeWithLoggingAndNetworkCheck {
+            val newUserId = userRepository.saveUserToFirestore()
+            notificationSettingsRepository.setNotificationSettings(newUserId)
+            Resource.success(Unit)
         }
-    }
-
-    private suspend fun saveNotificationSettings(newUserId: String): Result<Unit> {
-        return notificationSettingsRepository.setNotificationSettings(newUserId).fold(
-            onSuccess = {
-                Result.success(Unit)
-            },
-            onFailure = { error ->
-                Result.failure(error)
-            }
-        )
     }
 }

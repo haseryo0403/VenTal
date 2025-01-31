@@ -13,6 +13,9 @@ class GetUserDetailsUseCase @Inject constructor(
     logRepository: LogRepository
 ): BaseUseCase(networkUtils, logRepository) {
     suspend fun execute(uid: String): Resource<User> {
-        return  userRepository.fetchUserInformation(uid)
+        return executeWithLoggingAndNetworkCheck {
+            val user = userRepository.fetchUserInformation(uid)
+            Resource.success(user)
+        }
     }
 }

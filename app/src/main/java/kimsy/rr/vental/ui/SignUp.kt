@@ -32,15 +32,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import kimsy.rr.vental.R
+import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.viewModel.AuthViewModel
 
 @Composable
 fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
     var showDialog by remember { mutableStateOf(false)}
-    val errorMessage by authViewModel.errorMessage
 
-    // 認証結果を監視
-    val authResult by authViewModel.authResult.collectAsState()
+    val authState by authViewModel.authState.collectAsState()
     val isLoading = authViewModel.isLoading
 
     // Googleサインインの結果を受け取るランチャー
@@ -48,42 +47,47 @@ fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == RESULT_OK) {
-            Log.e("SU", "result_ok")
             val signInIntent = result.data
             // ViewModelで結果を処理
             authViewModel.handleSignInResult(signInIntent)
         } else {
-            Log.e("SU", "result_NG")
-
             authViewModel.updateLoading(false)
             showDialog = true
         }
     }
 
     // 認証成功で画面遷移
-    LaunchedEffect(authResult) {
-        if (authResult == true) {
+    LaunchedEffect(authState) {
+        if (authState.data == true) {
             Log.d("TAG", "Navigate to timeline")
             onNavigateToMainView()  // 遷移先の処理を呼び出す
         }
     }
 
-    if (errorMessage != null) {
-        showDialog = true
+    when(authState.status) {
+        Status.SUCCESS -> {
+            if (authState.data == true) {
+                onNavigateToMainView()
+            }
+            authViewModel.resetState()
+        }
+        Status.FAILURE -> {
+            showDialog = true
+            authViewModel.resetState()
+        }
+        else -> {}
     }
 
     if(showDialog){
         AlertDialog(onDismissRequest = {
             showDialog = false
-            authViewModel.resetErrorMessage()  // ダイアログが閉じられたらエラーメッセージをリセット
         },
             confirmButton = { /*TODO*/ },
             title = { Text(text = "エラー")},
-            text = { Text(text = errorMessage?: "不明なエラーが発生しました。")}
+            text = { Text(text = "エラーが発生しました。時間をおいて再度お試しください。")}
             )
     }
 
-    // UIの定義
     Column(
         modifier = Modifier
             .fillMaxSize()

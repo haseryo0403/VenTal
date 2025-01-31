@@ -3,7 +3,6 @@ package kimsy.rr.vental.data.repository
 import com.google.firebase.firestore.FirebaseFirestore
 import kimsy.rr.vental.data.NotificationSettings
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
 class NotificationSettingsRepository @Inject constructor(
@@ -33,32 +32,12 @@ class NotificationSettingsRepository @Inject constructor(
             .await()
     }
 
-//    suspend fun setNotificationSettings (userId: String){
-//        val defaultNotificationSettings = NotificationSettings()
-//        db
-//            .collection("notificationSettings")
-//            .document(userId)
-//            .set(defaultNotificationSettings)
-//            .await()
-//
-//        Result.success(Unit)
-//    }
-    suspend fun setNotificationSettings (userId: String):Result<Unit> {
-        return try {
-            val defaultNotificationSettings = NotificationSettings()
-            withTimeout(10000L) {
-                db
-                    .collection("notificationSettings")
-                    .document(userId)
-                    .set(defaultNotificationSettings)
-                    .await()
-
-                Result.success(Unit)
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+    suspend fun setNotificationSettings (userId: String){
+        val defaultNotificationSettings = NotificationSettings()
+        db
+            .collection("notificationSettings")
+            .document(userId)
+            .set(defaultNotificationSettings)
+            .await()
     }
-
-
 }

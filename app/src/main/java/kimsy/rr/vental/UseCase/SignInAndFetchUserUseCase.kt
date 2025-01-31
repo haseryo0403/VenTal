@@ -1,23 +1,22 @@
 package kimsy.rr.vental.UseCase
 
+import kimsy.rr.vental.data.NetworkUtils
+import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.User
+import kimsy.rr.vental.data.repository.LogRepository
 import kimsy.rr.vental.data.repository.UserRepository
 import javax.inject.Inject
 
 class SignInAndFetchUserUseCase @Inject constructor(
     private val userRepository: UserRepository,
-) {
-    //TODO auth and getUser is combo, save and settings are combo
-    suspend fun execute(idToken: String): Result<User?> {
-        return userRepository.firebaseAuthWithGoogle(idToken).fold(
-            onSuccess = {
-                // firebaseAuthWithGoogle が成功した場合に、getCurrentUser() を呼び出してその結果を返す
-                userRepository.getCurrentUser()
-            },
-            onFailure = { exception ->
-                // エラーが発生した場合、Result.failure() を使ってエラーを返す
-                Result.failure(exception)
-            }
-        )
+    networkUtils: NetworkUtils,
+    logRepository: LogRepository
+): BaseUseCase(networkUtils, logRepository) {
+    suspend fun execute(idToken: String): Resource<User?> {
+        return executeWithLoggingAndNetworkCheck {
+            userRepository.firebaseAuthWithGoogle(idToken)
+            val currentUser = userRepository.getCurrentUser()
+            Resource.success(currentUser)
+        }
     }
 }

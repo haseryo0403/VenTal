@@ -15,6 +15,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -25,6 +27,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kimsy.rr.vental.R
+import kimsy.rr.vental.data.Status
+import kimsy.rr.vental.ui.commonUi.ErrorView
 import kimsy.rr.vental.viewModel.AuthViewModel
 
 @Composable
@@ -66,6 +70,16 @@ fun SettingsView(
 ) {
     val dialogOpen = remember { mutableStateOf(false)}
     val context = LocalContext.current
+    val signOutState by authViewModel.signOutState.collectAsState()
+
+    when(signOutState.status) {
+        Status.FAILURE -> {
+            ErrorView(retry = {
+                authViewModel.signOut(context)
+            })
+        }
+        else -> {}
+    }
 
     LazyColumn(
         modifier = Modifier.fillMaxWidth()
@@ -123,6 +137,7 @@ fun logoutDialog(
     authViewModel: AuthViewModel,
     context: Context
 ){
+
     if(dialogOpen.value){
         AlertDialog(
             onDismissRequest = {
