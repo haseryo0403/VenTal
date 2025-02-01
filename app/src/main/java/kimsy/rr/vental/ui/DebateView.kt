@@ -1,5 +1,6 @@
 package kimsy.rr.vental.ui
 
+import MessageItem
 import android.app.Activity
 import android.content.Context
 import android.net.Uri
@@ -74,7 +75,6 @@ import kimsy.rr.vental.ui.CommonComposable.CustomLinearProgressIndicator
 import kimsy.rr.vental.ui.CommonComposable.ImagePermissionAndSelection
 import kimsy.rr.vental.ui.CommonComposable.MaxLengthOutlinedTextField
 import kimsy.rr.vental.ui.CommonComposable.MaxLengthTextField
-import kimsy.rr.vental.ui.CommonComposable.MessageItem
 import kimsy.rr.vental.ui.CommonComposable.formatTimeDifference
 import kimsy.rr.vental.ui.CommonComposable.showAsBottomSheet
 import kimsy.rr.vental.ui.commonUi.ErrorView
@@ -100,7 +100,7 @@ fun DebateView(
     val isKeyboardVisible = WindowInsets.isImeVisible
     var text by remember { mutableStateOf("") }
 
-    val context = LocalContext.current// is this Right?
+    val context = LocalContext.current
     val fetchMessageState by debateViewModel.fetchMessageState.collectAsState()
     val currentDebateItem by sharedDebateViewModel.currentDebateItem.collectAsState()
 
@@ -114,7 +114,6 @@ fun DebateView(
 
     when (likeState[currentDebateItem]?.status) {
         Status.SUCCESS -> {
-            //TODO もし必要なUIの処理があれば。
             currentDebateItem?.let { sharedDebateViewModel.resetLikeState(it) }
         }
         Status.FAILURE -> {
@@ -137,13 +136,6 @@ fun DebateView(
         else -> {}
     }
 
-    //TODO delete
-//    val sheetState = rememberModalBottomSheetState(
-//        initialValue = ModalBottomSheetValue.HalfExpanded,
-////        skipHalfExpanded = true
-//    )
-//    val coroutineScope = rememberCoroutineScope()
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -158,28 +150,7 @@ fun DebateView(
                     .fillMaxSize()
                     .padding(bottom = if (imageUri == null) 120.dp else 0.dp) // TextField の高さ分の余白を確保
             ) {
-
-
-
                 item {
-//                    ModalBottomSheetLayout(
-//                        sheetState = sheetState,
-//                        sheetContent = {
-//                            Column(
-//                                modifier = Modifier
-//                                    .fillMaxWidth()
-//                                    .height(300.dp)
-//                                    .padding(16.dp),
-//                                horizontalAlignment = Alignment.CenterHorizontally
-//                            ) {
-//                                Text("モーダルシートのタイトル", style = MaterialTheme.typography.headlineMedium)
-//                                Spacer(modifier = Modifier.height(8.dp))
-//                                Button(onClick = { coroutineScope.launch { sheetState.hide() } }) {
-//                                    Text("閉じる")
-//                                }
-//                            }
-//                        }
-//                    ) {
                         if (currentDebateItem != null) {
                             DebateContent(
                                 debateItem = currentDebateItem!!,
@@ -189,7 +160,7 @@ fun DebateView(
                         } else {
                             Toast.makeText(
                                 context,
-                                "読み込みに失敗しました。通信環境の良いところで再度お試しください。",
+                                stringResource(id = R.string.fail_loading_try_again),
                                 Toast.LENGTH_LONG
                             ).show()
                         }
@@ -212,12 +183,9 @@ fun DebateView(
                             Text(text = "16")
 
                             IconButton(onClick = {
-//                                currentDebateItem?.let {
-//                                    debateViewModel.reportDebate(it.debate)
-//                                }
                                 activity.showAsBottomSheet { hideModal ->
                                     val debate = currentDebateItem?.debate
-                                    if (currentUser != null && debate != null) {
+                                    if (debate != null) {
                                         DebateBottomSheet(
                                             modifier = Modifier.fillMaxWidth(),
                                             debate = debate,
@@ -250,13 +218,6 @@ fun DebateView(
                                 }
                             }
                             Status.FAILURE -> {
-//                                Toast.makeText(
-//                                    context,
-//                                    "読み込みに失敗しました。通信環境の良いところで再度お試しください。",
-//                                    Toast.LENGTH_LONG
-//                                ).show()
-//                                debateViewModel.resetState()
-//                                Log.e("DV", "${fetchMessageState.message}")
                                 ErrorView(retry = {
                                     currentDebateItem?.let { debateViewModel.getMessages(it.debate) }
                                     debateViewModel.observeFollowingUserIds()
@@ -272,15 +233,13 @@ fun DebateView(
                                 text = text,
                                 onTextChange = { text = it }
                             ) {
-                                currentUser?.let {
-                                    currentDebateItem?.let {
-                                        debateViewModel.createMessage(
-                                            debate = it.debate,
-                                            text = text,
-                                            imageUri = imageUri,
-                                            context = context
-                                        )
-                                    }
+                                currentDebateItem?.let {
+                                    debateViewModel.createMessage(
+                                        debate = it.debate,
+                                        text = text,
+                                        imageUri = imageUri,
+                                        context = context
+                                    )
                                 }
                             }
                         }
@@ -415,26 +374,24 @@ fun DebateContent(
                 when (followingUserIdsState.status) {
                     Status.SUCCESS -> {
                         val followingUserIds = followingUserIdsState.data
-                        if (currentUser != null) {
-                            if (followingUserIds != null && poster.uid != currentUser.value.uid) {
-                                if (!followingUserIds.contains(poster.uid)){
-                                    OutlinedButton(
-                                        onClick = {
-                                            debateViewModel.followUser(poster.uid)
-                                        },
-                                        modifier = Modifier.height(32.dp)
-                                    ) {
-                                        Text(text = "フォローする")
-                                    }
-                                } else {
-                                    OutlinedButton(
-                                        onClick = {
-                                            debateViewModel.unFollowUser(poster.uid)
-                                        },
-                                        modifier = Modifier.height(32.dp)
-                                    ) {
-                                        Text(text = "フォロー解除")
-                                    }
+                        if (followingUserIds != null && poster.uid != currentUser.value.uid) {
+                            if (!followingUserIds.contains(poster.uid)){
+                                OutlinedButton(
+                                    onClick = {
+                                        debateViewModel.followUser(poster.uid)
+                                    },
+                                    modifier = Modifier.height(32.dp)
+                                ) {
+                                    Text(text = stringResource(id = R.string.follow))
+                                }
+                            } else {
+                                OutlinedButton(
+                                    onClick = {
+                                        debateViewModel.unFollowUser(poster.uid)
+                                    },
+                                    modifier = Modifier.height(32.dp)
+                                ) {
+                                    Text(text = stringResource(id = R.string.unfollow))
                                 }
                             }
                         }
@@ -745,108 +702,6 @@ fun debateTextFieldWithOutImage(
         }
     }
 }
-
-//
-//@Composable
-//fun MoreBottomSheet(
-//    modifier: Modifier,
-//    onReportDebateClicked: () -> Unit
-//){
-//    Box(
-//        Modifier
-//            .fillMaxWidth()
-//            .height(300.dp)
-//            .background(
-//                androidx.compose.material.MaterialTheme.colors.primarySurface
-//            )
-//    ){
-//        Column(modifier = modifier.padding(16.dp), verticalArrangement = Arrangement.SpaceBetween){
-//            Row(modifier = modifier
-//                .padding(16.dp)
-//                .clickable{
-//                    //TODO open dialog?
-//                    onReportDebateClicked()
-//                }
-//            ){
-//                Icon(modifier = Modifier.padding(end = 8.dp),
-//                    painter =  painterResource(id = R.drawable.outline_report_problem_24),
-//                    contentDescription = "Settings")
-//                Text(text = "Settings", fontSize = 20.sp, color = Color.White)
-//            }
-//        }
-//    }
-//}
-//
-//
-//@Composable
-//fun reportDebateDialog(
-//    dialogOpen: MutableState<Boolean>,
-//    viewModel: DebateViewModel,
-//    context: Context
-//){
-//    var text by remember { mutableStateOf("")}
-//
-//    if(dialogOpen.value){
-//        Dialog(
-//            onDismissRequest = { dialogOpen.value = false },
-//        ) {
-//            Card(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .height(360.dp)
-//                    .padding(16.dp),
-//                shape = RoundedCornerShape(16.dp),
-//            ) {
-//                Column(
-//                    modifier = Modifier
-//                        .fillMaxSize(),
-//                    verticalArrangement = Arrangement.Center,
-//                    horizontalAlignment = Alignment.CenterHorizontally,
-//                ) {
-//                    Text(
-//                        text = "追加したいタグを入力してください。タグは最大5つまで追加できます",
-//                        modifier = Modifier.padding(16.dp),
-//                    )
-//                    MaxLengthOutlinedTextField(
-//                        value = text,
-//                        onValueChange = {newText -> text = newText},
-//                        maxLength = 50
-//                    )
-//
-//                    Row(
-//                        modifier = Modifier
-//                            .fillMaxWidth(),
-//                        horizontalArrangement = Arrangement.Center,
-//                    ) {
-//                        TextButton(
-//                            onClick = {
-//                                dialogOpen.value = false
-//                            },
-//                            modifier = Modifier.padding(16.dp),
-//                        ) {
-//                            Text("キャンセル")
-//                        }
-//                        TextButton(
-//                            onClick = {
-//                                if(viewModel.tags.contains(text)){
-//                                    Toast.makeText(context, "同じタグは追加できません", Toast.LENGTH_SHORT).show()
-//                                } else {
-//                                    dialogOpen.value = false
-//                                    viewModel.tags.add(text)
-//                                    text = ""
-//                                }
-//                            },
-//                            modifier = Modifier.padding(16.dp),
-//                        ) {
-//                            Text("追加")
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
-
 
 
 

@@ -67,7 +67,11 @@
     <string name="follow_failure">フォロー/フォロー解除に失敗しました。時間をあけて再度お試しください。</string>
     <string name="please_follow_to_show_debates">表示する討論がありません。フォローしてください。</string>
     <string name="all">全て</string>
+    <string name="follow">フォローする</string>
+    <string name="unfollow">フォロー解除</string>
 
+    <!--    エラー関連-->
+    <string name="fail_loading_try_again">読み込みに失敗しました。通信環境の良いところで再度お試しください。</string>
 
 
 

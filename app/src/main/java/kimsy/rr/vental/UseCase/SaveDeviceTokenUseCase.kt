@@ -16,13 +16,5 @@ class SaveDeviceTokenUseCase @Inject constructor(
             userRepository.saveDeviceToken(userId)
             Resource.success(Unit)
         }
-//        userRepository.saveDeviceToken(userId)
-//            .onSuccess {
-//                Log.d("SDTUC","saved device token" )
-//            }
-//            .onFailure {
-//                Log.e("SDTUC", "save device token failed")
-//                //TODO リカバリー必要なら。いまのところ通知できないからスルー
-//            }
     }
 }

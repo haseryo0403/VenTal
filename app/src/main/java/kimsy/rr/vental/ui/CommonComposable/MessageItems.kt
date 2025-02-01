@@ -1,7 +1,8 @@
-package kimsy.rr.vental.ui.CommonComposable
+//package kimsy.rr.vental.ui.CommonComposable
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -21,7 +23,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.data.Message
 import kimsy.rr.vental.data.UserType
 import java.text.SimpleDateFormat
@@ -50,43 +55,70 @@ fun MessageItem(messages: List<Message>) {
                     DateDisplay(message.sentDatetime)
                 }
             }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp),
-                horizontalArrangement = if (message.userType == UserType.DEBATER) Arrangement.Start else Arrangement.End,
-                verticalAlignment = Alignment.Bottom
-            ) {
-                Surface(
+            if (message.imageURL != null) {
+                Row(
                     modifier = Modifier
-                        .padding(4.dp)
-                        .widthIn(max = 250.dp),
-                    shape = MaterialTheme.shapes.medium,
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    tonalElevation = 4.dp
+                        .fillMaxWidth()
+                        .padding(4.dp),
+                    horizontalArrangement = if (message.userType == UserType.DEBATER) Arrangement.Start else Arrangement.End,
+                    verticalAlignment = Alignment.Bottom
                 ) {
-                    Row(
-                        modifier = Modifier.padding(12.dp)
-                    ) {
-                        Text(
-                            text = message.text,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-
-                        Spacer(modifier = Modifier.height(4.dp))
-                    }
+                    Image(
+                        painter = rememberAsyncImagePainter(message.imageURL),
+                        contentDescription = "message Image",
+                        modifier = Modifier.clip(RoundedCornerShape(16.dp)).widthIn(max = 250.dp),
+                        contentScale = ContentScale.FillWidth
+                    )
+                    Text(
+                        text = message.sentDatetime?.let {
+                            formatTime(it)
+                        } ?: "不明",
+                        modifier = Modifier.padding(bottom = 4.dp),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
-                Text(
-                    text = message.sentDatetime?.let {
-                        formatTime(it)
-                    } ?: "不明",
-                    modifier = Modifier.padding(bottom = 4.dp),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
             }
+            if (message.text.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(4.dp),
+                    horizontalArrangement = if (message.userType == UserType.DEBATER) Arrangement.Start else Arrangement.End,
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    Surface(
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .widthIn(max = 250.dp),
+                        shape = MaterialTheme.shapes.medium,
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        tonalElevation = 4.dp
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp)
+                        ) {
+                            Text(
+                                text = message.text,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+
+                            Spacer(modifier = Modifier.height(4.dp))
+                        }
+                    }
+                    Text(
+                        text = message.sentDatetime?.let {
+                            formatTime(it)
+                        } ?: "不明",
+                        modifier = Modifier.padding(bottom = 4.dp),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+
 
             previousDate = message.sentDatetime
         }
