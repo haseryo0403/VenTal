@@ -6,8 +6,10 @@ import androidx.activity.result.ActivityResultLauncher
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
+import kimsy.rr.vental.data.CloseAccountData
 import kimsy.rr.vental.data.User
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -120,6 +122,44 @@ class UserRepository @Inject constructor(
         }
 
         return followingUserIds
+    }
+
+    suspend fun updateAccountClosingFlagToTrue(
+        currentUserId: String
+    ) {
+        val docRef = db
+            .collection("users")
+            .document(currentUserId)
+
+        docRef.update("accountClosingFlag", true).await()
+    }
+
+    suspend fun saveCloseAccountData(closeAccountData: CloseAccountData) {
+        val query = db
+            .collection("withdrawals")
+            .document(closeAccountData.userId)
+
+        query.set(closeAccountData).await()
+    }
+
+    suspend fun updateAccountClosingFlagToFalse(
+        currentUserId: String
+    ) {
+        val docRef = db
+            .collection("users")
+            .document(currentUserId)
+
+        docRef.update("accountClosingFlag", false).await()
+    }
+
+    suspend fun updateReLoginDate(
+        currentUserId: String
+    ) {
+        val docRef = db
+            .collection("withdrawals")
+            .document(currentUserId)
+
+        docRef.update("reLoginDate", FieldValue.serverTimestamp()).await()
     }
 
 }

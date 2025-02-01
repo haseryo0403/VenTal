@@ -43,6 +43,7 @@ import kimsy.rr.vental.data.User
 import kimsy.rr.vental.otherScreen
 import kimsy.rr.vental.screensInBottom
 import kimsy.rr.vental.settingsScreen
+import kimsy.rr.vental.ui.AccountClosingView
 import kimsy.rr.vental.ui.AnotherUserPageView
 import kimsy.rr.vental.ui.DebateCreationView
 import kimsy.rr.vental.ui.DebateView
@@ -328,6 +329,9 @@ fun Navigation(
                 authViewModel = authViewModel,
                 toNotificationSettingsView = {
                     navController.navigate(Screen.SettingsMenuScreen.NotificationSettingsScreen.route)
+                },
+                toAccountClosingView = {
+                    navController.navigate(Screen.AccountClosingScreen.route)
                 }
             )
         }
@@ -395,6 +399,9 @@ fun Navigation(
             )
         }
 
+        composable(Screen.AccountClosingScreen.route) {
+            AccountClosingView()
+        }
     }
 }
 

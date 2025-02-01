@@ -66,9 +66,11 @@ fun SettingsItem(
 @Composable
 fun SettingsView(
     authViewModel: AuthViewModel,
-    toNotificationSettingsView: () -> Unit
+    toNotificationSettingsView: () -> Unit,
+    toAccountClosingView: () -> Unit
 ) {
-    val dialogOpen = remember { mutableStateOf(false)}
+    val logOutDialogOpen = remember { mutableStateOf(false)}
+    val accountClosingDialogOpen = remember { mutableStateOf(false)}
     val context = LocalContext.current
     val signOutState by authViewModel.signOutState.collectAsState()
 
@@ -116,7 +118,7 @@ fun SettingsView(
                     .padding(4.dp)
             ) {
                 TextButton(onClick = {
-                    dialogOpen.value = true
+                    logOutDialogOpen.value = true
                 }) {
                     Text(
                         text = stringResource(id = R.string.logout),
@@ -125,9 +127,28 @@ fun SettingsView(
                         )
                 }
             }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp)
+            ){
+                TextButton(onClick = {
+                    accountClosingDialogOpen.value = true
+                }) {
+                    Text(
+                        text = stringResource(id = R.string.close_account),
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
         }
     }
-    logoutDialog(dialogOpen = dialogOpen, authViewModel = authViewModel, context = context)
+    logoutDialog(dialogOpen = logOutDialogOpen, authViewModel = authViewModel, context = context)
+    accountClosingDialog(
+        dialogOpen = accountClosingDialogOpen,
+        toAccountClosingView = toAccountClosingView
+        )
 }
 
 
@@ -164,6 +185,43 @@ fun logoutDialog(
             },
             title = {
                 Text(stringResource(id = R.string.logout_comfirmation))
+            }
+        )
+    }
+}
+@Composable
+fun accountClosingDialog(
+    dialogOpen: MutableState<Boolean>,
+    toAccountClosingView: () -> Unit
+){
+
+    if(dialogOpen.value){
+        AlertDialog(
+            onDismissRequest = {
+                dialogOpen.value = false
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        toAccountClosingView()
+                        dialogOpen.value = false
+                    }
+                ) {
+                    Text("はい")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        toAccountClosingView()
+                        dialogOpen.value = false
+                    }
+                ) {
+                    Text("いいえ")
+                }
+            },
+            title = {
+                Text(stringResource(id = R.string.close_account_comfirmation))
             }
         )
     }

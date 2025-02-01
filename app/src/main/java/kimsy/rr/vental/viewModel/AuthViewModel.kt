@@ -4,14 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import androidx.activity.result.ActivityResultLauncher
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kimsy.rr.vental.UseCase.FinishMainActivityUseCase
 import kimsy.rr.vental.UseCase.GetGoogleIdTokenUseCase
 import kimsy.rr.vental.UseCase.LoadCurrentUserUseCase
+import kimsy.rr.vental.UseCase.ReLoginUseCase
 import kimsy.rr.vental.UseCase.SaveDeviceTokenUseCase
 import kimsy.rr.vental.UseCase.SaveUserUseCase
 import kimsy.rr.vental.UseCase.SignInAndFetchUserUseCase
@@ -33,7 +31,8 @@ class AuthViewModel @Inject constructor(
     private val signOutUseCase: SignOutUseCase,
     private val finishMainActivityUseCase: FinishMainActivityUseCase,
     private val saveUserUseCase: SaveUserUseCase,
-    private val getGoogleIdTokenUseCase: GetGoogleIdTokenUseCase
+    private val getGoogleIdTokenUseCase: GetGoogleIdTokenUseCase,
+    private val reLoginUseCase: ReLoginUseCase
     ) : ViewModel() {
 
     private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel()?: User())
@@ -41,13 +40,13 @@ class AuthViewModel @Inject constructor(
 
     val currentUserId = _currentUser.value.uid
 
-    // 状態管理用の変数
-    var isLoading by mutableStateOf(false)
-        private set
-
-    fun updateLoading(loading: Boolean) {
-        isLoading = loading
-    }
+//    // 状態管理用の変数
+//    var isLoading by mutableStateOf(false)
+//        private set
+//
+//    fun updateLoading(loading: Boolean) {
+//        isLoading = loading
+//    }
 
     //trueですでにFirebaseにユーザーがあるか、新規ユーザー登録が完了したということ
     private val _authState = MutableStateFlow<Resource<Boolean>>(Resource.idle())
@@ -62,7 +61,7 @@ class AuthViewModel @Inject constructor(
 
     // Googleサインインを開始するメソッド
     fun signInWithGoogle(activityResultLauncher: ActivityResultLauncher<Intent>) {
-        isLoading = true
+//        isLoading = true
         _authState.value = Resource.loading()
         userRepository.signInWithGoogle(activityResultLauncher)
     }
@@ -95,7 +94,12 @@ class AuthViewModel @Inject constructor(
                     if (user == null) {
                         saveNewUser()
                     } else {
-                        _authState.value = Resource.success(true)
+                        if (user.accountClosingFlag) {
+                            reLogin(user.uid)
+                        } else {
+                            _authState.value = Resource.success(true)
+                        }
+
                     }
                 }
                 Status.FAILURE -> {
@@ -110,6 +114,21 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             val saveUserState = saveUserUseCase.execute()
             when(saveUserState.status) {
+                Status.SUCCESS -> {
+                    _authState.value = Resource.success(true)
+                }
+                Status.FAILURE -> {
+                    _authState.value = Resource.failure()
+                }
+                else -> {}
+            }
+        }
+    }
+
+    private fun reLogin(userId: String) {
+        viewModelScope.launch {
+            val reLogInState = reLoginUseCase.execute(userId)
+            when(reLogInState.status) {
                 Status.SUCCESS -> {
                     _authState.value = Resource.success(true)
                 }

@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,6 +32,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import kimsy.rr.vental.R
 import kimsy.rr.vental.data.Status
+import kimsy.rr.vental.ui.CommonComposable.CustomCircularProgressIndicator
 import kimsy.rr.vental.viewModel.AuthViewModel
 
 @Composable
@@ -40,7 +40,7 @@ fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
     var showDialog by remember { mutableStateOf(false)}
 
     val authState by authViewModel.authState.collectAsState()
-    val isLoading = authViewModel.isLoading
+//    val isLoading = authViewModel.isLoading
 
     // Googleサインインの結果を受け取るランチャー
     val launcher = rememberLauncherForActivityResult(
@@ -51,7 +51,7 @@ fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
             // ViewModelで結果を処理
             authViewModel.handleSignInResult(signInIntent)
         } else {
-            authViewModel.updateLoading(false)
+//            authViewModel.updateLoading(false)
             showDialog = true
         }
     }
@@ -81,6 +81,7 @@ fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
     if(showDialog){
         AlertDialog(onDismissRequest = {
             showDialog = false
+            authViewModel.resetState()
         },
             confirmButton = { /*TODO*/ },
             title = { Text(text = "エラー")},
@@ -95,28 +96,36 @@ fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if(isLoading){
-            CircularProgressIndicator()
-        } else {
-            Text(text = "VenTalへようこそ")
-            Text(text = "Googleでサインイン")
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = { authViewModel.signInWithGoogle(launcher) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+        when(authState.status) {
+            Status.LOADING -> {
+                CustomCircularProgressIndicator()
+            }
+            else -> {
+                Text(text = "VenTalへようこそ")
+                Text(text = "Googleでサインイン")
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(onClick = { authViewModel.signInWithGoogle(launcher) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
                 )
-            {
-                Image(
-                    painter = painterResource(id = R.drawable.google_icon), // GoogleアイコンのリソースID
-                    contentDescription = "Google Icon",
-                    modifier = Modifier.size(24.dp) // アイコンサイズ
+                {
+                    Image(
+                        painter = painterResource(id = R.drawable.google_icon), // GoogleアイコンのリソースID
+                        contentDescription = "Google Icon",
+                        modifier = Modifier.size(24.dp) // アイコンサイズ
 
-                )
-                Text("Sign in with Google",modifier = Modifier.padding(horizontal = 8.dp))
+                    )
+                    Text("Sign in with Google",modifier = Modifier.padding(horizontal = 8.dp))
+                }
             }
         }
+//        if(isLoading){
+//            CircularProgressIndicator()
+//        } else {
+
+//        }
 
     }
 }

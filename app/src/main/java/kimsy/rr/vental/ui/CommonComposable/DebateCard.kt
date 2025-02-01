@@ -34,11 +34,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
-import kimsy.rr.vental.viewModel.SharedDebateViewModel
+import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.data.UserType
+import kimsy.rr.vental.viewModel.SharedDebateViewModel
 
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -90,7 +91,6 @@ fun DebateCard(
                     .size(40.dp)
                     .clip(CircleShape)
                     .clickable {
-                        //TODO 遷移先ユーザーがログイン中のユーザーではないかチェックする
                         toAnotherUserPageView(poster)
                     },
                 contentScale = ContentScale.Crop
@@ -195,7 +195,7 @@ fun DebateCard(
                         .clip(CircleShape)
                         .clickable {
                             toAnotherUserPageView(poster)
-                       },
+                        },
                     contentScale = ContentScale.Crop
                 )
                 Text(
@@ -207,40 +207,66 @@ fun DebateCard(
                 )
             }
         }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(4.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Bottom
-        ) {
-            Surface(
-                modifier = Modifier
-                    .padding(4.dp)
-                    .widthIn(max = 250.dp),
-                shape = MaterialTheme.shapes.medium,
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                tonalElevation = 4.dp
-            ) {
-                Column(
-                    modifier = Modifier.padding(12.dp)
-                ) {
-                    Text(
-                        text = debate.firstMessage,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                }
-            }
-
-            Text(
-                text = debate.debateCreatedDatetime?.let {
-                    formatTimeDifference(it)
-                } ?: "日付不明",
-            )
-
-        }
+        DebateFirstMessage(debate)
     }
     Divider()
 }
+
+@Composable
+fun DebateFirstMessage(debate: Debate) {
+    val formattedDate = debate.debateCreatedDatetime?.let { formatTimeDifference(it) } ?: "日付不明"
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Bottom
+    ) {
+        Column {
+            // 画像がある場合は表示
+            debate.firstMessageImageURL?.let {
+                Image(
+                    painter = rememberAsyncImagePainter(it),
+                    contentDescription = "message Image",
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(16.dp))
+                        .widthIn(max = 250.dp),
+                    contentScale = ContentScale.FillWidth
+                )
+            }
+
+            // メッセージがある場合は吹き出しで表示
+            if (debate.firstMessage.isNotEmpty()) {
+                MessageBubble(debate.firstMessage)
+            }
+        }
+
+        // 日付表示
+        Text(text = formattedDate)
+    }
+}
+
+@Composable
+fun MessageBubble(text: String) {
+    Surface(
+        modifier = Modifier
+            .padding(4.dp)
+            .widthIn(max = 250.dp),
+        shape = MaterialTheme.shapes.medium,
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        tonalElevation = 4.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp)
+        ) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+        }
+    }
+}
+
