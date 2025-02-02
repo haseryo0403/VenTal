@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
@@ -24,7 +25,6 @@ import androidx.compose.material.primarySurface
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -64,16 +64,13 @@ fun DebateCommentBottomSheet(
     val sendCommentState by viewModel.sendCommentState.collectAsState()
     val fetchCommentItemState by viewModel.fetchCommentItemState.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.getComments(debate)
-    }
-
     when(sendCommentState.status) {
         Status.LOADING -> {
             CustomLinearProgressIndicator()
         }
         Status.SUCCESS -> {
             text = ""
+            viewModel.getComments(debate)
         }
         Status.FAILURE -> {
             Toast.makeText(LocalContext.current, stringResource(id = R.string.send_comment_failure), Toast.LENGTH_LONG).show()
@@ -88,16 +85,24 @@ fun DebateCommentBottomSheet(
             .background(
                 MaterialTheme.colors.primarySurface
             )
-            .padding(bottom = if (isKeyboardVisible) 300.dp else 0.dp) // TextField の高さ分の余白を確保
+//            .padding(bottom = if (isKeyboardVisible) 300.dp else 0.dp) // TextField の高さ分の余白を確保
 
     ){
-        Column(modifier = modifier.padding(16.dp), verticalArrangement = Arrangement.SpaceBetween){
+        Column(modifier = modifier.padding(16.dp).fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween){
             when(fetchCommentItemState.status) {
                 Status.LOADING -> {
                     CustomCircularProgressIndicator()
                 }
                 Status.SUCCESS -> {
-                    fetchCommentItemState.data?.let { CommentItemRows(it) }
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        item {
+                            fetchCommentItemState.data?.let { CommentItemRows(it) }
+                        }
+
+                    }
+
                 }
                 Status.FAILURE -> {
                     ErrorView(retry = {
@@ -113,20 +118,6 @@ fun DebateCommentBottomSheet(
                     context = context
                 )
             }
-//            Row(
-//                modifier = modifier
-//                    .padding(16.dp)
-//                    .clickable {
-//                        VentCardShareModel.setDeleteRequestedVentCardToModel(ventCard)
-//                        hideModal()
-//                        toRequestVentCardDeletionView()
-//                    }
-//            ){
-//                Icon(modifier = Modifier.padding(end = 8.dp),
-//                    painter =  painterResource(id = R.drawable.outline_delete_24),
-//                    contentDescription = "request debate deletion")
-//                Text(text = stringResource(id = R.string.to_do_request_ventCard_deletion), fontSize = 20.sp, color = Color.White)
-//            }
         }
     }
 }

@@ -157,7 +157,7 @@ class DebateViewModel @Inject constructor(
         viewModelScope.launch {
             _sendCommentState.value = Resource.loading()
 
-            val commentCreationState =
+           _sendCommentState.value =
                 sendCommentUseCase.execute(
                     posterId = debate.posterId,
                     ventCardId = debate.swipeCardId,
@@ -165,9 +165,16 @@ class DebateViewModel @Inject constructor(
                     commenterId = currentUserId,
                     commentContent = text
                 )
-//            when(messageCreationState.status) {
+            if (_sendCommentState.value.status == Status.SUCCESS) {
+                if (currentUserId == debate.posterId || currentUserId == debate.debaterId) {
+                    saveNotificationToDebateParticipants(debate, text)
+                } else {
+                    saveNotificationToDebateBothParticipants(debate, text)
+                }
+            }
+//            when(commentCreationState.status) {
 //                Status.SUCCESS -> {
-//                    _createMessageState.value = Resource.success(Unit)
+//                    _sendCommentState.value = Resource.success(Unit)
 //                    saveNotificationUseCase.execute(
 //                        fromUserId = currentUserId,
 //                        if (currentUserId == debate.posterId) debate.debaterId else debate.posterId,
@@ -176,11 +183,35 @@ class DebateViewModel @Inject constructor(
 //                        text)
 //                }
 //                Status.FAILURE -> {
-//                    _createMessageState.value = Resource.failure(messageCreationState.message)
+//                    _sendCommentState.value = Resource.failure()
 //                }
 //                else -> {}
 //            }
         }
+    }
+
+    private suspend fun saveNotificationToDebateParticipants(debate: Debate, text: String) {
+        saveNotificationUseCase.execute(
+            fromUserId = currentUserId,
+            toUserId = if (currentUserId == debate.posterId) debate.debaterId else debate.posterId,
+            debate.debateId,
+            NotificationType.DEBATECOMMENT,
+            text)
+    }
+
+    private suspend fun saveNotificationToDebateBothParticipants(debate: Debate, text: String) {
+        saveNotificationUseCase.execute(
+            fromUserId = currentUserId,
+            toUserId = debate.posterId,
+            debate.debateId,
+            NotificationType.DEBATECOMMENT,
+            text)
+        saveNotificationUseCase.execute(
+            fromUserId = currentUserId,
+            toUserId = debate.debaterId,
+            debate.debateId,
+            NotificationType.DEBATECOMMENT,
+            text)
     }
 
     fun resetState() {

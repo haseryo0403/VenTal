@@ -22,7 +22,7 @@ class CommentRepository @Inject constructor(
             .collection("debates")
             .document(debateId)
             .collection("comments")
-            .orderBy("commentedDateTime", Query.Direction.ASCENDING)
+            .orderBy("commentedDateTime", Query.Direction.DESCENDING)
 
         val querySnapshot = docRef.get().await()
         val comments = querySnapshot.documents.mapNotNull { document ->

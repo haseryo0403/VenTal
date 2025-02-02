@@ -108,6 +108,8 @@ class UserRepository @Inject constructor(
         query.update(updates).await()
     }
 
+    //TODO ここでfollowingが存在すればの処理をする。もしくはlistがnullでもUseCaseはsuccessで返
+
     suspend fun fetchFollowingUserIds(
         userId: String
     ): List<String> {

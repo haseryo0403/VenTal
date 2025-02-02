@@ -103,6 +103,7 @@ fun DebateView(
 
     val context = LocalContext.current
     val fetchMessageState by debateViewModel.fetchMessageState.collectAsState()
+    val fetchCommentItemState by debateViewModel.fetchCommentItemState.collectAsState()
     val currentDebateItem by sharedDebateViewModel.currentDebateItem.collectAsState()
 
     val likeState by sharedDebateViewModel.likeState.collectAsState()
@@ -111,6 +112,7 @@ fun DebateView(
     LaunchedEffect(Unit) {
         currentDebateItem?.let { debateViewModel.getMessages(it.debate) }
         debateViewModel.observeFollowingUserIds()
+        currentDebateItem?.let { debateViewModel.getComments(it.debate) }
     }
 
     when (likeState[currentDebateItem]?.status) {
@@ -193,7 +195,11 @@ fun DebateView(
                                     contentDescription = "comment"
                                 )
                             }
-                            Text(text = "16")
+
+                            if (fetchCommentItemState.status == Status.SUCCESS) {
+                                Text(text = fetchCommentItemState.data?.size.toString())
+                            }
+//                            Text(text = "16")
 
                             IconButton(onClick = {
                                 activity.showAsBottomSheet { hideModal ->

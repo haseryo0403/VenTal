@@ -19,7 +19,7 @@ open class BaseUseCase @Inject constructor(
 
     suspend fun <T> executeWithLoggingAndNetworkCheck(action: suspend () -> Resource<T>): Resource<T> {
         return try {
-            withTimeout(10000L) {
+            withTimeout(20000L) {
                 val netWorkState = checkNetwork()
                 when (netWorkState.status) {
                     Status.SUCCESS -> {
