@@ -56,6 +56,7 @@ private fun BottomSheetWrapper(
         sheetContent = {
             content {
                 coroutineScope.launch {
+
                     modalBottomSheetState.hide()
                 }
             }

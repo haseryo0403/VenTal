@@ -98,6 +98,8 @@
     <string name="close_account_agreement">他のアプリでなるべく人の悪口を言わないことを同意する。</string>
     <string name="close_account_agreement_required">上記事項に同意してください。</string>
 
+    <!--    コメント関連-->
+    <string name="send_comment_failure">コメントの送信に失敗しました。時間をあけて再度お試しください。</string>
 
     <string name="app_name" translatable="false">Vental</string>
     <string name="like_fail">いいねに失敗しました。しばらく時間を置いて、再度お試しください。</string>

@@ -1,0 +1,213 @@
+package kimsy.rr.vental.ui.commonUi
+
+import android.os.Build
+import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.primarySurface
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import formatDate
+import kimsy.rr.vental.R
+import kimsy.rr.vental.data.CommentItem
+import kimsy.rr.vental.data.Debate
+import kimsy.rr.vental.data.Status
+import kimsy.rr.vental.ui.AccountIcon
+import kimsy.rr.vental.ui.CommonComposable.CustomCircularProgressIndicator
+import kimsy.rr.vental.ui.CommonComposable.CustomLinearProgressIndicator
+import kimsy.rr.vental.ui.CommonComposable.MaxLengthOutlinedTextField
+import kimsy.rr.vental.viewModel.DebateViewModel
+import java.util.Date
+
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun DebateCommentBottomSheet(
+    viewModel: DebateViewModel,
+    modifier: Modifier,
+    debate: Debate,
+    toAnotherUserPageView: () -> Unit,
+    hideModal: () -> Unit
+){
+    val isKeyboardVisible = WindowInsets.isImeVisible
+    var text by remember { mutableStateOf("") }
+    val context = LocalContext.current
+
+    val sendCommentState by viewModel.sendCommentState.collectAsState()
+    val fetchCommentItemState by viewModel.fetchCommentItemState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.getComments(debate)
+    }
+
+    when(sendCommentState.status) {
+        Status.LOADING -> {
+            CustomLinearProgressIndicator()
+        }
+        Status.SUCCESS -> {
+            text = ""
+        }
+        Status.FAILURE -> {
+            Toast.makeText(LocalContext.current, stringResource(id = R.string.send_comment_failure), Toast.LENGTH_LONG).show()
+        }
+        else -> {}
+    }
+
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .height(500.dp)
+            .background(
+                MaterialTheme.colors.primarySurface
+            )
+            .padding(bottom = if (isKeyboardVisible) 300.dp else 0.dp) // TextField の高さ分の余白を確保
+
+    ){
+        Column(modifier = modifier.padding(16.dp), verticalArrangement = Arrangement.SpaceBetween){
+            when(fetchCommentItemState.status) {
+                Status.LOADING -> {
+                    CustomCircularProgressIndicator()
+                }
+                Status.SUCCESS -> {
+                    fetchCommentItemState.data?.let { CommentItemRows(it) }
+                }
+                Status.FAILURE -> {
+                    ErrorView(retry = {
+                        viewModel.getComments(debate)
+                    })
+                }
+                else -> {}
+            }
+            CommentTextField(isKeyboardVisible = isKeyboardVisible, text = text, onTextChange = { text = it}) {
+                viewModel.sendComment(
+                    debate = debate,
+                    text = text,
+                    context = context
+                )
+            }
+//            Row(
+//                modifier = modifier
+//                    .padding(16.dp)
+//                    .clickable {
+//                        VentCardShareModel.setDeleteRequestedVentCardToModel(ventCard)
+//                        hideModal()
+//                        toRequestVentCardDeletionView()
+//                    }
+//            ){
+//                Icon(modifier = Modifier.padding(end = 8.dp),
+//                    painter =  painterResource(id = R.drawable.outline_delete_24),
+//                    contentDescription = "request debate deletion")
+//                Text(text = stringResource(id = R.string.to_do_request_ventCard_deletion), fontSize = 20.sp, color = Color.White)
+//            }
+        }
+    }
+}
+
+@Composable
+fun CommentItemRows(commentItems: List<CommentItem>) {
+    var previousDate: Date? by remember { mutableStateOf(null) }
+    commentItems.forEach {commentItem ->
+        val comment = commentItem.comment
+        val commenter = commentItem.user
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
+        ) {
+            Column {
+                AccountIcon(imageUrl = commenter.photoURL)
+            }
+            Column {
+                Text(text = commenter.name)
+                Text(text = comment.commentContent)
+                Text(text = comment.commentedDateTime?.let { formatDate(it) }.toString())
+            }
+
+        }
+    }
+
+}
+
+
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@Composable
+fun CommentTextField(
+    isKeyboardVisible: Boolean,
+//    context: Context,
+    text: String,
+    onTextChange: (String) -> Unit,
+    onSendClick: () -> Unit) {
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colors.primarySurface), // 親レイアウトを画面全体に拡張
+        contentAlignment = Alignment.BottomCenter
+    ) {
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = MaterialTheme.colors.primarySurface)
+                .padding(bottom = 40.dp),
+//                .padding(bottom = imePadding.dp),
+
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.CenterHorizontally,
+
+            ) {
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, end = 8.dp, bottom = 4.dp)
+//                    .wrapContentHeight()
+                    .heightIn(max = if (isKeyboardVisible) 140.dp else 56.dp),
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                MaxLengthOutlinedTextField(
+                    value = text,
+                    onValueChange = onTextChange,
+                    maxLength = 140,
+                    modifier = Modifier
+                        .weight(1f)
+                        .background(color = MaterialTheme.colors.onSurface)
+                )
+                IconButton(onClick = onSendClick) {
+                    Icon(imageVector = Icons.Default.Send, contentDescription = "Send")
+                }
+            }
+        }
+    }
+}
+
+

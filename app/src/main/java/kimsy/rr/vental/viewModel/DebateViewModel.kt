@@ -6,12 +6,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kimsy.rr.vental.UseCase.FollowUseCase
+import kimsy.rr.vental.UseCase.GetCommentItemUseCase
 import kimsy.rr.vental.UseCase.GetMessageUseCase
 import kimsy.rr.vental.UseCase.MessageCreationUseCase
 import kimsy.rr.vental.UseCase.ObserveFollowingUserIdUseCase
 import kimsy.rr.vental.UseCase.SaveImageUseCase
 import kimsy.rr.vental.UseCase.SaveNotificationUseCase
+import kimsy.rr.vental.UseCase.SendCommentUseCase
 import kimsy.rr.vental.UseCase.UnFollowUseCase
+import kimsy.rr.vental.data.CommentItem
 import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.Message
 import kimsy.rr.vental.data.NotificationType
@@ -31,7 +34,9 @@ class DebateViewModel @Inject constructor(
     private val saveNotificationUseCase: SaveNotificationUseCase,
     private val observeFollowingUserIdUseCase: ObserveFollowingUserIdUseCase,
     private val followUseCase: FollowUseCase,
-    private val unFollowUseCase: UnFollowUseCase
+    private val unFollowUseCase: UnFollowUseCase,
+    private val sendCommentUseCase: SendCommentUseCase,
+    private val getCommentItemUseCase: GetCommentItemUseCase
     ): ViewModel() {
 
     private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel()?: User())
@@ -50,6 +55,12 @@ class DebateViewModel @Inject constructor(
 
     private val _followState = MutableStateFlow<Resource<Unit>>(Resource.idle())
     val followState: StateFlow<Resource<Unit>> get() = _followState
+
+    private val _fetchCommentItemState = MutableStateFlow<Resource<List<CommentItem>>>(Resource.idle())
+    val fetchCommentItemState: StateFlow<Resource<List<CommentItem>>> get() = _fetchCommentItemState
+
+    private val _sendCommentState = MutableStateFlow<Resource<Unit>>(Resource.idle())
+    val sendCommentState: StateFlow<Resource<Unit>> get() = _sendCommentState
 
     fun getMessages(debate: Debate) {
         viewModelScope.launch {
@@ -121,6 +132,54 @@ class DebateViewModel @Inject constructor(
             if (_followingUserIdsState.value.status == Status.SUCCESS) {
                 _followState.value = unFollowUseCase.execute(currentUserId, toUserId)
             }
+        }
+    }
+    fun getCommentItem(
+        debate: Debate
+    ) {
+
+    }
+
+    fun getComments(
+        debate: Debate
+    ) {
+        viewModelScope.launch {
+            _fetchCommentItemState.value = Resource.loading()
+            _fetchCommentItemState.value = getCommentItemUseCase.execute(
+                debate.posterId,
+                debate.swipeCardId,
+                debate.debateId
+            )
+        }
+    }
+
+    fun sendComment(debate: Debate, text: String, context: Context) {
+        viewModelScope.launch {
+            _sendCommentState.value = Resource.loading()
+
+            val commentCreationState =
+                sendCommentUseCase.execute(
+                    posterId = debate.posterId,
+                    ventCardId = debate.swipeCardId,
+                    debateId = debate.debateId,
+                    commenterId = currentUserId,
+                    commentContent = text
+                )
+//            when(messageCreationState.status) {
+//                Status.SUCCESS -> {
+//                    _createMessageState.value = Resource.success(Unit)
+//                    saveNotificationUseCase.execute(
+//                        fromUserId = currentUserId,
+//                        if (currentUserId == debate.posterId) debate.debaterId else debate.posterId,
+//                        debate.debateId,
+//                        NotificationType.DEBATEMESSAGE,
+//                        text)
+//                }
+//                Status.FAILURE -> {
+//                    _createMessageState.value = Resource.failure(messageCreationState.message)
+//                }
+//                else -> {}
+//            }
         }
     }
 

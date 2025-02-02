@@ -77,6 +77,7 @@ import kimsy.rr.vental.ui.CommonComposable.MaxLengthOutlinedTextField
 import kimsy.rr.vental.ui.CommonComposable.MaxLengthTextField
 import kimsy.rr.vental.ui.CommonComposable.formatTimeDifference
 import kimsy.rr.vental.ui.CommonComposable.showAsBottomSheet
+import kimsy.rr.vental.ui.commonUi.DebateCommentBottomSheet
 import kimsy.rr.vental.ui.commonUi.ErrorView
 import kimsy.rr.vental.viewModel.DebateViewModel
 import kimsy.rr.vental.viewModel.SharedDebateViewModel
@@ -148,7 +149,7 @@ fun DebateView(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = if (imageUri == null) 120.dp else 0.dp) // TextField の高さ分の余白を確保
+                    .padding(bottom = if (imageUri == null && (currentDebateItem?.debate?.posterId == currentUser.value.uid || currentDebateItem?.debate?.debaterId == currentUser.value.uid)) 120.dp else 0.dp) // TextField の高さ分の余白を確保
             ) {
                 item {
                         if (currentDebateItem != null) {
@@ -174,7 +175,19 @@ fun DebateView(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.End
                         ) {
-                            IconButton(onClick = { /*TODO*/ }) {
+                            IconButton(onClick = {
+                                activity.showAsBottomSheet { hideModal ->
+                                    val debate = currentDebateItem?.debate
+                                    if (debate != null) {
+                                        DebateCommentBottomSheet(
+                                            viewModel = debateViewModel,
+                                            modifier = Modifier.fillMaxWidth(),
+                                            debate = debate,
+                                            toAnotherUserPageView = {/* TODO */}) {
+                                        }
+                                    }
+                                }
+                            }) {
                                 Icon(
                                     painter = painterResource(id = R.drawable.outline_mode_comment_24),
                                     contentDescription = "comment"
@@ -251,7 +264,7 @@ fun DebateView(
             }
 
             // テキストフィールド（固定位置）
-            if (imageUri == null) {
+            if (imageUri == null && (currentDebateItem?.debate?.posterId == currentUser.value.uid || currentDebateItem?.debate?.debaterId == currentUser.value.uid)) {
                 debateTextFieldWithOutImage(
                     isKeyboardVisible = isKeyboardVisible,
                     context = context,
