@@ -139,7 +139,7 @@ class FollowPageViewModel @Inject constructor(
     suspend fun getFollowingUserInfo() {
         viewModelScope.launch {
             if (_followingUserIds.value.isEmpty()) {
-                _followingUserState.value = Resource.failure()
+                _followingUserState.value = Resource.success(emptyList())
             } else {
                 _followingUserState.value = Resource.loading()
                 val userIds = _followingUserIds.value

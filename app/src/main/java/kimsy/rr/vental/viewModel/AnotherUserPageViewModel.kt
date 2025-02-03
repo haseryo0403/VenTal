@@ -18,6 +18,7 @@ import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -141,6 +142,12 @@ class AnotherUserPageViewModel @Inject constructor(
                             _debateItems.value = _debateItems.value + debateItems
                         }
                         lastVisible = newLastVisible
+                    }
+                }
+                Status.FAILURE -> {
+                    delay(500) //待機しないとローディング矢印が固まる
+                    if (_isRefreshing.value) {
+                        _isRefreshing.value = false
                     }
                 }
                 else -> {}

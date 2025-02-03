@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,6 +40,7 @@ import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
+import kimsy.rr.vental.ui.CommonComposable.CustomCircularProgressIndicator
 import kimsy.rr.vental.ui.CommonComposable.DebateCard
 import kimsy.rr.vental.ui.commonUi.ErrorView
 import kimsy.rr.vental.viewModel.FollowPageViewModel
@@ -77,29 +79,34 @@ fun FollowPageView(
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.background)
     ) {
-        if (followingUserState.status == Status.FAILURE || getDebateItemState.status == Status.FAILURE) {
-            ErrorView(retry = {
-                viewModel.loadFollowingUserDebates()
-            })
-        } else {
-            FollowingUserView(
-                viewModel = viewModel,
-                toAnotherUserPageView = toAnotherUserPageView,
-                toFollowListView = toFollowListView
-            )
+        when {
+            followingUserState.status == Status.FAILURE || getDebateItemState.status == Status.FAILURE -> {
+                ErrorView(retry = {
+                    viewModel.loadFollowingUserDebates()
+                })
+            }
 
-            Divider()
+            followingUserState.data?.isEmpty() == true -> {
+                Text("フォローしてくださいお願い")
+            }
+            else -> {
+                FollowingUserView(
+                    viewModel = viewModel,
+                    toAnotherUserPageView = toAnotherUserPageView,
+                    toFollowListView = toFollowListView
+                )
 
-            FollowUserDebateView(
-                viewModel = viewModel,
-                sharedDebateViewModel = sharedDebateViewModel,
-                toDebateView = toDebateView,
-                toAnotherUserPageView = toAnotherUserPageView,
-                scrollState = scrollState
-            )
+                Divider()
+
+                FollowUserDebateView(
+                    viewModel = viewModel,
+                    sharedDebateViewModel = sharedDebateViewModel,
+                    toDebateView = toDebateView,
+                    toAnotherUserPageView = toAnotherUserPageView,
+                    scrollState = scrollState
+                )
+            }
         }
-
-
     }
 }
 
@@ -124,7 +131,9 @@ fun FollowingUserView(
                 items(followingUser) { user ->
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(8.dp)
+                        modifier = Modifier.padding(8.dp).clickable {
+                            toAnotherUserPageView(user)
+                        }
                     ) {
                         Image(
                             painter = rememberAsyncImagePainter(user.photoURL),
@@ -189,12 +198,12 @@ fun FollowUserDebateView(
         isRefreshing = isRefreshing,
         onRefresh = { viewModel.onRefresh() }
     ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
-            state = scrollState
-        ) {
-            when {
-                debateItems.isNotEmpty() -> {
+        when {
+            debateItems.isNotEmpty() -> {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    state = scrollState
+                ) {
                     items(debateItems) { item->
                         DebateCard(
                             sharedDebateViewModel,
@@ -208,34 +217,27 @@ fun FollowUserDebateView(
                         item { FollowPageLoadingIndicator(viewModel = viewModel) }
                     }
                 }
-                else -> {
-                    item {
-                        when (getDebateItemState.status) {
-                            Status.LOADING -> {
-                                Box(
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.align(Alignment.Center)
-                                    )
-                                }
-                            }
-                            Status.FAILURE -> {
-                                ErrorView(retry = {
-                                    viewModel.loadFollowingUserDebates()
-                                })
-                            }
-                            Status.SUCCESS -> {
-                                Text(text = stringResource(id = R.string.please_follow_to_show_debates) )
-                            }
-                            else -> viewModel.resetGetDebateItemState()
-                        }
+
+            }
+            else -> {
+                when (getDebateItemState.status) {
+                    Status.LOADING -> {
+
+                        CustomCircularProgressIndicator()
                     }
+                    Status.FAILURE -> {
+                        ErrorView(retry = {
+                            viewModel.loadFollowingUserDebates()
+                        })
+                    }
+                    Status.SUCCESS -> {
+                        Text(text = stringResource(id = R.string.please_follow_to_show_debates) )
+                    }
+                    else -> viewModel.resetGetDebateItemState()
                 }
             }
         }
     }
-
 }
 
 

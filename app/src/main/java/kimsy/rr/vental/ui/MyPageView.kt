@@ -1,18 +1,15 @@
 package kimsy.rr.vental.ui
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresExtension
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -42,8 +39,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
+import kimsy.rr.vental.R
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.commonUi.ErrorView
@@ -102,12 +101,6 @@ fun MyPageView(
             .fillMaxWidth()
             .background(color = MaterialTheme.colorScheme.background)
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(accountContentHeight)
-                .background(MaterialTheme.colorScheme.background)
-        ) {
             when (debateCountsState.status) {
                 Status.LOADING -> {
                     // TODO: Loading
@@ -135,15 +128,6 @@ fun MyPageView(
                 }
                 else -> {}
             }
-        }
-
-        // TabRow
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(tabRowHeight)
-                .background(MaterialTheme.colorScheme.background)
-        ) {
             TabRow(
                 selectedTabIndex = selectedTabIndex,
                 indicator = { tabPositions ->
@@ -158,7 +142,7 @@ fun MyPageView(
                 tabs.forEachIndexed { index, tab ->
                     Tab(
                         selected = selectedTabIndex == index,
-                        onClick = { /* Handle Tab Click */ },
+                        onClick = { selectedTabIndex = index },
                         modifier = Modifier.padding(8.dp),
                         content = {
                             Text(
@@ -172,9 +156,7 @@ fun MyPageView(
                     )
                 }
             }
-        }
 
-        // HorizontalPager
         HorizontalPager(
             state = pagerState,
             modifier = Modifier
@@ -219,7 +201,6 @@ fun AccountContent(
     unFollowUser: (() -> Unit)?,
     isFollowing: Boolean?
 ){
-//    val debateCounts = userPageData.debatesCount
 
     Row(
         modifier = Modifier
@@ -237,7 +218,6 @@ fun AccountContent(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
-                Log.d("TAG", "Image URL: ${user?.photoURL}")
                 Image(
                     painter = rememberAsyncImagePainter(user?.photoURL),
                     contentDescription = null,
@@ -252,13 +232,13 @@ fun AccountContent(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(text = debateCounts.toString())
-                    Text(text = "討論")
+                    Text(text = stringResource(id = R.string.debate))
                 }
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(text = user.followerCount.toString())
-                    Text(text = "フォロワー")
+                    Text(text = stringResource(id = R.string.follower))
                 }
             }
 
@@ -278,7 +258,7 @@ fun AccountContent(
                                 }
                             }
                         ) {
-                            Text(text = "フォロー解除")
+                            Text(text = stringResource(id = R.string.unfollow))
                         }
                     }
                     false -> {
@@ -289,7 +269,7 @@ fun AccountContent(
                                 }
                             }
                         ) {
-                            Text(text = "フォローする")
+                            Text(text = stringResource(id = R.string.follow))
                         }
                     }
                     null ->{}

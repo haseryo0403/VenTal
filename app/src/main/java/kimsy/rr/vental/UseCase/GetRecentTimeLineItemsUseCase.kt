@@ -5,7 +5,6 @@ import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.NetworkUtils
 import kimsy.rr.vental.data.Resource
-import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.repository.DebateRepository
 import kimsy.rr.vental.data.repository.LogRepository
 import kotlinx.coroutines.async
@@ -25,29 +24,38 @@ class GetRecentTimeLineItemsUseCase @Inject constructor(
     ): Resource<Pair<List<DebateItem>, DocumentSnapshot?>> {
         return executeWithLoggingAndNetworkCheck {
             validateUserId(currentUserId)
-            val debatesState = debateRepository.fetch10Debates(lastVisible)
 
-            when (debatesState.status) {
-                Status.SUCCESS -> {
-                    val debates = debatesState.data?.first
-                        ?: return@executeWithLoggingAndNetworkCheck Resource.failure("討論データが空です。")
+            val result = debateRepository.fetchRecentDebates(lastVisible)
 
-                    val timeLineItems = generateDebateItem(debates, currentUserId)
+            val timeLineItems = generateDebateItem(result.first, currentUserId)
 
+            val newLastVisible = result.second
 
-                    val newLastVisible = debatesState.data.second
-
-                    Resource.success(Pair(timeLineItems, newLastVisible))
-                }
-
-                Status.FAILURE -> {
-                    Resource.failure("討論の取得に失敗しました")
-                }
-
-                else -> {
-                    Resource.failure("予期しないステータス: ${debatesState.status}")
-                }
-            }
+            Resource.success(Pair(timeLineItems, newLastVisible))
+//
+//            val debatesState = debateRepository.fetchRecentDebates(lastVisible)
+//
+//            when (debatesState.status) {
+//                Status.SUCCESS -> {
+//                    val debates = debatesState.data?.first
+//                        ?: return@executeWithLoggingAndNetworkCheck Resource.failure("討論データが空です。")
+//
+//                    val timeLineItems = generateDebateItem(debates, currentUserId)
+//
+//
+//                    val newLastVisible = debatesState.data.second
+//
+//                    Resource.success(Pair(timeLineItems, newLastVisible))
+//                }
+//
+//                Status.FAILURE -> {
+//                    Resource.failure("討論の取得に失敗しました")
+//                }
+//
+//                else -> {
+//                    Resource.failure("予期しないステータス: ${debatesState.status}")
+//                }
+//            }
         }
     }
 

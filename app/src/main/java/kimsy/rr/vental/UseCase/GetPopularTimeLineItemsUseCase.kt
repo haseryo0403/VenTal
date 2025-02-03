@@ -24,7 +24,7 @@ class GetPopularTimeLineItemsUseCase @Inject constructor(
     ): Resource<Pair<List<DebateItem>, DocumentSnapshot?>> {
         return executeWithLoggingAndNetworkCheck {
             validateUserId(currentUserId)
-            val result = debateRepository.fetchPopular10Debates(lastVisible)
+            val result = debateRepository.fetchPopularDebates(lastVisible)
 
             val timeLineItems = generateDebateItem(result.first, currentUserId)
 

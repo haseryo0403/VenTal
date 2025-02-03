@@ -13,6 +13,7 @@ import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.SplitList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -111,6 +112,12 @@ class MyLikedDebateViewModel @Inject constructor(
                         }
                         //TODO delete?
                         _loadLikedDebateItemsState.value = Resource.idle()
+                    }
+                }
+                Status.FAILURE -> {
+                    delay(500) //待機しないとローディング矢印が固まる
+                    if (_isRefreshing.value) {
+                        _isRefreshing.value = false
                     }
                 }
                 else -> {}

@@ -160,44 +160,73 @@ class DebateRepository @Inject constructor(
 
 
     //スクロールにて取得タイミングを管理。調べないと？
-    suspend fun fetch10Debates(
+    suspend fun fetchRecentDebates(
         lastVisible: DocumentSnapshot? = null
-    ): Resource<Pair<List<Debate>, DocumentSnapshot?>> {
-        return try {
-            Log.d("DR", "fetchD was called")
-            val query = db
-                .collectionGroup("debates")
-                .orderBy("debateCreatedDatetime", Query.Direction.DESCENDING)
+    ): Pair<List<Debate>, DocumentSnapshot?> {
+        val query = db
+            .collectionGroup("debates")
+            .orderBy("debateCreatedDatetime", Query.Direction.DESCENDING)
 
-            val querySnapshot = if (lastVisible == null) {
-                query.limit(100).get().await()
-            } else {
-                query.startAfter(lastVisible).limit(100).get().await()
-            }
-
-            if (querySnapshot.isEmpty) {
-                // データがない場合、空リストとnullを返す
-                return Resource.success(Pair(emptyList(), null))
-            }
-
-            val newLastVisible = querySnapshot.documents.lastOrNull()
-
-            Log.d("TAG", "ventCards: $querySnapshot size: ${querySnapshot.size()}")
-
-            val debates = querySnapshot.documents.mapNotNull { document->
-                document.toObject(Debate::class.java)!!.copy(
-                    debateId = document.id,
-                    debateCreatedDatetime = document.getTimestamp("debateCreatedDatetime")?.toDate()
-                )
-            }
-            Resource.success(Pair(debates, newLastVisible))
-        } catch (e: Exception) {
-            Log.e("DR" , "error : ${e.message}")
-            Resource.failure(e.message)
+        val querySnapshot = if (lastVisible == null) {
+            query.limit(100).get().await()
+        } else {
+            query.startAfter(lastVisible).limit(100).get().await()
         }
+
+        if (querySnapshot.isEmpty) {
+            return Pair(emptyList(), null)
+        }
+
+        val newLastVisible = querySnapshot.documents.lastOrNull()
+
+        val debates = querySnapshot.documents.mapNotNull { document->
+            document.toObject(Debate::class.java)!!.copy(
+                debateId = document.id,
+                debateCreatedDatetime = document.getTimestamp("debateCreatedDatetime")?.toDate()
+            )
+        }
+        return Pair(debates, newLastVisible)
     }
-    //スクロールにて取得タイミングを管理。調べないと？
-    suspend fun fetchPopular10Debates(
+//
+//    //スクロールにて取得タイミングを管理。調べないと？
+//    suspend fun fetchRecentDebates(
+//        lastVisible: DocumentSnapshot? = null
+//    ): Resource<Pair<List<Debate>, DocumentSnapshot?>> {
+//        return try {
+//            val query = db
+//                .collectionGroup("debates")
+//                .orderBy("debateCreatedDatetime", Query.Direction.DESCENDING)
+//
+//            val querySnapshot = if (lastVisible == null) {
+//                query.limit(100).get().await()
+//            } else {
+//                query.startAfter(lastVisible).limit(100).get().await()
+//            }
+//
+//            if (querySnapshot.isEmpty) {
+//                // データがない場合、空リストとnullを返す
+//                return Resource.success(Pair(emptyList(), null))
+//            }
+//
+//            val newLastVisible = querySnapshot.documents.lastOrNull()
+//
+//            Log.d("TAG", "ventCards: $querySnapshot size: ${querySnapshot.size()}")
+//
+//            val debates = querySnapshot.documents.mapNotNull { document->
+//                document.toObject(Debate::class.java)!!.copy(
+//                    debateId = document.id,
+//                    debateCreatedDatetime = document.getTimestamp("debateCreatedDatetime")?.toDate()
+//                )
+//            }
+//            Resource.success(Pair(debates, newLastVisible))
+//        } catch (e: Exception) {
+//            Log.e("DR" , "error : ${e.message}")
+//            Resource.failure(e.message)
+//        }
+//    }
+
+
+    suspend fun fetchPopularDebates(
         lastVisible: DocumentSnapshot? = null
     ): Pair<List<Debate>, DocumentSnapshot?> {
 
@@ -219,13 +248,10 @@ class DebateRepository @Inject constructor(
         }
 
         if (querySnapshot.isEmpty) {
-            // データがない場合、空リストとnullを返す
             return Pair(emptyList(), null)
         }
 
         val newLastVisible = querySnapshot.documents.lastOrNull()
-
-        Log.d("TAG", "ventCards: $querySnapshot size: ${querySnapshot.size()}")
 
         val debates = querySnapshot.documents.mapNotNull { document->
             document.toObject(Debate::class.java)!!.copy(

@@ -172,21 +172,6 @@ class DebateViewModel @Inject constructor(
                     saveNotificationToDebateBothParticipants(debate, text)
                 }
             }
-//            when(commentCreationState.status) {
-//                Status.SUCCESS -> {
-//                    _sendCommentState.value = Resource.success(Unit)
-//                    saveNotificationUseCase.execute(
-//                        fromUserId = currentUserId,
-//                        if (currentUserId == debate.posterId) debate.debaterId else debate.posterId,
-//                        debate.debateId,
-//                        NotificationType.DEBATEMESSAGE,
-//                        text)
-//                }
-//                Status.FAILURE -> {
-//                    _sendCommentState.value = Resource.failure()
-//                }
-//                else -> {}
-//            }
         }
     }
 
