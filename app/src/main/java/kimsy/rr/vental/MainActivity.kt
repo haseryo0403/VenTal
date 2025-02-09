@@ -33,11 +33,11 @@ import com.google.firebase.appcheck.FirebaseAppCheck
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
-import kimsy.rr.vental.viewModel.AuthViewModel
 import kimsy.rr.vental.data.repository.UserRepository
 import kimsy.rr.vental.ui.SignInScreen
 import kimsy.rr.vental.ui.commonUi.MainView
 import kimsy.rr.vental.ui.theme.VentalTheme
+import kimsy.rr.vental.viewModel.AuthViewModel
 import javax.inject.Inject
 
 
@@ -54,6 +54,8 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+//        FirebaseFirestore.setLoggingEnabled(true)
 
         if (intent.hasExtra("debateId")) {
             val intent = Intent(this, MainActivity::class.java)

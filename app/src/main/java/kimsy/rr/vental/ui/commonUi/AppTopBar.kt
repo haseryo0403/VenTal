@@ -4,6 +4,7 @@ package kimsy.rr.vental.ui.commonUi
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -34,9 +35,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kimsy.rr.vental.R
 import kimsy.rr.vental.Screen
+import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.viewModel.NotificationsViewModel
 import kimsy.rr.vental.viewModel.VentCardCreationViewModel
-import kimsy.rr.vental.data.Status
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -154,10 +155,11 @@ fun AppTopBarView(
                 null
             }
         }
-
     Box(
+
         modifier = Modifier.fillMaxWidth()
-//            .height(48.dp)
+            .background(color = MaterialTheme.colorScheme.background)
+    //            .height(48.dp)
     ){
         TopAppBar(
             title = {
@@ -172,16 +174,18 @@ fun AppTopBarView(
             navigationIcon = {navigationIcon?.invoke()},
             actions = {action?.invoke()},
             scrollBehavior = if(titleToDisableScroll.any{title.contains(it)}){
-                                TopAppBarDefaults.pinnedScrollBehavior()
-                            } else {
-                                scrollBehavior
-                            },
+                TopAppBarDefaults.pinnedScrollBehavior()
+            } else {
+                scrollBehavior
+            },
             colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                 containerColor = MaterialTheme.colorScheme.background,
                 titleContentColor = MaterialTheme.colorScheme.onBackground
             )
 
         )
+
+
         when (saveState.value.status) {
             Status.LOADING -> {
                 LinearProgressIndicator(
@@ -200,6 +204,7 @@ fun AppTopBarView(
             }
             else -> {}
         }
+
 
     }
 

@@ -3,6 +3,7 @@ package kimsy.rr.vental.ui
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresExtension
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,12 +37,12 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kimsy.rr.vental.viewModel.SharedDebateViewModel
-import kimsy.rr.vental.viewModel.TimeLineViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.DebateCard
 import kimsy.rr.vental.ui.commonUi.ErrorView
+import kimsy.rr.vental.viewModel.SharedDebateViewModel
+import kimsy.rr.vental.viewModel.TimeLineViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -108,7 +109,7 @@ fun TimeLineView(
     }
 
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().background(color = MaterialTheme.colorScheme.background)
     ) {
         TabRow(
             selectedTabIndex = selectedTabIndex,
@@ -153,6 +154,7 @@ fun TimeLineView(
                     modifier = Modifier
                         .fillMaxSize()
                         .weight(1f)
+                        .background(color = MaterialTheme.colorScheme.background)
                 ) { index ->
                     when (index) {
                         0 -> {
@@ -161,7 +163,10 @@ fun TimeLineView(
                                 isRefreshing = isRefreshing,
                                 onRefresh = { timeLineViewModel.onRefreshRecentItem() }
                             ) {
-                                LazyColumn(state = recentItemScrollState) {
+                                LazyColumn(
+                                    modifier = Modifier.background(color = MaterialTheme.colorScheme.background),
+                                    state = recentItemScrollState
+                                ) {
                                     items(recentTimeLineItems) { item ->
                                         DebateCard(
                                             sharedDebateViewModel,

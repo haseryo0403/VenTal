@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Context
 import android.net.Uri
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresExtension
@@ -365,7 +364,6 @@ fun DebateContent(
     val debater = debateItem.debater
     val poster = debateItem.poster
     val heartIcon = painterResource(id = R.drawable.baseline_favorite_24)
-    Log.d("DV", "$debateItem, $ventCard")
 
     val followState by debateViewModel.followState.collectAsState()
 

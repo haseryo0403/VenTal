@@ -265,11 +265,16 @@ fun VentalTheme(
           val context = LocalContext.current
           if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
       }
-      
+
       darkTheme -> darkScheme
       else -> lightScheme
   }
 
+//  MaterialTheme(
+//    colorScheme = darkScheme,
+//    typography = AppTypography,
+//    content = content
+//  )
   MaterialTheme(
     colorScheme = colorScheme,
     typography = AppTypography,

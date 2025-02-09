@@ -40,14 +40,6 @@ class AuthViewModel @Inject constructor(
 
     val currentUserId = _currentUser.value.uid
 
-//    // 状態管理用の変数
-//    var isLoading by mutableStateOf(false)
-//        private set
-//
-//    fun updateLoading(loading: Boolean) {
-//        isLoading = loading
-//    }
-
     //trueですでにFirebaseにユーザーがあるか、新規ユーザー登録が完了したということ
     private val _authState = MutableStateFlow<Resource<Boolean>>(Resource.idle())
     val authState: StateFlow<Resource<Boolean>> get() = _authState
@@ -61,7 +53,6 @@ class AuthViewModel @Inject constructor(
 
     // Googleサインインを開始するメソッド
     fun signInWithGoogle(activityResultLauncher: ActivityResultLauncher<Intent>) {
-//        isLoading = true
         _authState.value = Resource.loading()
         userRepository.signInWithGoogle(activityResultLauncher)
     }
