@@ -177,12 +177,12 @@ class FollowPageViewModel @Inject constructor(
     }
 
     fun observeFollowingUserIds() {
-//        viewModelScope.launch {
-//            observeFollowingUserIdUseCase.execute(currentUserId)
-//                .collect{ resource ->
-//                    _followingUserIdsState.value = resource
-//                }
-//        }
+        viewModelScope.launch {
+            observeFollowingUserIdUseCase.execute(currentUserId)
+                .collect{ resource ->
+                    _followingUserIdsState.value = resource
+                }
+        }
     }
 
     fun followUser(toUserId: String) {

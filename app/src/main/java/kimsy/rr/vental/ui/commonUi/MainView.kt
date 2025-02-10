@@ -231,7 +231,9 @@ fun Navigation(
                 context = context,
                 debateCreationViewModel = debateCreationViewModel,
                 toDebateCreationView = {navController.navigate(Screen.DebateCreation.route)},
-                toReportVentCardView = {navController.navigate(Screen.ReportVentCardScreen.route)},
+                toAnotherUserPageView = { user ->
+                    navigateToUserPage(user, navController)
+                },                toReportVentCardView = {navController.navigate(Screen.ReportVentCardScreen.route)},
                 toRequestVentCardDeletionView = {
                     //TODO
                 }

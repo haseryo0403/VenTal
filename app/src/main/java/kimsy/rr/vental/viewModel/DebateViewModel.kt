@@ -134,11 +134,6 @@ class DebateViewModel @Inject constructor(
             }
         }
     }
-    fun getCommentItem(
-        debate: Debate
-    ) {
-
-    }
 
     fun getComments(
         debate: Debate

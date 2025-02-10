@@ -60,6 +60,16 @@
     <!--    討論関連全般-->
     <string name="get_extra_debate_failure">討論の追加の取得に失敗しまいた。</string>
 
+<!--    ventcard作成関連-->
+    <string name="select_file">ファイルを選択</string>
+    <string name="add_tag">タグを追加</string>
+    <string name="tag_amount_limit">タグは5つまでしか追加できません。</string>
+    <string name="card_content">投稿内容</string>
+    <string name="asterisk">*</string>
+    <string name="image_optional">画像（任意）</string>
+    <string name="tag_optional">タグ（任意）</string>
+
+
 <!--    profileEditView-->
     <string name="update_user_fail">プロフィールの更新に失敗しました。時間をあけて再度お試しください。</string>
 

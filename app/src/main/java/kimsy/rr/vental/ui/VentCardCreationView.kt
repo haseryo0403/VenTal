@@ -6,15 +6,18 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,10 +25,13 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
@@ -38,22 +44,224 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
-import kimsy.rr.vental.viewModel.VentCardCreationViewModel
 import kimsy.rr.vental.ui.CommonComposable.MaxLengthOutlinedTextField
 import kimsy.rr.vental.ui.CommonComposable.MaxLengthTextField
+import kimsy.rr.vental.ui.commonUi.DottedLine
+import kimsy.rr.vental.viewModel.VentCardCreationViewModel
+
+
+
+
 
 
 @OptIn(ExperimentalLayoutApi::class)
 @SuppressLint("SuspiciousIndentation")
 @Composable
 fun VentCardCreationView(
+    viewModel: VentCardCreationViewModel,
+    context: Context
+){
+    val selectedUri = viewModel.selectedImageUri
+    val dialogOpen = remember { mutableStateOf(false)}
+
+    LazyColumn(
+    modifier = Modifier
+        .fillMaxSize()
+        .padding(start = 16.dp, end = 16.dp)
+    ) {
+        item {
+
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp)
+                    .clickable { /* Handle Click Action */ }
+                    .shadow(4.dp, RoundedCornerShape(10.dp))
+                    .clip(RoundedCornerShape(16.dp))
+            ) {
+                //スワイプカードのコンテント以外の要素
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        "新規投稿",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 20.dp)
+                    )
+                    val contentLabel = buildAnnotatedString {
+                        append(stringResource(id = R.string.card_content))
+                        withStyle(style = SpanStyle(MaterialTheme.colorScheme.primary)){
+                            append(stringResource(id = R.string.asterisk))
+                        }
+                    }
+                    Row {
+                        Icon(painter = painterResource(id = R.drawable.bubble), contentDescription = "bubble", modifier = Modifier.size(24.dp), tint = MaterialTheme.colorScheme.onBackground)
+                        Text(text = contentLabel, style = MaterialTheme.typography.titleMedium)
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    MaxLengthOutlinedTextField(
+                        value = viewModel.content,
+                        onValueChange = { newText -> viewModel.content = newText},
+                        maxLength = 140,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 120.dp),
+                        placeHolder = { Text(text = "怒りをぶつけろ！") },
+                        colors = TextFieldDefaults.colors(
+                            unfocusedContainerColor = Color.Transparent, // 背景を透明に設定
+                            focusedContainerColor = Color.Transparent, // フォーカス時の背景を透明に設定
+                            unfocusedIndicatorColor = MaterialTheme.colorScheme.surfaceVariant, // 未選択時の線の色
+                            focusedIndicatorColor = MaterialTheme.colorScheme.surfaceVariant // 選択時の線の色
+                        )
+                    )
+
+                    DottedLine(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp), color = Color.Gray)
+
+                    Row {
+                        Icon(painter = painterResource(id = R.drawable.baseline_image_24), contentDescription = "bubble", modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.onBackground)
+                        Text(text = stringResource(id = R.string.image_optional), style = MaterialTheme.typography.bodyMedium)
+                    }
+
+                    Button(
+                        onClick = { /* ファイル選択処理 */ },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    ) {
+                        Text(text = stringResource(id = R.string.select_file))
+                    }
+
+                    selectedUri?.let {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(8.dp),
+                        ){
+                            Image(
+                                painter = rememberAsyncImagePainter(selectedUri),
+                                contentDescription = "Selected Image",
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(RoundedCornerShape(16.dp)),
+                                contentScale = ContentScale.FillWidth,
+                            )
+                            IconButton(
+                                onClick = { viewModel.selectedImageUri = null },
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .align(Alignment.TopEnd)
+                                    .offset(x = (-8).dp, y = (8).dp)
+                                    .background(
+                                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
+                                        shape = CircleShape
+                                    )
+
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.baseline_clear_24),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier
+                                        .size(32.dp),
+
+                                    )
+                            }
+                        }
+                    }
+
+                    Row {
+                        Icon(painter = painterResource(id = R.drawable.baseline_tag_24), contentDescription = "bubble", modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.onBackground)
+                        Text(text = stringResource(id = R.string.tag_optional), style = MaterialTheme.typography.bodyMedium)
+                    }
+
+                    Button(onClick = {
+                        if(viewModel.tags.size < 5) {
+                            dialogOpen.value = true
+                        } else {
+                            Toast.makeText(context, "タグは5つまでしか追加できません。", Toast.LENGTH_LONG).show()
+                        }
+
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    ) {
+                        Text(text = stringResource(id = R.string.add_tag))
+                    }
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        viewModel.tags.forEach { tag ->
+                            // Rowを1つの要素としてまとめ、FlowRow内で改行されにくくする
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .padding(8.dp)
+                                    .background(
+                                        MaterialTheme.colorScheme.secondary,
+                                        RoundedCornerShape(8.dp)
+                                    )
+                                    .clip(RoundedCornerShape(8.dp))
+                            ) {
+                                Text(
+                                    text = tag,
+                                    modifier = Modifier
+                                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                                        .widthIn(max = 200.dp),
+                                    color = MaterialTheme.colorScheme.onSecondary
+                                )
+                                IconButton(
+                                    onClick = { viewModel.tags.remove(tag) },
+                                    modifier = Modifier.size(24.dp) // IconButtonのサイズを調整
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.baseline_clear_24),
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onSurface,
+                                        modifier = Modifier.size(16.dp) // アイコンのサイズを小さめに設定
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+
+                }
+            }
+        }
+    }
+    tagDialog(dialogOpen = dialogOpen, viewModel = viewModel, context )
+}
+
+
+
+
+@OptIn(ExperimentalLayoutApi::class)
+@SuppressLint("SuspiciousIndentation")
+@Composable
+fun VentCardCreationViews(
     viewModel: VentCardCreationViewModel,
     context: Context
 ){

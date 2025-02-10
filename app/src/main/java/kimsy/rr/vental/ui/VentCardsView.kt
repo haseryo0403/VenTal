@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import kimsy.rr.vental.data.Status
+import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.CardStack
 import kimsy.rr.vental.ui.commonUi.ErrorView
 import kimsy.rr.vental.viewModel.DebateCreationViewModel
@@ -37,6 +38,7 @@ fun SwipeCardsView(
     debateCreationViewModel: DebateCreationViewModel,
     context: Context,
     toDebateCreationView: () -> Unit,
+    toAnotherUserPageView: (user: User) -> Unit,
     toReportVentCardView: () -> Unit,
     toRequestVentCardDeletionView: () -> Unit,
 ){
@@ -107,6 +109,7 @@ fun SwipeCardsView(
                         onLessStack = {
                             ventCardsViewModel.loadVentCards(currentUser.uid)
                         },
+                        toAnotherUserPageView = toAnotherUserPageView,
                         toReportVentCardView = toReportVentCardView,
                         toRequestVentCardDeletionView = toRequestVentCardDeletionView
                     )

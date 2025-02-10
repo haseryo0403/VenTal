@@ -31,6 +31,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kimsy.rr.vental.R
@@ -157,16 +161,30 @@ fun AppTopBarView(
         }
     Box(
 
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .background(color = MaterialTheme.colorScheme.background)
     //            .height(48.dp)
     ){
+            val appTitle = buildAnnotatedString {
+                withStyle(style = SpanStyle(MaterialTheme.colorScheme.primary)){
+                    append("VEN")
+                }
+                withStyle(style = SpanStyle(MaterialTheme.colorScheme.secondary)){
+                    append("TAL")
+                }
+            }
         TopAppBar(
             title = {
                 if(title != "VCC"){
-                    Text(
-                        title,
-                    )
+//                    Text(
+//                        title,
+//                    )
+                    Text(text = appTitle,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.titleLarge
+                        )
                 } else {
                     null
                 }

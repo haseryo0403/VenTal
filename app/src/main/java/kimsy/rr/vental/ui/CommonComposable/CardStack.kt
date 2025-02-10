@@ -9,9 +9,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,7 +20,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
@@ -66,6 +65,7 @@ fun CardStack(modifier : Modifier = Modifier,
               onSwipeRight : ( item : VentCard) ->  Unit = {},
               onEmptyStack : () -> Unit = {},
               onLessStack : () -> Unit = {},
+              toAnotherUserPageView: (user: User) -> Unit,
               toReportVentCardView: () -> Unit,
               toRequestVentCardDeletionView: () -> Unit
 ){
@@ -120,7 +120,7 @@ fun CardStack(modifier : Modifier = Modifier,
                     backgroundColor = Color.White,
                     elevation = FloatingActionButtonDefaults.elevation(5.dp)
                 ) {
-                    Icon(Icons.Outlined.Close, contentDescription = "", tint = Color.Green
+                    Icon(painter = painterResource(id = R.drawable.swords_24dp), contentDescription = "", tint = Color.Black
                     )
                 }
                 Spacer( modifier = Modifier.width(70.dp))
@@ -129,7 +129,7 @@ fun CardStack(modifier : Modifier = Modifier,
                     backgroundColor = Color.White,
                     elevation = FloatingActionButtonDefaults.elevation(5.dp)
                 ) {
-                    Icon(Icons.Outlined.Favorite,contentDescription = "", tint = Color.Red)
+                    Icon(painter = painterResource(id = R.drawable.thumb_up_24dp),contentDescription = "", tint = Color.Black)
                 }
             }
         }
@@ -159,6 +159,7 @@ fun CardStack(modifier : Modifier = Modifier,
                     )
                     .shadow(4.dp, RoundedCornerShape(10.dp)),
                     item,
+                    toAnotherUserPageView = toAnotherUserPageView,
                     toReportVentCardView = toReportVentCardView,
                     toRequestVentCardDeletionView = toRequestVentCardDeletionView
                 )
@@ -171,6 +172,7 @@ fun CardStack(modifier : Modifier = Modifier,
 fun Card(
     modifier: Modifier = Modifier,
     ventCardItem: VentCardItem,
+    toAnotherUserPageView: (user: User) -> Unit,
     toReportVentCardView: () -> Unit,
     toRequestVentCardDeletionView: () -> Unit
 ){
@@ -179,41 +181,38 @@ fun Card(
     val ventCard = ventCardItem.ventCard
     val poster = ventCardItem.poster
 
+
+
+
     Surface(
         modifier
-    ){
+//            .fillMaxWidth()
+//            .padding(12.dp)
+//            .shadow(4.dp, RoundedCornerShape(10.dp))
+//            .clip(RoundedCornerShape(16.dp))
+    ) {
         LazyColumn(
-            modifier = Modifier
-                .padding(12.dp)
-                .fillMaxSize()
-        ){
+            modifier = Modifier.fillMaxSize()
+        ) {
+            //スワイプカードのコンテント以外の要素
             item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                ){
-                    //TODO　DBから自分が投稿したもの意外を取得
+                Box(modifier = Modifier.fillMaxWidth()) {
+
                     Image(
-                        painter = rememberAsyncImagePainter(poster.photoURL),
-                        contentDescription = null,
+                        painter = rememberAsyncImagePainter(ventCard.swipeCardImageURL),
+                        contentDescription = "Image",
                         modifier = Modifier
-                            .size(56.dp)
-                            .clip(CircleShape),
-                        contentScale = ContentScale.Crop
+                            .fillMaxWidth(),
+                        contentScale = ContentScale.FillWidth
                     )
-                    Column(
+
+                    Box(
                         modifier = Modifier
-                            .weight(5f)
-                            .fillMaxWidth()
+                            .align(Alignment.TopEnd)
                     ) {
-                        Row(modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween) {
-                            androidx.compose.material3.Text(text = poster.name)
-                            androidx.compose.material3.Text(
-                                text = ventCard.swipeCardCreatedDateTime?.let {
-                                    formatTimeDifference(it)
-                                } ?: "日付不明"
-                            )
+                        Row{
+                            ExpandableTagRow(tags = ventCard.tags)
+
                             IconButton(onClick = {
                                 activity.showAsBottomSheet { hideModal ->
                                     if (currentUser != null) {
@@ -227,42 +226,177 @@ fun Card(
                                         )
                                     }
                                 }
-
-                            }) {
-                                androidx.compose.material3.Icon(
+                            }){
+                                Icon(
                                     painter = painterResource(id = R.drawable.baseline_more_vert_24),
-                                    contentDescription = "option"
+                                    contentDescription = "option",
+                                    modifier = Modifier
+                                        .background(Color.White.copy(alpha = 0.4f), shape = CircleShape)
+
                                 )
                             }
                         }
-                        androidx.compose.material3.Text(text = ventCard.swipeCardContent)
-                        ventCard.tags.forEach { tag ->
-                            Text(text = tag, color = MaterialTheme.colorScheme.primary)
-                        }
-                        //TODO color choose
-                        Image(painter = rememberAsyncImagePainter(ventCard.swipeCardImageURL),
-                            contentDescription = "Image",
+
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(8.dp),
+                    ) {
+                        Image(
+                            painter = rememberAsyncImagePainter(poster.photoURL),
+                            contentDescription = "AccountIcon",
                             modifier = Modifier
-                                .clip(RoundedCornerShape(16.dp))
-                                .fillMaxWidth(),
-                            contentScale = ContentScale.FillWidth
+                                .size(40.dp)
+                                .clip(CircleShape)
+                                .border(1.5.dp, Color.White, CircleShape)
+                                .clickable {
+                                    toAnotherUserPageView(poster)
+                                },
+                            contentScale = ContentScale.Crop
                         )
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(4.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            androidx.compose.material3.Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
-                                contentDescription = "haert")
-                            androidx.compose.material3.Text(text = ventCard.likeCount.toString())
+                        Column {
+                            val textColor = if (ventCard.swipeCardImageURL.isEmpty()) {
+                                MaterialTheme.colorScheme.onBackground// 画像がない場合のテキスト色（例: グレー）
+                            } else {
+                                Color.White // 画像がある場合のテキスト色（白）
+                            }
+
+                            val shadow = if (ventCard.swipeCardImageURL.isEmpty()) {
+                                null // 画像がない場合はシャドウなし
+                            } else {
+                                Shadow(
+                                    color = Color.Black.copy(alpha = 0.6f), // シャドウの色を設定
+                                    offset = Offset(1f, 1f), // シャドウの位置を調整
+                                    blurRadius = 4f // シャドウのぼかし具合
+                                )
+                            }
+
+                            androidx.compose.material3.Text(
+                                text = poster.name,
+                                modifier = Modifier
+                                    .clickable {
+                                        toAnotherUserPageView(poster)
+                                    },
+                                color = textColor,
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    shadow = shadow // 影の有無を条件に応じて設定
+                                )
+                            )
+
+                            val formattedDate = ventCard.swipeCardCreatedDateTime?.let {
+                                formatTimeDifference(it)
+                            } ?: "日付不明"
+                            Text(
+                                text = formattedDate,
+                                color = textColor,
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    shadow = shadow // 影の有無を条件に応じて設定
+                                )
+                            )
                         }
                     }
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(text = ventCard.swipeCardContent)
                 }
             }
         }
     }
+
+
+
+
+//    Surface(
+//        modifier
+//    ){
+//        LazyColumn(
+//            modifier = Modifier
+//                .padding(12.dp)
+//                .fillMaxSize()
+//        ){
+//            item {
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxSize()
+//                ){
+//                    //TODO　DBから自分が投稿したもの意外を取得
+//                    Image(
+//                        painter = rememberAsyncImagePainter(poster.photoURL),
+//                        contentDescription = null,
+//                        modifier = Modifier
+//                            .size(56.dp)
+//                            .clip(CircleShape),
+//                        contentScale = ContentScale.Crop
+//                    )
+//                    Column(
+//                        modifier = Modifier
+//                            .weight(5f)
+//                            .fillMaxWidth()
+//                    ) {
+//                        Row(modifier = Modifier.fillMaxWidth(),
+//                            horizontalArrangement = Arrangement.SpaceBetween) {
+//                            androidx.compose.material3.Text(text = poster.name)
+//                            androidx.compose.material3.Text(
+//                                text = ventCard.swipeCardCreatedDateTime?.let {
+//                                    formatTimeDifference(it)
+//                                } ?: "日付不明"
+//                            )
+//                            IconButton(onClick = {
+//                                activity.showAsBottomSheet { hideModal ->
+//                                    if (currentUser != null) {
+//                                        VentCardBottomSheet(
+//                                            modifier = Modifier.fillMaxWidth(),
+//                                            ventCard = ventCard,
+//                                            currentUserId = currentUser.uid,
+//                                            toReportVentCardView = toReportVentCardView,
+//                                            toRequestVentCardDeletionView = toRequestVentCardDeletionView,
+//                                            hideModal = hideModal
+//                                        )
+//                                    }
+//                                }
+//
+//                            }) {
+//                                androidx.compose.material3.Icon(
+//                                    painter = painterResource(id = R.drawable.baseline_more_vert_24),
+//                                    contentDescription = "option"
+//                                )
+//                            }
+//                        }
+//                        androidx.compose.material3.Text(text = ventCard.swipeCardContent)
+//                        ventCard.tags.forEach { tag ->
+//                            Text(text = tag, color = MaterialTheme.colorScheme.primary)
+//                        }
+//                        //TODO color choose
+//                        Image(painter = rememberAsyncImagePainter(ventCard.swipeCardImageURL),
+//                            contentDescription = "Image",
+//                            modifier = Modifier
+//                                .clip(RoundedCornerShape(16.dp))
+//                                .fillMaxWidth(),
+//                            contentScale = ContentScale.FillWidth
+//                        )
+//                        Row(
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .padding(4.dp),
+//                            verticalAlignment = Alignment.CenterVertically,
+//                            horizontalArrangement = Arrangement.End
+//                        ) {
+//                            androidx.compose.material3.Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
+//                                contentDescription = "haert")
+//                            androidx.compose.material3.Text(text = ventCard.likeCount.toString())
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 }
 
 fun Modifier.moveTo(

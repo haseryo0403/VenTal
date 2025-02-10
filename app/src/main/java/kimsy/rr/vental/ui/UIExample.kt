@@ -1,4 +1,7 @@
 
+
+
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -7,24 +10,36 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,12 +48,124 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
+
+@Composable
+fun PostScreen(darkMode: Boolean) {
+    var isPosting by remember { mutableStateOf(true) }
+    var content by remember { mutableStateOf("") }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var currentTag by remember { mutableStateOf("") }
+    var tags by remember { mutableStateOf(listOf<String>()) }
+    var error by remember { mutableStateOf<String?>(null) }
+    var uploading by remember { mutableStateOf(false) }
+
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(16.dp)) {
+        if (isPosting) {
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(if (darkMode) Color.DarkGray else Color.White)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("新規投稿", style = MaterialTheme.typography.titleLarge, color = if (darkMode) Color.White else Color.Black)
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    OutlinedTextField(
+                        value = content,
+                        onValueChange = { content = it },
+                        label = { Text("投稿内容*") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = false,
+                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(onDone = {})
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = { /* 画像選択処理 */ },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("画像を選択")
+                    }
+
+                    imageUri?.let {
+                        Image(
+                            painter = rememberAsyncImagePainter(it),
+                            contentDescription = "選択した画像",
+                            modifier = Modifier
+                                .size(100.dp)
+                                .padding(8.dp),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    OutlinedTextField(
+                        value = currentTag,
+                        onValueChange = { currentTag = it },
+                        label = { Text("タグを入力（Enterで追加）") },
+                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(onDone = {
+                            if (currentTag.isNotBlank()) {
+                                tags = tags + currentTag
+                                currentTag = ""
+                            }
+                        })
+                    )
+
+                    Row(modifier = Modifier.padding(top = 8.dp)) {
+                        tags.forEach { tag ->
+                            Chip(tag) { tags = tags - tag }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = { /* 投稿処理 */ },
+                        enabled = content.isNotBlank(),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(if (uploading) "投稿中..." else "投稿する")
+                    }
+
+                    error?.let {
+                        Text(it, color = Color.Red, modifier = Modifier.padding(top = 8.dp))
+                    }
+                }
+            }
+        } else {
+            // 投稿一覧表示エリア（未実装）
+        }
+    }
+}
+
+@Composable
+fun Chip(tag: String, onRemove: () -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .padding(4.dp)
+            .background(Color.LightGray, shape = RoundedCornerShape(50))
+            .padding(horizontal = 8.dp, vertical = 4.dp)
+    ) {
+        Text(text = "#$tag", color = Color.Black)
+        Spacer(modifier = Modifier.width(4.dp))
+        Text("×", color = Color.Red, modifier = Modifier.clickable { onRemove() })
+    }
+}
+
 
 
 @Composable
@@ -593,7 +720,8 @@ data class Message(val type: String, val content: String)
 fun DefaultPreview() {
 //    TryScreen()
 //    SwipeCardScreen()
-    FireScreen()
+//    FireScreen()
+    PostScreen(darkMode = false)
 }
 
 
