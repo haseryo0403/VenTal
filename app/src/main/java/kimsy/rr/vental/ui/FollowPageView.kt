@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
@@ -131,9 +132,11 @@ fun FollowingUserView(
                 items(followingUser) { user ->
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(8.dp).clickable {
-                            toAnotherUserPageView(user)
-                        }
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .clickable {
+                                toAnotherUserPageView(user)
+                            }
                     ) {
                         Image(
                             painter = rememberAsyncImagePainter(user.photoURL),
@@ -204,7 +207,7 @@ fun FollowUserDebateView(
                     modifier = Modifier.fillMaxSize(),
                     state = scrollState
                 ) {
-                    items(debateItems) { item->
+                    itemsIndexed(debateItems) { debateIndex, item->
                         DebateCard(
                             sharedDebateViewModel,
                             toDebateView,
@@ -212,10 +215,12 @@ fun FollowUserDebateView(
                             onLikeStateSuccess = { debateItem ->
                                 viewModel.onLikeSuccess(debateItem)
                             },
-                            item)                        }
-                    if (!hasFinishedLoadingAllItems) {
-                        item { FollowPageLoadingIndicator(viewModel = viewModel) }
+                            item)
+                        if ((debateIndex + 1) % 7 == 0) {
+                            LoadFollowPageItem(viewModel)
+                        }
                     }
+                    item { FollowPageLoadingIndicator(viewModel = viewModel) }
                 }
 
             }
@@ -240,6 +245,17 @@ fun FollowUserDebateView(
     }
 }
 
+@Composable
+fun LoadFollowPageItem(viewModel: FollowPageViewModel) {
+    val hasFinishedLoadingAllItems = viewModel.hasFinishedLoadingAllDebateItems
+    LaunchedEffect(Unit) {
+        // 要素の追加読み込み
+        if (!hasFinishedLoadingAllItems) {
+            viewModel.loadFollowingUserDebates()
+        }
+    }
+}
+
 
 @Composable
 fun FollowPageLoadingIndicator(viewModel: FollowPageViewModel) {
@@ -260,11 +276,6 @@ fun FollowPageLoadingIndicator(viewModel: FollowPageViewModel) {
             }
             else -> {}
         }
-    }
-
-    LaunchedEffect(Unit) {
-        // 要素の追加読み込み
-        viewModel.loadFollowingUserDebates()
     }
 }
 

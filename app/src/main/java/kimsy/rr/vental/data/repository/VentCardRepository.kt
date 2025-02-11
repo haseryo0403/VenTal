@@ -18,6 +18,8 @@ import javax.inject.Inject
 class VentCardRepository @Inject constructor(
     private val db: FirebaseFirestore
 ) {
+    val limitNum = 10L
+
     suspend fun saveVentCardToFireStore(
         ventCard: VentCard
     ){
@@ -46,9 +48,9 @@ class VentCardRepository @Inject constructor(
             .orderBy("swipeCardCreatedDateTime", Query.Direction.DESCENDING)
 
         val querySnapshot = if (lastVisible == null) {
-            query.limit(10).get().await()
+            query.limit(limitNum).get().await()
         } else {
-            query.startAfter(lastVisible).limit(10).get().await()
+            query.startAfter(lastVisible).limit(limitNum).get().await()
         }
 
         if (querySnapshot.isEmpty) {
@@ -82,9 +84,9 @@ suspend fun getVentCardItems(
             .orderBy("swipeCardCreatedDateTime", Query.Direction.DESCENDING)
 
         val querySnapshot = if (lastVisible == null) {
-            query.limit(10).get().await()
+            query.limit(limitNum).get().await()
         } else {
-            query.startAfter(lastVisible).limit(10).get().await()
+            query.startAfter(lastVisible).limit(limitNum).get().await()
         }
 
         if (querySnapshot.isEmpty) {

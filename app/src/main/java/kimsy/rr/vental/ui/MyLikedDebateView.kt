@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,12 +20,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import kimsy.rr.vental.viewModel.MyLikedDebateViewModel
-import kimsy.rr.vental.viewModel.SharedDebateViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.DebateCard
 import kimsy.rr.vental.ui.commonUi.ErrorView
+import kimsy.rr.vental.viewModel.MyLikedDebateViewModel
+import kimsy.rr.vental.viewModel.SharedDebateViewModel
 
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -75,7 +75,7 @@ fun MyLikedDebateView(
             // LazyColumn Content
             when {
                 myLikedDebateItems.isNotEmpty() -> {
-                    items(myLikedDebateItems) {item->
+                    itemsIndexed(myLikedDebateItems) {index, item->
                         DebateCard(
                             sharedDebateViewModel,
                             toDebateView,
@@ -84,10 +84,12 @@ fun MyLikedDebateView(
                                     debateItem ->
                                 viewModel.onLikeSuccess(debateItem)
                             },
-                            item)                        }
-                    if (!hasFinishedLoadingAllItems) {
-                        item { MyLikedDebateLoadingIndicator(viewModel) }
+                            item)
+                        if ((index + 1) % 7 == 0) {
+                            LoadMyLikedDebate(viewModel)
+                        }
                     }
+                    item { MyLikedDebateLoadingIndicator(viewModel) }
                 }
                 else -> {
                     item {
@@ -121,6 +123,17 @@ fun MyLikedDebateView(
 }
 
 @Composable
+fun LoadMyLikedDebate(viewModel: MyLikedDebateViewModel) {
+    val hasFinishedLoadingAllItems = viewModel.hasFinishedLoadingAllLikedDebateItems
+    if (!hasFinishedLoadingAllItems) {
+        LaunchedEffect(Unit) {
+            viewModel.loadLikedDebates()
+            Log.d("CUDUC", "LE")
+        }
+    }
+
+}
+@Composable
 fun MyLikedDebateLoadingIndicator(viewModel: MyLikedDebateViewModel) {
     val getDebateItemState by viewModel.loadLikedDebateItemsState.collectAsState()
     Box(
@@ -137,10 +150,5 @@ fun MyLikedDebateLoadingIndicator(viewModel: MyLikedDebateViewModel) {
             Status.FAILURE -> Text(text = "討論の追加の取得に失敗しまいた。")
             else -> {}
         }
-    }
-
-    LaunchedEffect(Unit) {
-        viewModel.loadLikedDebates()
-        Log.d("CUDUC", "LE")
     }
 }

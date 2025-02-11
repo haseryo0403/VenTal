@@ -1,13 +1,12 @@
 package kimsy.rr.vental.ui
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,12 +19,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import kimsy.rr.vental.viewModel.MyDebateViewModel
-import kimsy.rr.vental.viewModel.SharedDebateViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.DebateCard
 import kimsy.rr.vental.ui.commonUi.ErrorView
+import kimsy.rr.vental.viewModel.MyDebateViewModel
+import kimsy.rr.vental.viewModel.SharedDebateViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -72,7 +71,7 @@ fun MyDebateView(
         ) {
             when {
                 myPageItems.isNotEmpty() -> {
-                    items(myPageItems) {item->
+                    itemsIndexed(myPageItems) {index, item->
                         DebateCard(
                             sharedDebateViewModel,
                             toDebateView,
@@ -81,10 +80,12 @@ fun MyDebateView(
                                     debateItem ->
                                 viewModel.onLikeSuccess(debateItem)
                             },
-                            item)                        }
-                    if (!hasFinishedLoadingAllItems) {
-                        item { MyPageLoadingIndicator(viewModel) }
+                            item)
+                        if ((index + 1) % 7 == 0) {
+                            LoadMyDebate(viewModel)
+                        }
                     }
+                    item { MyPageLoadingIndicator(viewModel) }
                 }
                 else -> {
                     item {
@@ -107,8 +108,6 @@ fun MyDebateView(
                                         viewModel.debateItemSavedScrollOffset
                                     )
                                 })
-//                                Text(text = "討論の取得に失敗しました。")
-//                                viewModel.resetGetDebateItemState()
                             }
                             else -> viewModel.resetGetDebateItemState()
                         }
@@ -117,6 +116,17 @@ fun MyDebateView(
             }
         }
     }
+}
+
+@Composable
+fun LoadMyDebate(viewModel: MyDebateViewModel) {
+    val hasFinishedLoadingAllItems = viewModel.hasFinishedLoadingAllDebateItems
+    if (!hasFinishedLoadingAllItems) {
+        LaunchedEffect(Unit) {
+            viewModel.getMyPageDebateItems()
+        }
+    }
+
 }
 
 @Composable
@@ -136,10 +146,5 @@ fun MyPageLoadingIndicator(viewModel: MyDebateViewModel) {
             Status.FAILURE -> Text(text = "討論の追加の取得に失敗しまいた。")
             else -> {}
         }
-    }
-
-    LaunchedEffect(Unit) {
-        viewModel.getMyPageDebateItems()
-        Log.d("CUDUC", "LE")
     }
 }

@@ -151,8 +151,6 @@ fun MainView(
                 title = title.value,
                 navController = controller,
                 currentRoute = currentRoute?:"null",
-                context = context,
-                viewModel = ventCardCreationViewModel,
                 bottomBarHeight = bottomBarHeight,
                 bottomBarOffsetHeightPx = bottomBarOffsetHeightPx
             )

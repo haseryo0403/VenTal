@@ -2,8 +2,10 @@ package kimsy.rr.vental.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -59,6 +61,7 @@ import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
 import kimsy.rr.vental.ui.CommonComposable.MaxLengthOutlinedTextField
 import kimsy.rr.vental.ui.CommonComposable.MaxLengthTextField
+import kimsy.rr.vental.ui.CommonComposable.RememberImagePicker
 import kimsy.rr.vental.ui.commonUi.DottedLine
 import kimsy.rr.vental.viewModel.VentCardCreationViewModel
 
@@ -67,6 +70,7 @@ import kimsy.rr.vental.viewModel.VentCardCreationViewModel
 
 
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalLayoutApi::class)
 @SuppressLint("SuspiciousIndentation")
 @Composable
@@ -76,11 +80,17 @@ fun VentCardCreationView(
 ){
     val selectedUri = viewModel.selectedImageUri
     val dialogOpen = remember { mutableStateOf(false)}
+    val requestImageSelection = RememberImagePicker(context) { uri ->
+        if (uri != null) {
+            // 画像URIが選択された場合の処理
+            viewModel.selectedImageUri = uri
+        }
+    }
 
     LazyColumn(
     modifier = Modifier
         .fillMaxSize()
-        .padding(start = 16.dp, end = 16.dp)
+        .padding(8.dp)
     ) {
         item {
 
@@ -143,13 +153,13 @@ fun VentCardCreationView(
                     }
 
                     Button(
-                        onClick = { /* ファイル選択処理 */ },
+                        onClick = { requestImageSelection() },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.surfaceVariant,
                             contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     ) {
-                        Text(text = stringResource(id = R.string.select_file))
+                        Text(text = stringResource(id = R.string.select_file), color = MaterialTheme.colorScheme.primary)
                     }
 
                     selectedUri?.let {
@@ -208,7 +218,7 @@ fun VentCardCreationView(
                             contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     ) {
-                        Text(text = stringResource(id = R.string.add_tag))
+                        Text(text = stringResource(id = R.string.add_tag), color = MaterialTheme.colorScheme.primary)
                     }
                     FlowRow(
                         modifier = Modifier.fillMaxWidth()

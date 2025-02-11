@@ -1,7 +1,6 @@
 package kimsy.rr.vental.ui
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -109,7 +108,9 @@ fun TimeLineView(
     }
 
     Column(
-        modifier = Modifier.fillMaxWidth().background(color = MaterialTheme.colorScheme.background)
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = MaterialTheme.colorScheme.background)
     ) {
         TabRow(
             selectedTabIndex = selectedTabIndex,
@@ -167,7 +168,7 @@ fun TimeLineView(
                                     modifier = Modifier.background(color = MaterialTheme.colorScheme.background),
                                     state = recentItemScrollState
                                 ) {
-                                    items(recentTimeLineItems) { item ->
+                                    itemsIndexed(recentTimeLineItems) {debateIndex, item ->
                                         DebateCard(
                                             sharedDebateViewModel,
                                             toDebateView,
@@ -177,11 +178,11 @@ fun TimeLineView(
                                             },
                                             item
                                         )
+                                        if ((debateIndex +1) % 7 == 0) {
+                                            LoadRecentDebateItems(timeLineViewModel)
+                                        }
                                     }
-                                    if (!hasFinishedLoadingAllRecentItems) {
-                                        //                        item { LoadingIndicator(sharedDebateViewModel) }
-                                        item { LoadingIndicator(timeLineViewModel) }
-                                    }
+                                    item { LoadingIndicator(timeLineViewModel) }
                                 }
                             }
                         }
@@ -192,7 +193,7 @@ fun TimeLineView(
                                 onRefresh = { timeLineViewModel.onRefreshPopularItem() }
                             ) {
                                 LazyColumn(state = popularItemScrollState) {
-                                    items(popularTimeLineItems) { item ->
+                                    itemsIndexed(popularTimeLineItems) { debateIndex, item ->
                                         DebateCard(
                                             sharedDebateViewModel,
                                             toDebateView,
@@ -202,10 +203,11 @@ fun TimeLineView(
                                             },
                                             item
                                         )
+                                        if ((debateIndex + 1) % 7 == 0) {
+                                            LoadPopularDebateItems(timeLineViewModel)
+                                        }
                                     }
-                                    if (!hasFinishedLoadingAllPopularItems) {
-                                        item { LoadingIndicator(timeLineViewModel) }
-                                    }
+                                    item { LoadingIndicator(timeLineViewModel) }
                                 }
                             }
                         }
@@ -238,8 +240,6 @@ fun TimeLineView(
                                 )
                             }
                         )
-//                        Text(text = "討論の取得に失敗しまいた。")
-//                        timeLineViewModel.resetGetDebateItemState()
                     }
 
                     else -> {
@@ -247,6 +247,27 @@ fun TimeLineView(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun LoadRecentDebateItems(timeLineViewModel: TimeLineViewModel) {
+    val hasFinishedLoadingAllRecentItems = timeLineViewModel.hasFinishedLoadingAllRecentItems
+    LaunchedEffect(Unit) {
+        // 要素の追加読み込み
+        if (!hasFinishedLoadingAllRecentItems){
+            timeLineViewModel.getRecentTimeLineItems()
+        }
+    }
+}
+@Composable
+fun LoadPopularDebateItems(timeLineViewModel: TimeLineViewModel) {
+    val hasFinishedLoadingAllPopularItems = timeLineViewModel.hasFinishedLoadingAllPopularItems
+    LaunchedEffect(Unit) {
+        // 要素の追加読み込み
+        if (!hasFinishedLoadingAllPopularItems){
+            timeLineViewModel.getPopularTimeLineItems()
         }
     }
 }
@@ -271,12 +292,12 @@ fun LoadingIndicator(timeLineViewModel: TimeLineViewModel) {
         }
     }
 
-    LaunchedEffect(Unit) {
-        // 要素の追加読み込み
-//        sharedDebateViewModel.getTimeLineItems()
-        timeLineViewModel.getRecentTimeLineItems()
-        Log.d("CUDUC", "LE")
-    }
+//    LaunchedEffect(Unit) {
+//        // 要素の追加読み込み
+////        sharedDebateViewModel.getTimeLineItems()
+//        timeLineViewModel.getRecentTimeLineItems()
+//        Log.d("CUDUC", "LE")
+//    }
 }
 //
 //@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)

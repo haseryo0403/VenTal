@@ -53,7 +53,7 @@ class UserRepository @Inject constructor(
         return userDoc.toObject(User::class.java)
     }
 
-    suspend fun saveUserToFirestore(): String{
+    suspend fun saveUserToFirestore(): User{
             val user = auth.currentUser
                 ?: throw IllegalArgumentException("保存するユーザーがありません。")
 
@@ -64,7 +64,7 @@ class UserRepository @Inject constructor(
                 .set(newUser)
                 .await()
 
-            return newUser.uid
+            return newUser
     }
 
     fun signOutFromFirebaseAuth() {

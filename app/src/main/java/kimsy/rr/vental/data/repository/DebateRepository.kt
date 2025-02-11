@@ -28,6 +28,9 @@ class DebateRepository @Inject constructor(
     private val db: FirebaseFirestore,
 ) {
 
+    private val limitNum = 10L
+
+
     suspend fun fetchDebateByDebateId(debateId: String): Debate {
         val query = db
             .collectionGroup("debates")
@@ -52,22 +55,18 @@ class DebateRepository @Inject constructor(
         }
         return debates
     }
-    
-    suspend fun getRelatedDebatesCount(posterId: String, swipeCardId: String): Int{
-        return withTimeout(10000L) {
-            val query = db
-                .collection("users")
-                .document(posterId)
-                .collection("swipeCards")
-                .document(swipeCardId)
-                .collection("debates")
 
-            val querySnapshot = query.count().get(AggregateSource.SERVER).await()
+    suspend fun getRelatedDebatesCount(posterId: String, swipeCardId: String): Int {
+        val query = db
+            .collection("users")
+            .document(posterId)
+            .collection("swipeCards")
+            .document(swipeCardId)
+            .collection("debates")
 
-            val count = querySnapshot.count.toInt()
+        val querySnapshot = query.count().get(AggregateSource.SERVER).await()
 
-            count
-        }
+        return querySnapshot.count.toInt()
     }
 
     suspend fun getDebatesCountRelatedUser(userId: String): Int {
@@ -94,9 +93,9 @@ class DebateRepository @Inject constructor(
         ).orderBy("debateCreatedDatetime", Query.Direction.DESCENDING)
 
         val querySnapshot = if (lastVisible == null) {
-            query.limit(100).get().await()
+            query.limit(limitNum).get().await()
         } else {
-            query.startAfter(lastVisible).limit(100).get().await()
+            query.startAfter(lastVisible).limit(limitNum).get().await()
         }
 
         if (querySnapshot.isEmpty) {
@@ -139,7 +138,7 @@ class DebateRepository @Inject constructor(
             .collectionGroup("debates")
             .whereIn("debateId", debateIds)
 
-        val querySnapshot = query.limit(10).get().await()
+        val querySnapshot = query.limit(limitNum).get().await()
 
         if (querySnapshot.isEmpty) {
             // データがない場合、空リストとnullを返す
@@ -168,9 +167,9 @@ class DebateRepository @Inject constructor(
             .orderBy("debateCreatedDatetime", Query.Direction.DESCENDING)
 
         val querySnapshot = if (lastVisible == null) {
-            query.limit(100).get().await()
+            query.limit(limitNum).get().await()
         } else {
-            query.startAfter(lastVisible).limit(100).get().await()
+            query.startAfter(lastVisible).limit(limitNum).get().await()
         }
 
         if (querySnapshot.isEmpty) {
@@ -242,9 +241,9 @@ class DebateRepository @Inject constructor(
             .orderBy("totalLikeCount", Query.Direction.DESCENDING)
 
         val querySnapshot = if (lastVisible == null) {
-            query.limit(100).get().await()
+            query.limit(limitNum).get().await()
         } else {
-            query.startAfter(lastVisible).limit(100).get().await()
+            query.startAfter(lastVisible).limit(limitNum).get().await()
         }
 
         if (querySnapshot.isEmpty) {

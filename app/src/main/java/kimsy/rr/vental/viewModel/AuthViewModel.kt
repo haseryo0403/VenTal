@@ -86,8 +86,9 @@ class AuthViewModel @Inject constructor(
                         saveNewUser()
                     } else {
                         if (user.accountClosingFlag) {
-                            reLogin(user.uid)
+                            reLogin(user)
                         } else {
+                            User.CurrentUserShareModel.setCurrentUserToModel(user)
                             _authState.value = Resource.success(true)
                         }
 
@@ -106,7 +107,13 @@ class AuthViewModel @Inject constructor(
             val saveUserState = saveUserUseCase.execute()
             when(saveUserState.status) {
                 Status.SUCCESS -> {
-                    _authState.value = Resource.success(true)
+                    if (saveUserState.data != null) {
+                        User.CurrentUserShareModel.setCurrentUserToModel(saveUserState.data)
+                        _authState.value = Resource.success(true)
+                    } else {
+                        _authState.value = Resource.failure()
+                    }
+
                 }
                 Status.FAILURE -> {
                     _authState.value = Resource.failure()
@@ -116,11 +123,12 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    private fun reLogin(userId: String) {
+    private fun reLogin(user: User) {
         viewModelScope.launch {
-            val reLogInState = reLoginUseCase.execute(userId)
+            val reLogInState = reLoginUseCase.execute(user.uid)
             when(reLogInState.status) {
                 Status.SUCCESS -> {
+                    User.CurrentUserShareModel.setCurrentUserToModel(user)
                     _authState.value = Resource.success(true)
                 }
                 Status.FAILURE -> {
@@ -164,6 +172,7 @@ class AuthViewModel @Inject constructor(
             _signOutState.value = signOutUseCase.execute()
                 when(_signOutState.value.status) {
                     Status.SUCCESS -> {
+                        User.CurrentUserShareModel.resetCurrentUserOnModel()
                         finishMainActivityUseCase.execute(context)
                     }
                     else -> {

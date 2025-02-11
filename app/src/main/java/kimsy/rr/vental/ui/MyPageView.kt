@@ -243,8 +243,9 @@ fun AccountContent(
             }
 
             if (toProfileEditView != null) {
-                Button(onClick = { toProfileEditView() },
-
+                Button(
+                    onClick = { toProfileEditView() },
+                    modifier = Modifier.padding(top = 4.dp)
                     ) {
                     Text(text = "プロフィールを編集")
                 }

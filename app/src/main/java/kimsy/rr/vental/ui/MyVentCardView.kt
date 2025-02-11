@@ -1,9 +1,10 @@
 package kimsy.rr.vental.ui
 
 import android.app.Activity
-import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,15 +13,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,18 +30,23 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
-import kimsy.rr.vental.viewModel.MyVentCardViewModel
 import kimsy.rr.vental.data.Status
+import kimsy.rr.vental.ui.CommonComposable.ExpandableTagRow
 import kimsy.rr.vental.ui.CommonComposable.formatTimeDifference
 import kimsy.rr.vental.ui.CommonComposable.showAsBottomSheet
 import kimsy.rr.vental.ui.commonUi.ErrorView
 import kimsy.rr.vental.ui.commonUi.VentCardBottomSheet
+import kimsy.rr.vental.viewModel.MyVentCardViewModel
 
 @Composable
 fun MyVentCardView(
@@ -51,8 +56,8 @@ fun MyVentCardView(
 ) {
     val activity = LocalContext.current as Activity
     val currentUser by viewModel.currentUser.collectAsState()
-    val profileURL = currentUser?.photoURL
-    val currentUserName = currentUser?.name?: "unknown"
+    val profileURL = currentUser.photoURL
+    val currentUserName = currentUser.name
 
     val hasFinishedLoadingAllItems = viewModel.hasFinishedLoadingAllVentCards
 
@@ -84,112 +89,129 @@ fun MyVentCardView(
     ) {
         when {
             myVentCards.isNotEmpty() -> {
-                items(myVentCards) {item->
-
-                    Column(
-                        modifier = Modifier.padding(8.dp)
+                itemsIndexed(myVentCards) {index, ventCard->
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp)
+                            .clickable { /* Handle Click Action */ }
+                            .shadow(4.dp, RoundedCornerShape(10.dp))
+                            .clip(RoundedCornerShape(16.dp))
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ){
-                            Image(
-                                painter = rememberAsyncImagePainter(profileURL),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(44.dp)
-                                    .clip(CircleShape),
-                                contentScale = ContentScale.Crop
-                            )
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                verticalArrangement = Arrangement.Top
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.Top
-                                ) {
-                                    Text(text = currentUserName)
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically // 中央揃え
-                                    ) {
-                                        Text(
-                                            text = item.swipeCardCreatedDateTime?.let {
-                                                formatTimeDifference(it)
-                                            } ?: "日付不明"
-                                        )
-                                        IconButton(onClick = {
-                                            activity.showAsBottomSheet { hideModal ->
-                                                currentUser?.let {
-                                                    VentCardBottomSheet(
-                                                        modifier = Modifier.fillMaxWidth(),
-                                                        ventCard = item,
-                                                        currentUserId = it.uid,
-                                                        toReportVentCardView = toReportVentCardView,
-                                                        toRequestVentCardDeletionView = toRequestVentCardDeletionView,
-                                                        hideModal = hideModal
-                                                    )
-                                                }
-                                            }
+                        Column(
 
+                        ) {
+                            Box(modifier = Modifier.fillMaxWidth()) {
+
+                                Image(
+                                    painter = rememberAsyncImagePainter(ventCard.swipeCardImageURL),
+                                    contentDescription = "Image",
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    contentScale = ContentScale.FillWidth
+                                )
+
+                                Box(
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                ) {
+                                    Row{
+                                        ExpandableTagRow(tags = ventCard.tags)
+
+                                        androidx.compose.material.IconButton(onClick = {
+                                            activity.showAsBottomSheet { hideModal ->
+                                                VentCardBottomSheet(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    ventCard = ventCard,
+                                                    currentUserId = currentUser.uid,
+                                                    toReportVentCardView = toReportVentCardView,
+                                                    toRequestVentCardDeletionView = toRequestVentCardDeletionView,
+                                                    hideModal = hideModal
+                                                )
+                                            }
                                         }) {
                                             Icon(
                                                 painter = painterResource(id = R.drawable.baseline_more_vert_24),
-                                                contentDescription = "option"
-                                            )
-                                        }
-                                        IconButton(
-                                            onClick = { /*TODO*/ },
-                                            modifier = Modifier.size(24.dp)
-                                        ) {
-                                            Icon(
-                                                painter = painterResource(id = R.drawable.baseline_more_vert_24),
-                                                contentDescription = "HORIZONTAL ELLIPSIS",
+                                                contentDescription = "option",
                                                 modifier = Modifier
-                                                    .size(20.dp)
-                                                    .padding(top = 8.dp)
+                                                    .background(
+                                                        Color.White.copy(alpha = 0.4f),
+                                                        shape = CircleShape
+                                                    )
+
                                             )
                                         }
                                     }
 
                                 }
-                                Text(text = item.swipeCardContent)
-                                item.tags.forEach {tag ->
-                                    Text(
-                                        text = tag,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                }
-                                Image(painter = rememberAsyncImagePainter(item.swipeCardImageURL),
-                                    contentDescription = "Image",
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .fillMaxWidth(),
-                                    contentScale = ContentScale.FillWidth
-                                )
+
                                 Row(
                                     modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(4.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.End
+                                        .align(Alignment.BottomStart)
+                                        .padding(8.dp),
                                 ) {
-                                    Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
-                                        contentDescription = "haert")
-                                    Text(text = item.likeCount.toString())
+                                    Image(
+                                        painter = rememberAsyncImagePainter(profileURL),
+                                        contentDescription = "AccountIcon",
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                            .clip(CircleShape)
+                                            .border(1.5.dp, Color.White, CircleShape),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                    Column {
+                                        val textColor = if (ventCard.swipeCardImageURL.isEmpty()) {
+                                            MaterialTheme.colorScheme.onBackground// 画像がない場合のテキスト色（例: グレー）
+                                        } else {
+                                            Color.White // 画像がある場合のテキスト色（白）
+                                        }
+
+                                        val shadow = if (ventCard.swipeCardImageURL.isEmpty()) {
+                                            null // 画像がない場合はシャドウなし
+                                        } else {
+                                            Shadow(
+                                                color = Color.Black.copy(alpha = 0.6f), // シャドウの色を設定
+                                                offset = Offset(1f, 1f), // シャドウの位置を調整
+                                                blurRadius = 4f // シャドウのぼかし具合
+                                            )
+                                        }
+
+                                        Text(
+                                            text = currentUserName,
+                                            color = textColor,
+                                            style = MaterialTheme.typography.bodyMedium.copy(
+                                                shadow = shadow // 影の有無を条件に応じて設定
+                                            )
+                                        )
+
+                                        val formattedDate = ventCard.swipeCardCreatedDateTime?.let {
+                                            formatTimeDifference(it)
+                                        } ?: "日付不明"
+                                        androidx.compose.material.Text(
+                                            text = formattedDate,
+                                            color = textColor,
+                                            style = MaterialTheme.typography.bodySmall.copy(
+                                                shadow = shadow // 影の有無を条件に応じて設定
+                                            )
+                                        )
+                                    }
                                 }
                             }
+
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                            ) {
+                                Text(text = ventCard.swipeCardContent)
+                            }
+
                         }
-                        Divider()
                     }
-
-
+                    if ((index + 1) % 7 == 0)
+                    LoadMyVentCard(viewModel)
                 }
-                if (!hasFinishedLoadingAllItems) {
-                    item { MyVentCardLoadingIndicator(viewModel = viewModel) }
-                }
+                item { MyVentCardLoadingIndicator(viewModel = viewModel) }
             }
             else -> {
                 item {
@@ -222,6 +244,16 @@ fun MyVentCardView(
 }
 
 @Composable
+fun LoadMyVentCard(viewModel: MyVentCardViewModel) {
+    val hasFinishedLoadingAllItems = viewModel.hasFinishedLoadingAllVentCards
+    if (!hasFinishedLoadingAllItems) {
+        LaunchedEffect(Unit) {
+            viewModel.loadMyVentCards()
+        }
+    }
+}
+
+@Composable
 fun MyVentCardLoadingIndicator(viewModel: MyVentCardViewModel) {
     val loadVentCardState by viewModel.loadVentCardState.collectAsState()
     Box(
@@ -238,10 +270,5 @@ fun MyVentCardLoadingIndicator(viewModel: MyVentCardViewModel) {
             Status.FAILURE -> Text(text = "討論の追加の取得に失敗しまいた。")
             else -> {}
         }
-    }
-
-    LaunchedEffect(Unit) {
-        viewModel.loadMyVentCards()
-        Log.d("CUDUC", "LE")
     }
 }
