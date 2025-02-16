@@ -82,7 +82,10 @@ fun MyDebateView(
                             },
                             item)
                         if ((index + 1) % 7 == 0) {
-                            LoadMyDebate(viewModel)
+                             if (!hasFinishedLoadingAllItems) {
+                                 LoadMyDebate(viewModel)
+                             }
+
                         }
                     }
                     item { MyPageLoadingIndicator(viewModel) }

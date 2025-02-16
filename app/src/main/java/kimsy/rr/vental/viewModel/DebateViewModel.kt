@@ -2,8 +2,13 @@ package kimsy.rr.vental.viewModel
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.DocumentSnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kimsy.rr.vental.UseCase.FollowUseCase
 import kimsy.rr.vental.UseCase.GetCommentItemUseCase
@@ -56,11 +61,21 @@ class DebateViewModel @Inject constructor(
     private val _followState = MutableStateFlow<Resource<Unit>>(Resource.idle())
     val followState: StateFlow<Resource<Unit>> get() = _followState
 
-    private val _fetchCommentItemState = MutableStateFlow<Resource<List<CommentItem>>>(Resource.idle())
-    val fetchCommentItemState: StateFlow<Resource<List<CommentItem>>> get() = _fetchCommentItemState
+    private val _fetchCommentItemState = MutableStateFlow<Resource<Pair<List<CommentItem>, DocumentSnapshot?>>>(Resource.idle())
+    val fetchCommentItemState: StateFlow<Resource<Pair<List<CommentItem>, DocumentSnapshot?>>> get() = _fetchCommentItemState
+//    private val _fetchCommentItemState = MutableStateFlow<Resource<List<CommentItem>>>(Resource.idle())
+//    val fetchCommentItemState: StateFlow<Resource<List<CommentItem>>> get() = _fetchCommentItemState
 
     private val _sendCommentState = MutableStateFlow<Resource<Unit>>(Resource.idle())
     val sendCommentState: StateFlow<Resource<Unit>> get() = _sendCommentState
+
+    private var commentItemLastVisible: DocumentSnapshot? = null
+    var hasFinishedLoadingAllCommentItems by mutableStateOf(false)
+        private set
+
+    private val _commentItems = MutableStateFlow<List<CommentItem>>(emptyList())
+    val commentItems: StateFlow<List<CommentItem>> get() = _commentItems
+
 
     fun getMessages(debate: Debate) {
         viewModelScope.launch {
@@ -139,12 +154,29 @@ class DebateViewModel @Inject constructor(
         debate: Debate
     ) {
         viewModelScope.launch {
+            Log.d("DVM", "getComment called lastV: $commentItemLastVisible")
             _fetchCommentItemState.value = Resource.loading()
             _fetchCommentItemState.value = getCommentItemUseCase.execute(
                 debate.posterId,
                 debate.swipeCardId,
-                debate.debateId
+                debate.debateId,
+                commentItemLastVisible
             )
+            when (_fetchCommentItemState.value.status) {
+                Status.SUCCESS -> {
+                    _fetchCommentItemState.value.data?.let { (commentItems, newLastVisible) ->
+                        if (commentItems.isEmpty()) {
+                            Log.d("DVM", "empty")
+                            hasFinishedLoadingAllCommentItems = true
+                        }
+
+                        _commentItems.value = _commentItems.value + commentItems
+                        commentItemLastVisible = newLastVisible
+                    }
+                }
+                Status.FAILURE -> {}
+                else -> {}
+            }
         }
     }
 
@@ -168,6 +200,10 @@ class DebateViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun addCommentLocally(comment: CommentItem) {
+        _commentItems.value = listOf(comment) + _commentItems.value
     }
 
     private suspend fun saveNotificationToDebateParticipants(debate: Debate, text: String) {
@@ -201,4 +237,8 @@ class DebateViewModel @Inject constructor(
         _followingUserIdsState.value = Resource.idle()
         _sendCommentState.value = Resource.idle()
     }
+
+//    fun resetHasFinishedLoadingAllCommentItems() {
+//        hasFinishedLoadingAllCommentItems = false
+//    }
 }

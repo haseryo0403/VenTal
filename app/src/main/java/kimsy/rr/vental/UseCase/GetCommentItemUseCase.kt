@@ -1,5 +1,6 @@
 package kimsy.rr.vental.UseCase
 
+import com.google.firebase.firestore.DocumentSnapshot
 import kimsy.rr.vental.data.Comment
 import kimsy.rr.vental.data.CommentItem
 import kimsy.rr.vental.data.NetworkUtils
@@ -21,14 +22,24 @@ class GetCommentItemUseCase @Inject constructor(
     suspend fun execute(
         posterId: String,
         ventCardId: String,
-        debateId: String
-    ): Resource<List<CommentItem>> {
+        debateId: String,
+        lastVisible: DocumentSnapshot?,
+        ): Resource<Pair<List<CommentItem>, DocumentSnapshot?>> {
         return executeWithLoggingAndNetworkCheck {
-            val comments = commentRepository.fetchComments(
+            val result = commentRepository.fetchComments(
                 posterId = posterId,
                 swipeCardId = ventCardId,
-                debateId = debateId
+                debateId = debateId,
+                lastVisible = lastVisible
             )
+            val comments = result.first
+            val newLastVisible = result.second
+
+//            val comments = commentRepository.fetchComments(
+//                posterId = posterId,
+//                swipeCardId = ventCardId,
+//                debateId = debateId
+//            )
 
             val commentItems = coroutineScope {
                 comments.map { comment ->
@@ -38,7 +49,7 @@ class GetCommentItemUseCase @Inject constructor(
                 }.awaitAll()
             }
 
-            Resource.success(commentItems)
+            Resource.success(Pair(commentItems, newLastVisible))
         }
     }
 
@@ -54,3 +65,46 @@ class GetCommentItemUseCase @Inject constructor(
         return commentItem?: throw IllegalArgumentException("commentItemの生成に失敗しました。")
     }
 }
+//
+//class GetCommentItemUseCase @Inject constructor(
+//    private val commentRepository: CommentRepository,
+//    private val getUserDetailsUseCase: GetUserDetailsUseCase,
+//    networkUtils: NetworkUtils,
+//    logRepository: LogRepository
+//): BaseUseCase(networkUtils, logRepository) {
+//    suspend fun execute(
+//        posterId: String,
+//        ventCardId: String,
+//        debateId: String
+//    ): Resource<List<CommentItem>> {
+//        return executeWithLoggingAndNetworkCheck {
+//            val comments = commentRepository.fetchComments(
+//                posterId = posterId,
+//                swipeCardId = ventCardId,
+//                debateId = debateId
+//            )
+//
+//            val commentItems = coroutineScope {
+//                comments.map { comment ->
+//                    async {
+//                        generateCommentItem(comment)
+//                    }
+//                }.awaitAll()
+//            }
+//
+//            Resource.success(commentItems)
+//        }
+//    }
+//
+//    private suspend fun generateCommentItem(comment: Comment): CommentItem {
+//        val fetchUserInfoState =getUserDetailsUseCase.execute(comment.commenterId)
+//        val commenter = fetchUserInfoState.data.takeIf { fetchUserInfoState.status == Status.SUCCESS }
+//        val commentItem = commenter?.let {
+//            CommentItem(
+//                comment = comment,
+//                user = it
+//            )
+//        }
+//        return commentItem?: throw IllegalArgumentException("commentItemの生成に失敗しました。")
+//    }
+//}

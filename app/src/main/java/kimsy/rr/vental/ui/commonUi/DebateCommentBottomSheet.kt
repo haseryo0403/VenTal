@@ -44,7 +44,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import formatDate
 import kimsy.rr.vental.R
@@ -75,7 +74,7 @@ fun DebateCommentBottomSheet(
     val context = LocalContext.current
     val sendCommentState by viewModel.sendCommentState.collectAsState()
     val fetchCommentItemState by viewModel.fetchCommentItemState.collectAsState()
-    val commentSize = (fetchCommentItemState.data?.size?: 0).toString()
+//    val commentSize = (fetchCommentItemState.data?.size?: 0).toString()
     val focusManager = LocalFocusManager.current
 
 
@@ -114,13 +113,13 @@ fun DebateCommentBottomSheet(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = stringResource(id = R.string.comment) + " " + commentSize + stringResource(
-                        id = R.string.unit_of_comment
-                    ),
-                    style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                )
+//                Text(
+//                    text = stringResource(id = R.string.comment) + " " + commentSize + stringResource(
+//                        id = R.string.unit_of_comment
+//                    ),
+//                    style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
+//                    fontWeight = FontWeight.Bold,
+//                )
                 IconButton(onClick = { hideModal() }) {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_clear_24),
@@ -155,7 +154,7 @@ fun DebateCommentBottomSheet(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         item {
-                            fetchCommentItemState.data?.let { CommentItemRows(it) }
+//                            fetchCommentItemState.data?.let { CommentItemRows(it) }
                         }
 
                     }

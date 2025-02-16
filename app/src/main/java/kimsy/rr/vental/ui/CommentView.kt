@@ -1,7 +1,6 @@
 package kimsy.rr.vental.ui
 
 import android.os.Build
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,8 +42,7 @@ import kimsy.rr.vental.data.CommentItem
 import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.ui.CommonComposable.CustomCircularProgressIndicator
-import kimsy.rr.vental.ui.CommonComposable.CustomLinearProgressIndicator
-import kimsy.rr.vental.ui.CommonComposable.MaxLengthTextField
+import kimsy.rr.vental.ui.CommonComposable.MaxLengthOutlinedTextField
 import kimsy.rr.vental.ui.commonUi.ErrorView
 import kimsy.rr.vental.viewModel.DebateViewModel
 import java.util.Date
@@ -66,28 +64,30 @@ fun CommentView(
     val context = LocalContext.current
     val sendCommentState by viewModel.sendCommentState.collectAsState()
     val fetchCommentItemState by viewModel.fetchCommentItemState.collectAsState()
-    val commentSize = (fetchCommentItemState.data?.size?: 0).toString()
+    val commentItems by viewModel.commentItems.collectAsState()
+    val hasFinishedLoadingAllCommentItem = viewModel.hasFinishedLoadingAllCommentItems
+//    val commentSize = (fetchCommentItemState.data?.size?: 0).toString()
     val focusManager = LocalFocusManager.current
 
-    LaunchedEffect(Unit) {
-        viewModel.getComments(debate)
-    }
+//    LaunchedEffect(Unit) {
+//        viewModel.getComments(debate)
+//    }
 
 
-    when(sendCommentState.status) {
-        Status.LOADING -> {
-            CustomLinearProgressIndicator()
-        }
-        Status.SUCCESS -> {
-            text = ""
-            viewModel.getComments(debate)
-            viewModel.resetState()
-        }
-        Status.FAILURE -> {
-            Toast.makeText(LocalContext.current, stringResource(id = R.string.send_comment_failure), Toast.LENGTH_LONG).show()
-        }
-        else -> {}
-    }
+//    when(sendCommentState.status) {
+//        Status.LOADING -> {
+//            CustomLinearProgressIndicator()
+//        }
+//        Status.SUCCESS -> {
+//            text = ""
+//            viewModel.getComments(debate)
+//            viewModel.resetState()
+//        }
+//        Status.FAILURE -> {
+//            Toast.makeText(LocalContext.current, stringResource(id = R.string.send_comment_failure), Toast.LENGTH_LONG).show()
+//        }
+//        else -> {}
+//    }
 
     Box(
         Modifier
@@ -120,28 +120,54 @@ fun CommentView(
 //
 //            }
 
-            when(fetchCommentItemState.status) {
-                Status.LOADING -> {
-                    CustomCircularProgressIndicator()
+//            when(fetchCommentItemState.status) {
+//                Status.LOADING -> {
+//                    CustomCircularProgressIndicator()
+//                }
+//                Status.SUCCESS -> {
+//                    fetchCommentItemState.data?.let { CommentItemRows(it) }?: Text(text = "nullllll")
+//                }
+//                Status.FAILURE -> {
+//                    ErrorView(retry = {
+//                        viewModel.getComments(debate)
+//                    })
+//                }
+//                else -> {}
+//            }
+            when{
+                commentItems.isNotEmpty() -> {
+                    CommentItemRows(commentItems = commentItems, viewModel = viewModel, debate = debate)
                 }
-                Status.SUCCESS -> {
-                    fetchCommentItemState.data?.let { CommentItemRows(it) }?: Text(text = "nullllll")
+                else -> {
+                    when(fetchCommentItemState.status){
+                        Status.LOADING -> {
+                            CustomCircularProgressIndicator()
+                        }
+                        Status.FAILURE -> {
+                            ErrorView(retry = {
+                                viewModel.getComments(debate)
+                            })
+                        }
+                        else -> {}
+                    }
                 }
-                Status.FAILURE -> {
-                    ErrorView(retry = {
-                        viewModel.getComments(debate)
-                    })
-                }
-                else -> {}
+
             }
         }
     }
 }
 
 @Composable
-fun CommentItemRows(commentItems: List<CommentItem>) {
+fun CommentItemRows(
+    commentItems: List<CommentItem>,
+    viewModel: DebateViewModel,
+    debate: Debate
+) {
+    val hasFinishedLoadingAllCommentItem = viewModel.hasFinishedLoadingAllCommentItems
+
     var previousDate: Date? by remember { mutableStateOf(null) }
-    commentItems.forEach {commentItem ->
+
+    commentItems.forEachIndexed {index, commentItem ->
         val comment = commentItem.comment
         val commenter = commentItem.user
         Row(
@@ -160,9 +186,51 @@ fun CommentItemRows(commentItems: List<CommentItem>) {
                 Text(text = comment.commentContent)
             }
         }
+        if ((index + 1) % 7 == 0) {
+            if (!hasFinishedLoadingAllCommentItem) {
+//                viewModel.getComments(debate)
+                LoadCommentItems(viewModel = viewModel, debate = debate)
+            }
+
+        }
     }
 }
 
+@Composable
+fun LoadCommentItems(viewModel: DebateViewModel, debate: Debate) {
+    LaunchedEffect(Unit) {
+        // 要素の追加読み込み
+        viewModel.getComments(debate)
+    }
+}
+
+
+//
+//@Composable
+//fun CommentItemRows(commentItems: List<CommentItem>) {
+//    var previousDate: Date? by remember { mutableStateOf(null) }
+//    commentItems.forEach {commentItem ->
+//        val comment = commentItem.comment
+//        val commenter = commentItem.user
+//        Row(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(12.dp)
+//        ) {
+//            Column {
+//                AccountIcon(imageUrl = commenter.photoURL)
+//            }
+//            Column {
+//                Row {
+//                    Text(text = commenter.name)
+//                    Text(text = comment.commentedDateTime?.let { formatDate(it) }.toString(), color = Color.Gray)
+//                }
+//                Text(text = comment.commentContent)
+//            }
+//        }
+//    }
+//}
+//
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -172,20 +240,22 @@ fun CommentTextField(
     onTextChange: (String) -> Unit,
     onSendClick: () -> Unit,
 ) {
-    MaxLengthTextField(
+    MaxLengthOutlinedTextField(
         value = text,
         onValueChange = onTextChange,
         maxLength = 140,
         modifier = Modifier
+            .offset(y = (-8).dp)
             .fillMaxWidth()
             .padding(horizontal = 24.dp)
-            .offset(y = (-20).dp)
             .clip(RoundedCornerShape(16.dp))
             .heightIn(max = if (isKeyboardVisible) 200.dp else 56.dp),
         placeHolder = {Text(text = stringResource(id = R.string.add_comment))},
         colors = TextFieldDefaults.colors(
-            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant, // 背景を透明に設定
-            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant, // フォーカス時の背景を透明に設定
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            unfocusedIndicatorColor = MaterialTheme.colorScheme.surfaceVariant,
+            focusedIndicatorColor = MaterialTheme.colorScheme.surfaceVariant
         ),
         trailingIcon = {
             IconButton(onClick = onSendClick) {

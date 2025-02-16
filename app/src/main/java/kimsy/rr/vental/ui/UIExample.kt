@@ -152,6 +152,37 @@ fun PostScreen(darkMode: Boolean) {
 }
 
 @Composable
+fun OverlayImageOnLazyColumn() {
+    Box(modifier = Modifier.fillMaxSize()) {
+        // スクロール可能なLazyColumn
+        LazyColumn(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(50) { index ->
+                Text(
+                    text = "Item $index",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    fontSize = 20.sp
+                )
+            }
+        }
+
+        // 画面上部に固定する画像
+        Image(
+            painter = painterResource(id = R.drawable.aston_martin),
+            contentDescription = "Overlay Image",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp) // 画像の高さ
+                .align(Alignment.TopCenter) // 上部中央に配置
+        )
+    }
+}
+
+
+@Composable
 fun Chip(tag: String, onRemove: () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -721,7 +752,8 @@ fun DefaultPreview() {
 //    TryScreen()
 //    SwipeCardScreen()
 //    FireScreen()
-    PostScreen(darkMode = false)
+//    PostScreen(darkMode = false)
+    OverlayImageOnLazyColumn()
 }
 
 
