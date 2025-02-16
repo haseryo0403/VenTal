@@ -62,6 +62,11 @@
 
     <!--    討論関連全般-->
     <string name="get_extra_debate_failure">討論の追加の取得に失敗しまいた。</string>
+    <string name="comment">コメント</string>
+    <string name="add_comment">コメントを追加</string>
+    <string name="unit_of_comment">件</string>
+    <string name="add_message">反論する</string>
+
 
     <!--    ventcard作成関連-->
     <string name="select_file">ファイルを選択</string>

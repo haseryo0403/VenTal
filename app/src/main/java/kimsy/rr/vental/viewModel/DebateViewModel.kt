@@ -199,5 +199,6 @@ class DebateViewModel @Inject constructor(
         _createMessageState.value = Resource.idle()
         _followState.value = Resource.idle()
         _followingUserIdsState.value = Resource.idle()
+        _sendCommentState.value = Resource.idle()
     }
 }

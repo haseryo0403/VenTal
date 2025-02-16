@@ -321,6 +321,9 @@ fun Navigation(
                 },
                 toRequestDebateDeletionView = {
                     navController.navigate(Screen.RequestDebateDeletionScreen.route)
+                },
+                toAnotherUserPageView =  { user ->
+                    navigateToUserPage(user, navController)
                 }
             )
         }

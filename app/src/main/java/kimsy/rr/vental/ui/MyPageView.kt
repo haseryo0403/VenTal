@@ -162,6 +162,7 @@ fun MyPageView(
             modifier = Modifier
                 .fillMaxSize()
                 .weight(1f)
+
         ) { index ->
             when (index) {
                 0 -> {

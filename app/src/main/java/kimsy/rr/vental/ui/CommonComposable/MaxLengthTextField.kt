@@ -1,8 +1,8 @@
 package kimsy.rr.vental.ui.CommonComposable
 
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,7 +18,8 @@ fun MaxLengthTextField(
     maxLength: Int,
     modifier: Modifier = Modifier,
     placeHolder: @Composable (() -> Unit)? = null,
-    colors: TextFieldColors = TextFieldDefaults.colors() // デフォルトのTextFieldColors
+    colors: TextFieldColors = TextFieldDefaults.colors(), // デフォルトのTextFieldColors
+    trailingIcon: @Composable (() -> Unit)? = null
 ) {
     var textFieldValueState by remember {
         mutableStateOf(TextFieldValue(text = value))
@@ -46,6 +47,7 @@ fun MaxLengthTextField(
         onValueChange = onTextFieldValueChange,
         modifier = modifier,
         placeholder = placeHolder,
-        colors = colors
+        colors = colors,
+        trailingIcon = trailingIcon
     )
 }

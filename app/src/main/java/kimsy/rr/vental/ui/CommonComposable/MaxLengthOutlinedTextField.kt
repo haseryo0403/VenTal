@@ -18,7 +18,8 @@ fun MaxLengthOutlinedTextField(
     maxLength: Int,
     modifier: Modifier = Modifier,
     placeHolder: @Composable (() -> Unit)? = null,
-    colors: TextFieldColors = TextFieldDefaults.colors() // デフォルトのTextFieldColors
+    colors: TextFieldColors = TextFieldDefaults.colors(),
+    trailingIcon: @Composable (() -> Unit)? = null
 ) {
     var textFieldValueState by remember {
         mutableStateOf(TextFieldValue(text = value))
@@ -47,6 +48,6 @@ fun MaxLengthOutlinedTextField(
         modifier = modifier,
         placeholder = placeHolder,
         colors = colors,
-
+        trailingIcon = trailingIcon
     )
 }

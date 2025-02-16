@@ -1,5 +1,6 @@
 package kimsy.rr.vental.ui
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -48,6 +49,7 @@ import kimsy.rr.vental.ui.commonUi.ErrorView
 import kimsy.rr.vental.ui.commonUi.VentCardBottomSheet
 import kimsy.rr.vental.viewModel.MyVentCardViewModel
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun MyVentCardView(
     viewModel: MyVentCardViewModel,

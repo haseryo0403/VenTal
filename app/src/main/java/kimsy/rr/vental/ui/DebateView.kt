@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,8 +26,10 @@ import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
@@ -42,6 +43,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -54,6 +59,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -67,17 +73,15 @@ import kimsy.rr.vental.R
 import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.DebateShareModel
-import kimsy.rr.vental.data.Message
 import kimsy.rr.vental.data.Status
-import kimsy.rr.vental.data.UserType
+import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.CustomLinearProgressIndicator
 import kimsy.rr.vental.ui.CommonComposable.ImagePermissionAndSelection
 import kimsy.rr.vental.ui.CommonComposable.MaxLengthOutlinedTextField
 import kimsy.rr.vental.ui.CommonComposable.MaxLengthTextField
+import kimsy.rr.vental.ui.CommonComposable.VSSurface
 import kimsy.rr.vental.ui.CommonComposable.formatTimeDifference
 import kimsy.rr.vental.ui.CommonComposable.showAsBottomSheet
-import kimsy.rr.vental.ui.commonUi.DebateCommentBottomSheet
-import kimsy.rr.vental.ui.commonUi.ErrorView
 import kimsy.rr.vental.viewModel.DebateViewModel
 import kimsy.rr.vental.viewModel.SharedDebateViewModel
 
@@ -90,10 +94,9 @@ fun DebateView(
     debateViewModel: DebateViewModel = hiltViewModel(),
     sharedDebateViewModel: SharedDebateViewModel,
     toReportDebateView: () -> Unit,
-    toRequestDebateDeletionView: () -> Unit
+    toRequestDebateDeletionView: () -> Unit,
+    toAnotherUserPageView: (user: User) -> Unit
 ){
-    val activity = LocalContext.current as Activity
-
     val currentUser = sharedDebateViewModel.currentUser
 
     var imageUri by remember { mutableStateOf<Uri?>(null) }
@@ -101,17 +104,26 @@ fun DebateView(
     var text by remember { mutableStateOf("") }
 
     val context = LocalContext.current
-    val fetchMessageState by debateViewModel.fetchMessageState.collectAsState()
     val fetchCommentItemState by debateViewModel.fetchCommentItemState.collectAsState()
     val currentDebateItem by sharedDebateViewModel.currentDebateItem.collectAsState()
 
     val likeState by sharedDebateViewModel.likeState.collectAsState()
     val createMessageState by debateViewModel.createMessageState.collectAsState()
 
+    var selectedTabIndex by remember { mutableStateOf(0) }
+    val tabs = listOf("VS", "コメント")
+    val pagerState = rememberPagerState(pageCount = { tabs.size })
+
     LaunchedEffect(Unit) {
-        currentDebateItem?.let { debateViewModel.getMessages(it.debate) }
         debateViewModel.observeFollowingUserIds()
         currentDebateItem?.let { debateViewModel.getComments(it.debate) }
+    }
+
+    LaunchedEffect(pagerState.currentPage) {
+        selectedTabIndex = pagerState.currentPage
+    }
+    LaunchedEffect(key1 = selectedTabIndex) {
+        pagerState.animateScrollToPage(selectedTabIndex)
     }
 
     when (likeState[currentDebateItem]?.status) {
@@ -137,27 +149,37 @@ fun DebateView(
         }
         else -> {}
     }
-
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp)
+        modifier = Modifier.fillMaxSize()
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize()
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
         ) {
-            // メッセージリスト
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = if (imageUri == null && (currentDebateItem?.debate?.posterId == currentUser.value.uid || currentDebateItem?.debate?.debaterId == currentUser.value.uid)) 120.dp else 0.dp) // TextField の高さ分の余白を確保
-            ) {
-                item {
+            item{
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp)
+                        .clickable { /* Handle Click Action */ }
+                        .shadow(4.dp, RoundedCornerShape(10.dp))
+                        .clip(RoundedCornerShape(16.dp))
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    ) {
+                        //TODO 色々な場所でcurrentDebateItemがNullかチェックしているが、どこかで一回に抑える。
+
                         if (currentDebateItem != null) {
                             DebateContent(
                                 debateItem = currentDebateItem!!,
                                 sharedDebateViewModel = sharedDebateViewModel,
-                                debateViewModel = debateViewModel
+                                debateViewModel = debateViewModel,
+                                toReportDebateView, toRequestDebateDeletionView,
+                                toAnotherUserPageView = toAnotherUserPageView
                             )
                         } else {
                             Toast.makeText(
@@ -167,20 +189,59 @@ fun DebateView(
                             ).show()
                         }
 
-                        Divider()
+//TODO
+//                            if (fetchCommentItemState.status == Status.SUCCESS) {
+//                                Text(text = fetchCommentItemState.data?.size.toString())
+//                            }
 
-                        Row(
+
+                        TabRow(
+                            selectedTabIndex = selectedTabIndex,
+                            indicator = { tabPositions ->
+                                TabRowDefaults.Indicator(
+                                    modifier = Modifier
+                                        .tabIndicatorOffset(tabPositions[selectedTabIndex])
+                                        .width(200.dp)
+                                )
+                            },
+                            containerColor = MaterialTheme.colorScheme.background
+                        ) {
+                            tabs.forEachIndexed { index, tab ->
+                                Tab(
+                                    selected = selectedTabIndex == index,
+                                    onClick = { selectedTabIndex = index },
+                                    modifier = Modifier.padding(8.dp),
+                                    content = {
+                                        Text(
+                                            text = tab,
+                                            color = if (selectedTabIndex == index)
+                                                MaterialTheme.colorScheme.primary
+                                            else
+                                                MaterialTheme.colorScheme.onBackground
+                                        )
+                                    }
+                                )
+                            }
+                        }
+
+                        HorizontalPager(
+                            state = pagerState,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.End
-                        ) {
-                            IconButton(onClick = {
-                                activity.showAsBottomSheet { hideModal ->
+                        ) { index ->
+                            when (index) {
+                                0 -> {
+                                    currentDebateItem?.let {
+                                        MessageItem(
+                                            viewModel = debateViewModel,
+                                            debate = it.debate
+                                        )
+                                    }
+                                }
+                                1 -> {
                                     val debate = currentDebateItem?.debate
                                     if (debate != null) {
-                                        DebateCommentBottomSheet(
+                                        CommentView(
                                             viewModel = debateViewModel,
                                             modifier = Modifier.fillMaxWidth(),
                                             debate = debate,
@@ -188,60 +249,7 @@ fun DebateView(
                                         }
                                     }
                                 }
-                            }) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.outline_mode_comment_24),
-                                    contentDescription = "comment"
-                                )
                             }
-
-                            if (fetchCommentItemState.status == Status.SUCCESS) {
-                                Text(text = fetchCommentItemState.data?.size.toString())
-                            }
-//                            Text(text = "16")
-
-                            IconButton(onClick = {
-                                activity.showAsBottomSheet { hideModal ->
-                                    val debate = currentDebateItem?.debate
-                                    if (debate != null) {
-                                        DebateBottomSheet(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            debate = debate,
-                                            currentUserId = currentUser.value.uid,
-                                            toReportDebateView = toReportDebateView,
-                                            toRequestDebateDeletionView = toRequestDebateDeletionView,
-                                            hideModal = hideModal
-                                        )
-                                    }
-                                }
-
-                            }) {
-                                Icon(painter = painterResource(id = R.drawable.baseline_more_vert_24),
-                                    contentDescription = "option")
-                            }
-
-                        }
-
-                        Divider()
-
-                        when (fetchMessageState.status) {
-                            Status.LOADING -> {
-                                showLoadingIndicator()
-                            }
-                            Status.SUCCESS -> {
-                                if (fetchMessageState.data != null) {
-                                    MessageItem(messages = fetchMessageState.data!!)
-                                } else {
-                                    Text(text = "どうやらメッセージが無いようです。")
-                                }
-                            }
-                            Status.FAILURE -> {
-                                ErrorView(retry = {
-                                    currentDebateItem?.let { debateViewModel.getMessages(it.debate) }
-                                    debateViewModel.observeFollowingUserIds()
-                                })
-                            }
-                            else -> {}
                         }
 
                         if (imageUri != null) {
@@ -261,31 +269,46 @@ fun DebateView(
                                 }
                             }
                         }
-
-//                    }
-
-
-                }
-            }
-
-            // テキストフィールド（固定位置）
-            if (imageUri == null && (currentDebateItem?.debate?.posterId == currentUser.value.uid || currentDebateItem?.debate?.debaterId == currentUser.value.uid)) {
-                debateTextFieldWithOutImage(
-                    isKeyboardVisible = isKeyboardVisible,
-                    context = context,
-                    onImageSelected = { imageUri = it },
-                    text = text,
-                    onTextChange = { text = it }
-                ) {
-                    currentDebateItem?.let {
-                        debateViewModel.createMessage(
-                            debate = it.debate,
-                            text = text,
-                            imageUri = null,
-                            context = context
-                        )
                     }
                 }
+            }
+        }
+        when(selectedTabIndex) {
+            0 -> {
+                if (imageUri == null && (currentDebateItem?.debate?.posterId == currentUser.value.uid || currentDebateItem?.debate?.debaterId == currentUser.value.uid)) {
+                    debateTextFieldWithOutImage(
+                        isKeyboardVisible = isKeyboardVisible,
+                        context = context,
+                        onImageSelected = { imageUri = it },
+                        text = text,
+                        onTextChange = { text = it }
+                    ) {
+                        currentDebateItem?.let {
+                            debateViewModel.createMessage(
+                                debate = it.debate,
+                                text = text,
+                                imageUri = null,
+                                context = context
+                            )
+                        }
+                    }
+                }
+            }
+            1 -> {
+                CommentTextField(
+                    isKeyboardVisible = isKeyboardVisible,
+                    text = text,
+                    onTextChange = { text = it},
+                    onSendClick = {
+                        currentDebateItem?.let {
+                            debateViewModel.sendComment(
+                                debate = it.debate,
+                                text = text,
+                                context = context
+                            )
+                        }
+                    }
+                )
             }
         }
     }
@@ -352,19 +375,18 @@ fun DebateBottomSheet(
 fun DebateContent(
     debateItem: DebateItem,
     sharedDebateViewModel: SharedDebateViewModel,
-    debateViewModel: DebateViewModel
-                  ) {
-
+    debateViewModel: DebateViewModel,
+    toReportDebateView: () -> Unit,
+    toRequestDebateDeletionView: () -> Unit,
+    toAnotherUserPageView: (user: User) -> Unit
+    ) {
+    val activity = LocalContext.current as Activity
     val followingUserIdsState by debateViewModel.followingUserIdsState.collectAsState()
-
     val currentUser = debateViewModel.currentUser
-
     val debate = debateItem.debate
     val ventCard = debateItem.ventCard
     val debater = debateItem.debater
     val poster = debateItem.poster
-    val heartIcon = painterResource(id = R.drawable.baseline_favorite_24)
-
     val followState by debateViewModel.followState.collectAsState()
 
     when(followState.status) {
@@ -375,175 +397,101 @@ fun DebateContent(
     }
 
     Row(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)
     ){
-        AccountIcon(imageUrl = poster.photoURL)
-
         Column(
             modifier = Modifier
                 .weight(5f)
                 .fillMaxWidth()
         ) {
             Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(text = poster.name)
-
-                when (followingUserIdsState.status) {
-                    Status.SUCCESS -> {
-                        val followingUserIds = followingUserIdsState.data
-                        if (followingUserIds != null && poster.uid != currentUser.value.uid) {
-                            if (!followingUserIds.contains(poster.uid)){
-                                OutlinedButton(
-                                    onClick = {
-                                        debateViewModel.followUser(poster.uid)
-                                    },
-                                    modifier = Modifier.height(32.dp)
-                                ) {
-                                    Text(text = stringResource(id = R.string.follow))
-                                }
-                            } else {
-                                OutlinedButton(
-                                    onClick = {
-                                        debateViewModel.unFollowUser(poster.uid)
-                                    },
-                                    modifier = Modifier.height(32.dp)
-                                ) {
-                                    Text(text = stringResource(id = R.string.unfollow))
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    AccountIcon(imageUrl = poster.photoURL)
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = poster.name)
+                        when (followingUserIdsState.status) {
+                            Status.SUCCESS -> {
+                                val followingUserIds = followingUserIdsState.data
+                                if (followingUserIds != null && poster.uid != currentUser.value.uid) {
+                                    if (!followingUserIds.contains(poster.uid)){
+                                        OutlinedButton(
+                                            onClick = {
+                                                debateViewModel.followUser(poster.uid)
+                                            },
+                                            modifier = Modifier.height(32.dp)
+                                        ) {
+                                            Text(text = stringResource(id = R.string.follow))
+                                        }
+                                    } else {
+                                        OutlinedButton(
+                                            onClick = {
+                                                debateViewModel.unFollowUser(poster.uid)
+                                            },
+                                            modifier = Modifier.height(32.dp)
+                                        ) {
+                                            Text(text = stringResource(id = R.string.unfollow))
+                                        }
+                                    }
                                 }
                             }
+                            else -> {}
                         }
                     }
-                    else -> {}
                 }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = ventCard.swipeCardCreatedDateTime?.let {
+                            formatTimeDifference(it)
+                        } ?: "日付不明",
+                    )
+                    IconButton(onClick = {
+                        activity.showAsBottomSheet { hideModal ->
+                            DebateBottomSheet(
+                                modifier = Modifier.fillMaxWidth(),
+                                debate = debate,
+                                currentUserId = currentUser.value.uid,
+                                toReportDebateView = toReportDebateView,
+                                toRequestDebateDeletionView = toRequestDebateDeletionView,
+                                hideModal = hideModal
+                            )
+                        }
 
-                Text(
-                    text = ventCard.swipeCardCreatedDateTime?.let {
-                        formatTimeDifference(it)
-                    } ?: "日付不明",
-                )
+                    }) {
+                        Icon(painter = painterResource(id = R.drawable.baseline_more_vert_24),
+                            contentDescription = "option")
+                    }
+                }
             }
-
+            Image(
+                painter = rememberAsyncImagePainter(ventCard.swipeCardImageURL),
+                contentDescription = "ventCardImage",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp)),
+                contentScale = ContentScale.FillWidth
+            )
             Text(text = ventCard.swipeCardContent)
             ventCard.tags.forEach { tag->
                 Text(text = tag, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
             }
-            Image(
-                painter = rememberAsyncImagePainter(ventCard.swipeCardImageURL),
-                contentDescription = "ventCardImage",
-                modifier = Modifier.clip(RoundedCornerShape(16.dp)),
-                contentScale = ContentScale.FillWidth
-            )
-            Divider()
         }
     }
-
-    Row(modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween) {
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier
-                .padding(4.dp)
-                .weight(2f)
-        ) {
-            AccountIcon(imageUrl = debater.photoURL)
-
-            Text(text = debater.name)
-        }
-        // ひだりいいね debater
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(8.dp)
-        ) {
-            IconButton(onClick = {
-                sharedDebateViewModel.handleLikeAction(debateItem, UserType.DEBATER)
-
-            }) {
-                Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
-                    contentDescription = "heart",
-                    tint = if (debateItem.likedUserType == UserType.DEBATER) Color.Red else Color.Gray
-                )
-            }
-            Text(text = debate.debaterLikeCount.toString())
-        }
-        // みぎいいね poster
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(8.dp)
-        ) {
-            IconButton(onClick = {
-                sharedDebateViewModel.handleLikeAction(debateItem, UserType.POSTER)
-            }) {
-                Icon(painter = painterResource(id = R.drawable.baseline_favorite_24),
-                    contentDescription = "heart",
-                    tint = if (debateItem.likedUserType == UserType.POSTER) Color.Red else Color.Gray
-
-                )
-            }
-            Text(text = debate.posterLikeCount.toString())
-        }
-
-
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier
-                .padding(4.dp)
-                .weight(2f)
-        ) {
-            AccountIcon(imageUrl = poster.photoURL)
-
-            Text(text = poster.name)
-        }
-    }
-}
-
-//TODO Delete 別ファイルにうつした。複雑になりそうなので
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun ChatMessageItem(messages: List<Message>) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-    ) {
-        messages.forEach { message ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(4.dp),
-                horizontalArrangement = if (message.userType == UserType.DEBATER) Arrangement.Start else Arrangement.End
-            ) {
-                Surface(
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .widthIn(max = 250.dp),
-                    shape = MaterialTheme.shapes.medium,
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    tonalElevation = 4.dp
-                ) {
-                    Column(
-                        modifier = Modifier.padding(12.dp)
-                    ) {
-                        Text(
-                            text = message.text,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                    }
-                }
-            }
-            Text(
-                text = message.sentDatetime?.let {
-                    formatTimeDifference(it)
-                } ?: "日付不明",
-            )
-        }
-    }
+    VSSurface(
+        debateItem = debateItem,
+        sharedDebateViewModel = sharedDebateViewModel,
+        debateViewModel = debateViewModel,
+        toAnotherUserPageView = toAnotherUserPageView
+    )
 }
 
 @Composable
@@ -663,61 +611,67 @@ fun debateTextFieldWithOutImage(
     onTextChange: (String) -> Unit,
     onSendClick: () -> Unit) {
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize(), // 親レイアウトを画面全体に拡張
-        contentAlignment = Alignment.BottomCenter
-    ) {
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.background),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally,
-
-            ) {
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 8.dp, end = 8.dp, bottom = 4.dp)
-//                    .wrapContentHeight()
-                    .heightIn(max = if (isKeyboardVisible) 140.dp else 56.dp),
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
+//        Column(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .background(MaterialTheme.colorScheme.background)
+//                .padding(bottom = 40.dp),
+////            verticalArrangement = Arrangement.Bottom,
+//            horizontalAlignment = Alignment.CenterHorizontally,
+//
+//            ) {
+//
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(start = 8.dp, end = 8.dp, bottom = 4.dp)
+//                    .heightIn(max = if (isKeyboardVisible) 140.dp else 56.dp),
+//                verticalAlignment = Alignment.Bottom,
+//                horizontalArrangement = Arrangement.SpaceBetween
+//            ) {
                 MaxLengthOutlinedTextField(
                     value = text,
                     onValueChange = onTextChange,
                     maxLength = 140,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(40.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp)
+                        .offset(y = (-24).dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .heightIn(max = if (isKeyboardVisible) 200.dp else 56.dp),
+                    placeHolder = {Text(text = stringResource(id = R.string.add_message))},
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant, // 背景を透明に設定
+                        focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant, // フォーカス時の背景を透明に設定
+                    ),
+                    trailingIcon = {
+                        Row{
+                            ImagePermissionAndSelection(
+                                context = context,
+                                modifier = Modifier.padding(start = 8.dp),
+                                onImageSelected = onImageSelected
+                            ){
+                                Icon(
+                                    painter = painterResource(id = R.drawable.baseline_image_24),
+                                    modifier = Modifier.size(40.dp),
+                                    contentDescription = "add Image",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                            IconButton(onClick = onSendClick) {
+                                Icon(
+                                    imageVector = Icons.Default.Send,
+                                    contentDescription = "Send",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
 
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                ImagePermissionAndSelection(
-                    context = context,
-                    modifier = Modifier.padding(start = 8.dp),
-                    onImageSelected = onImageSelected
-                ){
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_image_24),
-                        modifier = Modifier.size(40.dp),
-                        contentDescription = "add Image"
-                    )
-                }
-                IconButton(onClick = onSendClick) {
-                    Icon(imageVector = Icons.Default.Send, contentDescription = "Send")
-                }
-            }
-        }
-    }
+                    }
+                )
+//            }
+//
+//        }
 }
 
 

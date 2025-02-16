@@ -17,6 +17,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,8 +29,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
+import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.Message
+import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.UserType
+import kimsy.rr.vental.ui.commonUi.ErrorView
+import kimsy.rr.vental.ui.showLoadingIndicator
+import kimsy.rr.vental.viewModel.DebateViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -36,9 +43,43 @@ import java.util.Date
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun MessageItem(messages: List<Message>) {
-    var previousDate: Date? by remember { mutableStateOf(null) }
+fun MessageItem(
+    viewModel: DebateViewModel,
+    debate: Debate
+) {
 
+    val fetchMessageState by viewModel.fetchMessageState.collectAsState()
+    LaunchedEffect(Unit) {
+        viewModel.getMessages(debate)
+        viewModel.observeFollowingUserIds()
+    }
+
+    when (fetchMessageState.status) {
+        Status.LOADING -> {
+            showLoadingIndicator()
+        }
+        Status.SUCCESS -> {
+            if (fetchMessageState.data != null) {
+                fetchMessageState.data?.let {
+                    MessageView(messages = it)
+                }
+            }
+        }
+        Status.FAILURE -> {
+            ErrorView(retry = {
+                viewModel.getMessages(debate)
+                viewModel.observeFollowingUserIds()
+            })
+        }
+        else -> {}
+    }
+
+
+}
+
+@Composable
+fun MessageView(messages: List<Message>) {
+    var previousDate: Date? by remember { mutableStateOf(null) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -66,7 +107,9 @@ fun MessageItem(messages: List<Message>) {
                     Image(
                         painter = rememberAsyncImagePainter(message.imageURL),
                         contentDescription = "message Image",
-                        modifier = Modifier.clip(RoundedCornerShape(16.dp)).widthIn(max = 250.dp),
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(16.dp))
+                            .widthIn(max = 250.dp),
                         contentScale = ContentScale.FillWidth
                     )
                     Text(
@@ -122,6 +165,7 @@ fun MessageItem(messages: List<Message>) {
 
             previousDate = message.sentDatetime
         }
+
     }
 }
 
