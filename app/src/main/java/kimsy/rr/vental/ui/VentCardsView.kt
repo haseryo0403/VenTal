@@ -6,10 +6,15 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,7 +26,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kimsy.rr.vental.R
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.CardStack
@@ -31,7 +39,7 @@ import kimsy.rr.vental.viewModel.VentCardsViewModel
 
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun SwipeCardsView(
     ventCardsViewModel: VentCardsViewModel = hiltViewModel(),
@@ -72,11 +80,16 @@ fun SwipeCardsView(
             }
 
             loadCardsState.value.status == Status.SUCCESS && (noCardsLeft || ventCardItems.isEmpty()) -> {
-                Text(text = "No ventCards available", modifier = Modifier.align(Alignment.Center)) // TODO: デザインを追加
+                FlowRow(
+                    Modifier.padding(16.dp).align(Alignment.Center),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(text = stringResource(id = R.string.no_ventCard_available), style = MaterialTheme.typography.titleLarge)
+                }
             }
 
             loadCardsState.value.status == Status.IDLE -> {
-                Text(text = "EROORRRRRRRRRRR")
             }
 
             else -> {

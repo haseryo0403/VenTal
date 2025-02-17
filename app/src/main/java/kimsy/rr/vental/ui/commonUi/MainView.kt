@@ -45,13 +45,16 @@ import kimsy.rr.vental.screensInBottom
 import kimsy.rr.vental.settingsScreen
 import kimsy.rr.vental.ui.AccountClosingView
 import kimsy.rr.vental.ui.AnotherUserPageView
+import kimsy.rr.vental.ui.AppInfoView
 import kimsy.rr.vental.ui.DebateCreationView
 import kimsy.rr.vental.ui.DebateView
 import kimsy.rr.vental.ui.FollowListView
 import kimsy.rr.vental.ui.FollowPageView
+import kimsy.rr.vental.ui.GuidelineView
 import kimsy.rr.vental.ui.MyPageView
 import kimsy.rr.vental.ui.NotificationSettingsView
 import kimsy.rr.vental.ui.NotificationsView
+import kimsy.rr.vental.ui.PrivacyPolicyView
 import kimsy.rr.vental.ui.ProfileEditView
 import kimsy.rr.vental.ui.ReportDebateView
 import kimsy.rr.vental.ui.ReportVentCardView
@@ -59,6 +62,7 @@ import kimsy.rr.vental.ui.RequestDebateDeletionView
 import kimsy.rr.vental.ui.RequestVentCardDeletionView
 import kimsy.rr.vental.ui.SettingsView
 import kimsy.rr.vental.ui.SwipeCardsView
+import kimsy.rr.vental.ui.TermsOfServiceView
 import kimsy.rr.vental.ui.TimeLineView
 import kimsy.rr.vental.ui.VentCardCreationView
 import kimsy.rr.vental.viewModel.AnotherUserPageViewModel
@@ -333,6 +337,9 @@ fun Navigation(
                 toNotificationSettingsView = {
                     navController.navigate(Screen.SettingsMenuScreen.NotificationSettingsScreen.route)
                 },
+                toAppInfoView = {
+                    navController.navigate(Screen.AppInfoScreen.route)
+                },
                 toAccountClosingView = {
                     navController.navigate(Screen.AccountClosingScreen.route)
                 }
@@ -404,6 +411,32 @@ fun Navigation(
 
         composable(Screen.AccountClosingScreen.route) {
             AccountClosingView()
+        }
+
+        composable(Screen.AppInfoScreen.route){
+            AppInfoView(
+                toTermsOfServiceView = {
+                    navController.navigate(Screen.TermsOfServiceScreen.route)
+                },
+                toGuidelineView = {
+                    navController.navigate(Screen.GuidelineScreen.route)
+                },
+                toPrivacyPolicyView = {
+                    navController.navigate(Screen.PrivacyPolicyScreen.route)
+                }
+            )
+        }
+
+        composable(Screen.TermsOfServiceScreen.route) {
+            TermsOfServiceView()
+        }
+
+        composable(Screen.GuidelineScreen.route) {
+            GuidelineView()
+        }
+
+        composable(Screen.PrivacyPolicyScreen.route) {
+            PrivacyPolicyView()
         }
     }
 }

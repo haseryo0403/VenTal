@@ -34,6 +34,10 @@ sealed class Screen(val title: String, val route: String) {
     object ReportVentCardScreen: Screen("カードを通報", "report ventCard")
     object RequestVentCardDeletionScreen: Screen("カードの削除依頼", "request ventCard deletion")
     object AccountClosingScreen: Screen("退会する", "account closing screen")
+    object AppInfoScreen: Screen("アプリ情報", "app info screen")
+    object TermsOfServiceScreen: Screen("利用規約", "terms of service")
+    object GuidelineScreen: Screen("ガイドライン", "guideline")
+    object PrivacyPolicyScreen: Screen("個人情報保護方針", "privacy policy")
 }
 
 val screensInBottom = listOf(
@@ -62,5 +66,9 @@ val otherScreen = listOf(
     Screen.RequestDebateDeletionScreen,
     Screen.ReportVentCardScreen,
     Screen.RequestVentCardDeletionScreen,
-    Screen.AccountClosingScreen
+    Screen.AccountClosingScreen,
+    Screen.AppInfoScreen,
+    Screen.TermsOfServiceScreen,
+    Screen.GuidelineScreen,
+    Screen.PrivacyPolicyScreen
 )

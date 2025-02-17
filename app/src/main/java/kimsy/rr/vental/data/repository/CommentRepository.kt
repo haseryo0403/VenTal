@@ -1,5 +1,6 @@
 package kimsy.rr.vental.data.repository
 
+import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -67,5 +68,24 @@ class CommentRepository @Inject constructor(
         val commentWithId = comment.copy(commentId = commentDoc.id)
 
         commentDoc.set(commentWithId).await()
+    }
+
+    suspend fun countComments(
+        posterId: String,
+        swipeCardId: String,
+        debateId: String
+    ): Long{
+        val query = db
+            .collection("users")
+            .document(posterId)
+            .collection("swipeCards")
+            .document(swipeCardId)
+            .collection("debates")
+            .document(debateId)
+            .collection("comments")
+
+        val querySnapshot = query.count().get(AggregateSource.SERVER).await()
+
+        return querySnapshot.count
     }
 }

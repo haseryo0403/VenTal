@@ -42,14 +42,15 @@ fun SettingsItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(4.dp)
-            .clickable { onClick() }
+            .clickable { onClick() },
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             painter = painterResource(id = iconResId),
             contentDescription = null,
             modifier = Modifier
-                .size(40.dp)
                 .weight(1f)
+                .size(32.dp)
         )
         Column(
             horizontalAlignment = Alignment.Start,
@@ -67,6 +68,7 @@ fun SettingsItem(
 fun SettingsView(
     authViewModel: AuthViewModel,
     toNotificationSettingsView: () -> Unit,
+    toAppInfoView: () -> Unit,
     toAccountClosingView: () -> Unit
 ) {
     val logOutDialogOpen = remember { mutableStateOf(false)}
@@ -87,14 +89,15 @@ fun SettingsView(
         modifier = Modifier.fillMaxWidth()
     ) {
         item {
-            SettingsItem(
-                iconResId = R.drawable.outline_person_24,
-                title = stringResource(id = R.string.account),
-                description = stringResource(id = R.string.account_settings_description),
-                onClick = {
-                    // TODO: goto account page
-                }
-            )
+            //TODO これは今は必要ない。アカウント関連で表示することができたら使う。
+//            SettingsItem(
+//                iconResId = R.drawable.outline_person_24,
+//                title = stringResource(id = R.string.account),
+//                description = stringResource(id = R.string.account_settings_description),
+//                onClick = {
+//                    // TODO: goto account page
+//                }
+//            )
             SettingsItem(
                 iconResId = R.drawable.outline_notifications_24,
                 title = stringResource(id = R.string.notification_settings),
@@ -108,7 +111,7 @@ fun SettingsView(
                 title = stringResource(id = R.string.about_app),
                 description = null,
                 onClick = {
-
+                    toAppInfoView()
                 }
             )
 

@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.DocumentSnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kimsy.rr.vental.UseCase.CountCommentsUseCase
 import kimsy.rr.vental.UseCase.FollowUseCase
 import kimsy.rr.vental.UseCase.GetCommentItemUseCase
 import kimsy.rr.vental.UseCase.GetMessageUseCase
@@ -41,7 +42,8 @@ class DebateViewModel @Inject constructor(
     private val followUseCase: FollowUseCase,
     private val unFollowUseCase: UnFollowUseCase,
     private val sendCommentUseCase: SendCommentUseCase,
-    private val getCommentItemUseCase: GetCommentItemUseCase
+    private val getCommentItemUseCase: GetCommentItemUseCase,
+    private val countCommentsUseCase: CountCommentsUseCase
     ): ViewModel() {
 
     private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel()?: User())
@@ -60,6 +62,9 @@ class DebateViewModel @Inject constructor(
 
     private val _followState = MutableStateFlow<Resource<Unit>>(Resource.idle())
     val followState: StateFlow<Resource<Unit>> get() = _followState
+
+    private val _getCommentsCountState = MutableStateFlow<Resource<Long>>(Resource.idle())
+    val getCommentsCountState: StateFlow<Resource<Long>> get() = _getCommentsCountState
 
     private val _fetchCommentItemState = MutableStateFlow<Resource<Pair<List<CommentItem>, DocumentSnapshot?>>>(Resource.idle())
     val fetchCommentItemState: StateFlow<Resource<Pair<List<CommentItem>, DocumentSnapshot?>>> get() = _fetchCommentItemState
@@ -145,6 +150,19 @@ class DebateViewModel @Inject constructor(
             if (_followingUserIdsState.value.status == Status.SUCCESS) {
                 _followState.value = unFollowUseCase.execute(currentUserId, toUserId)
             }
+        }
+    }
+
+    fun getCommentsCount(
+        debate: Debate
+    ) {
+        viewModelScope.launch {
+            _getCommentsCountState.value = Resource.loading()
+            _getCommentsCountState.value = countCommentsUseCase.execute(
+                debate.posterId,
+                debate.swipeCardId,
+                debate.debateId
+            )
         }
     }
 

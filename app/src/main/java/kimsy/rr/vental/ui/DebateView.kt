@@ -115,6 +115,8 @@ fun DebateView(
     val likeState by sharedDebateViewModel.likeState.collectAsState()
     val createMessageState by debateViewModel.createMessageState.collectAsState()
     val sendCommentState by debateViewModel.sendCommentState.collectAsState()
+    val getCommentsCountState by debateViewModel.getCommentsCountState.collectAsState()
+    var commentCount = 0
 
     var selectedTabIndex by remember { mutableStateOf(0) }
     val tabs = listOf("VS", "コメント")
@@ -131,7 +133,10 @@ fun DebateView(
 
     LaunchedEffect(Unit) {
         debateViewModel.observeFollowingUserIds()
-        currentDebateItem?.let { debateViewModel.getComments(it.debate) }
+        currentDebateItem?.let {
+            debateViewModel.getCommentsCount(it.debate)
+            debateViewModel.getComments(it.debate)
+        }
     }
 
     LaunchedEffect(pagerState.currentPage) {
@@ -185,6 +190,7 @@ fun DebateView(
 
             // 入力欄をクリア
             commentText = ""
+            commentCount += 1
 
             debateViewModel.resetState()
         }
@@ -194,6 +200,13 @@ fun DebateView(
         else -> {}
     }
 
+    when(getCommentsCountState.status) {
+        Status.SUCCESS -> {
+            commentCount = getCommentsCountState.data?.toInt() ?: 0
+        }
+        else -> {
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -260,7 +273,7 @@ fun DebateView(
                                     modifier = Modifier.padding(8.dp),
                                     content = {
                                         Text(
-                                            text = tab,
+                                            text = if (index == 1 && commentCount != 0) "$tab($commentCount)" else tab,
                                             color = if (selectedTabIndex == index)
                                                 MaterialTheme.colorScheme.primary
                                             else

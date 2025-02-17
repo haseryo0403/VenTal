@@ -74,6 +74,8 @@
     <string name="image_optional">画像（任意）</string>
     <string name="tag_optional">タグ（任意）</string>
 
+<!--    ventcardView関連-->
+    <string name="no_ventCard_available">現在表示できるカードはありません。平和です。</string>
 
 <!--    profileEditView-->
     <string name="update_user_fail">プロフィールの更新に失敗しました。時間をあけて再度お試しください。</string>
@@ -115,6 +117,7 @@
 
     <!--    コメント関連-->
     <string name="send_comment_failure">コメントの送信に失敗しました。時間をあけて再度お試しください。</string>
+    <string name="no_comment_available">コメントはまだありません。</string>
 
     <!--    アカウント画面関連-->
     <string name="follower">フォロワー</string>
@@ -123,4 +126,12 @@
     <string name="app_name" translatable="false">Vental</string>
     <string name="like_fail">いいねに失敗しました。しばらく時間を置いて、再度お試しください。</string>
     <string name="default_web_client_id">480895274589-sca3ln83hfnh4odgegup9s7c7llms32o.apps.googleusercontent.com</string>
+    
+<!--    アプリ情報関連-->
+    <string name="terms_of_service">利用規約</string>
+    <string name="terms_of_service_content">これは利用規約です。あと数日で考えなければなりませんね。なんとまあ</string>
+    <string name="guideline">ガイドライン</string>
+    <string name="guideline_content">これはガイドラインです。あと数日で考えなければなりませんね。なんとまあ</string>
+    <string name="privacy_policy">個人情報保護方針</string>
+    <string name="privacy_policy_content">これは個人情報保護方針です。あと数日で考えなければなりませんね。なんとまあ</string>
 </resources>
