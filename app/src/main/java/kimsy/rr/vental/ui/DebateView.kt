@@ -333,7 +333,7 @@ fun DebateView(
                             debateViewModel.createMessage(
                                 debate = it.debate,
                                 text = messageText,
-                                imageUri = null,
+                                imageUri = imageUri,
                                 context = context
                             )
                         }

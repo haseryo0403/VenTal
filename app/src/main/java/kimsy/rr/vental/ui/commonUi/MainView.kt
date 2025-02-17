@@ -169,7 +169,8 @@ fun MainView(
                      {controller.navigate(Screen.BottomScreen.VentCardCreation.route)},
                      scrollBehavior,
                      ventCardCreationViewModel = ventCardCreationViewModel,
-                     notificationsViewModel = notificationsViewModel
+                     notificationsViewModel = notificationsViewModel,
+                     toNotificationView = {controller.navigate(Screen.Notifications.route)}
                  )
         },
         scaffoldState = scaffoldState

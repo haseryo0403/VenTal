@@ -1,5 +1,6 @@
 package kimsy.rr.vental.viewModel
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -69,6 +70,7 @@ class NotificationsViewModel @Inject constructor(
             observeNotificationCountUseCase.execute(_currentUser.value.uid)
                 .collect{ resource ->
                     _notificationCountState.value = resource
+                    Log.d("NVM", resource.data.toString())
                 }
         }
     }

@@ -1,5 +1,6 @@
 package kimsy.rr.vental.ui
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,8 +30,6 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import com.google.firebase.firestore.DocumentSnapshot
 import kimsy.rr.vental.R
-import kimsy.rr.vental.viewModel.NotificationsViewModel
-import kimsy.rr.vental.viewModel.SharedDebateViewModel
 import kimsy.rr.vental.data.NotificationItem
 import kimsy.rr.vental.data.NotificationType
 import kimsy.rr.vental.data.Resource
@@ -38,6 +37,8 @@ import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.CustomCircularProgressIndicator
 import kimsy.rr.vental.ui.commonUi.ErrorView
+import kimsy.rr.vental.viewModel.NotificationsViewModel
+import kimsy.rr.vental.viewModel.SharedDebateViewModel
 
 @Composable
 fun NotificationsView(
@@ -50,34 +51,22 @@ fun NotificationsView(
     val loadNotificationDataState by notificationsViewModel.loadNotificationDataState.collectAsState()
     val notificationItems by notificationsViewModel.notificationItems.collectAsState()
     val generateDebateItemState by sharedDebateViewModel.generateDebateItemState.collectAsState()
-    val notificationCountState = notificationsViewModel.notificationCountState.collectAsState()
 
-    LaunchedEffect(Unit) {
-//        if (notificationCountState.value.status == Status.SUCCESS) {
-//            when(notificationCountState.value.data) {
-//                0 -> {}
-//                else -> {
-//
-//                }
-//            }
-//        } else {
-//
-//        }
-        if (notificationItems.isNotEmpty()) {
+    LaunchedEffect(notificationItems) {
+        if (notificationItems.isEmpty()) {
+            Log.d("NV", "isEmpty -> Loading notifications")
+            notificationsViewModel.loadNotificationItems()
+        } else {
+            Log.d("NV", "isNotEmpty -> Marking notifications as read")
             notificationItems.forEach { notificationItem ->
-                if (notificationItem.notification.readFlag == false) {
-                    //TODO change flag
+                if (!notificationItem.notification.readFlag) {
                     notificationsViewModel.markNotificationAsRead(notificationItem)
                 }
             }
         }
-        //戻るボタンで実行されてしまうと同じ内容をどんどんストックしてしまうため
-        if (notificationItems.isEmpty()) {
-            notificationsViewModel.loadNotificationItems()
-        } else {
-
-        }
     }
+
+
 
     LazyColumn(
         modifier = Modifier.fillMaxWidth()

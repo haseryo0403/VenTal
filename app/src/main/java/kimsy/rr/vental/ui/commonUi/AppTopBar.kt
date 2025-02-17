@@ -56,7 +56,8 @@ fun AppTopBarView(
     onSavingFailure: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior,
     ventCardCreationViewModel: VentCardCreationViewModel,
-    notificationsViewModel: NotificationsViewModel
+    notificationsViewModel: NotificationsViewModel,
+    toNotificationView: () -> Unit
 ){
     val titleToDisableScroll = listOf("VCC", "VentCards")
     val saveState = ventCardCreationViewModel.saveState.collectAsState()
@@ -104,21 +105,11 @@ fun AppTopBarView(
                         modifier = Modifier
                     )
                 }
-            } else if (title.contains("マイページ")) {
-                IconButton(onClick = {
-                    navController.navigate(Screen.Notifications.route)
-                }) {
-                    Icon(painter = painterResource(id = R.drawable.baseline_notifications_24), contentDescription = "notifications")
-                }
+            }
+//            else if (title.contains("マイページ")) {
+            else if(!title.contains("通知")){
 
-                IconButton(onClick = {
-                    navController.navigate(Screen.SettingsScreen.route)
-                }) {
-                    Icon(painter = painterResource(id = R.drawable.baseline_settings_24), contentDescription = "notifications")
-                }
-            } else if(!title.contains("通知")){
-
-                BadgedBox(
+                    BadgedBox(
                     badge = {
                         if (notificationCountState.value.status == Status.SUCCESS) {
                             when(notificationCountState.value.data) {
@@ -126,8 +117,8 @@ fun AppTopBarView(
                                 else -> {
                                     Badge(
                                         modifier = Modifier
-                                            .size(24.dp)
-                                            .offset(x = (-4).dp)
+                                            .size(18.dp)
+                                            .offset(x = (-10).dp, y = 4.dp)
                                     ){
                                         Text(text = notificationCountState.value.data.toString())
                                     }
@@ -139,23 +130,67 @@ fun AppTopBarView(
                     },
                     modifier = Modifier.padding(end = 8.dp)
                 ){
-                    IconButton(
-                        onClick = {
-                        navController.navigate(Screen.Notifications.route)
-                        },
-                        modifier = Modifier.size(32.dp)
-                    ) {
+                    IconButton(onClick = {
+//                        navController.navigate(Screen.Notifications.route)
+                        toNotificationView()
+                    }) {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_notifications_24),
                             contentDescription = "notifications",
-                            modifier = Modifier.size(32.dp)
+//                            modifier = Modifier.size(28.dp)
                         )
                     }
-
                 }
 
 
-            } else {
+                IconButton(onClick = {
+                    navController.navigate(Screen.SettingsScreen.route)
+                }) {
+                    Icon(painter = painterResource(id = R.drawable.baseline_settings_24), contentDescription = "settings")
+                }
+            }
+//            else if(!title.contains("通知")){
+//
+//                BadgedBox(
+//                    badge = {
+//                        if (notificationCountState.value.status == Status.SUCCESS) {
+//                            when(notificationCountState.value.data) {
+//                                0 -> {}
+//                                else -> {
+//                                    Badge(
+//                                        modifier = Modifier
+//                                            .size(24.dp)
+//                                            .offset(x = (-4).dp)
+//                                    ){
+//                                        Text(text = notificationCountState.value.data.toString())
+//                                    }
+//                                }
+//                            }
+//                        } else {
+//
+//                        }
+//                    },
+//                    modifier = Modifier.padding(end = 8.dp)
+//                ){
+//                    IconButton(
+//                        onClick = {
+//                            toNotificationView()
+////                        navController.navigate(Screen.Notifications.route)
+//                        },
+//                        modifier = Modifier.size(32.dp)
+//                    ) {
+//                        Icon(
+//                            painter = painterResource(id = R.drawable.baseline_notifications_24),
+//                            contentDescription = "notifications",
+//                            modifier = Modifier.size(32.dp)
+//                        )
+//                    }
+//
+//                }
+//
+//
+//            }
+            else {
                 null
             }
         }
@@ -197,6 +232,7 @@ fun AppTopBarView(
                 scrollBehavior
             },
             colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                scrolledContainerColor = MaterialTheme.colorScheme.background,
                 containerColor = MaterialTheme.colorScheme.background,
                 titleContentColor = MaterialTheme.colorScheme.onBackground
             )
