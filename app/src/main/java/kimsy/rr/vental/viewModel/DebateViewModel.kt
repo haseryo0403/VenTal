@@ -63,8 +63,6 @@ class DebateViewModel @Inject constructor(
 
     private val _fetchCommentItemState = MutableStateFlow<Resource<Pair<List<CommentItem>, DocumentSnapshot?>>>(Resource.idle())
     val fetchCommentItemState: StateFlow<Resource<Pair<List<CommentItem>, DocumentSnapshot?>>> get() = _fetchCommentItemState
-//    private val _fetchCommentItemState = MutableStateFlow<Resource<List<CommentItem>>>(Resource.idle())
-//    val fetchCommentItemState: StateFlow<Resource<List<CommentItem>>> get() = _fetchCommentItemState
 
     private val _sendCommentState = MutableStateFlow<Resource<Unit>>(Resource.idle())
     val sendCommentState: StateFlow<Resource<Unit>> get() = _sendCommentState
@@ -237,8 +235,4 @@ class DebateViewModel @Inject constructor(
         _followingUserIdsState.value = Resource.idle()
         _sendCommentState.value = Resource.idle()
     }
-
-//    fun resetHasFinishedLoadingAllCommentItems() {
-//        hasFinishedLoadingAllCommentItems = false
-//    }
 }

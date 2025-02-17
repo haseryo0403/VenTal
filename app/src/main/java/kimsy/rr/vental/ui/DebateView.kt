@@ -1,6 +1,6 @@
 package kimsy.rr.vental.ui
 
-import MessageItem
+import MessageView
 import android.app.Activity
 import android.content.Context
 import android.net.Uri
@@ -34,13 +34,11 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.primarySurface
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -83,7 +81,6 @@ import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.CustomLinearProgressIndicator
 import kimsy.rr.vental.ui.CommonComposable.ImagePermissionAndSelection
 import kimsy.rr.vental.ui.CommonComposable.MaxLengthOutlinedTextField
-import kimsy.rr.vental.ui.CommonComposable.MaxLengthTextField
 import kimsy.rr.vental.ui.CommonComposable.VSSurface
 import kimsy.rr.vental.ui.CommonComposable.formatTimeDifference
 import kimsy.rr.vental.ui.CommonComposable.showAsBottomSheet
@@ -189,7 +186,6 @@ fun DebateView(
             // 入力欄をクリア
             commentText = ""
 
-//            currentDebateItem?.let { debateViewModel.getComments(it.debate) }
             debateViewModel.resetState()
         }
         Status.FAILURE -> {
@@ -283,9 +279,11 @@ fun DebateView(
                             when (index) {
                                 0 -> {
                                     currentDebateItem?.let {
-                                        MessageItem(
+                                        MessageView(
                                             viewModel = debateViewModel,
-                                            debate = it.debate
+                                            debate = it.debate,
+                                            posterIcon = it.poster.photoURL,
+                                            debaterIcon = it.debater.photoURL
                                         )
                                     }
                                 }
@@ -296,30 +294,12 @@ fun DebateView(
                                             viewModel = debateViewModel,
                                             modifier = Modifier.fillMaxWidth(),
                                             debate = debate,
-                                            toAnotherUserPageView = {/* TODO */}) {
-                                        }
+                                            toAnotherUserPageView = toAnotherUserPageView
+                                        )
                                     }
                                 }
                             }
                         }
-
-//                        if (imageUri != null) {
-//                            debateTextFieldWithImage(
-//                                imageUri = imageUri!!,
-//                                onImageDelete = { imageUri = null },
-//                                text = text,
-//                                onTextChange = { text = it }
-//                            ) {
-//                                currentDebateItem?.let {
-//                                    debateViewModel.createMessage(
-//                                        debate = it.debate,
-//                                        text = text,
-//                                        imageUri = imageUri,
-//                                        context = context
-//                                    )
-//                                }
-//                            }
-//                        }
                     }
                 }
             }
@@ -327,7 +307,7 @@ fun DebateView(
         when(selectedTabIndex) {
             0 -> {
                 if (currentDebateItem?.debate?.posterId == currentUser.value.uid || currentDebateItem?.debate?.debaterId == currentUser.value.uid) {
-                    debateTextFieldWithOutImage(
+                    debateTextField(
                         imageUri = imageUri,
                         onImageDelete = { imageUri = null },
                         isKeyboardVisible = isKeyboardVisible,
@@ -574,91 +554,9 @@ fun showLoadingIndicator() {
     }
 }
 
-// TODO　参加者以外非表示
-@Composable
-fun debateTextFieldWithImage(
-    imageUri: Uri,
-    onImageDelete: () -> Unit,
-    text: String,
-    onTextChange: (String) -> Unit,
-    onSendClick: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        Divider()
-        MaxLengthTextField(
-            value = text,
-            onValueChange = onTextChange,
-            maxLength = 140,
-            modifier = Modifier
-                .fillMaxWidth(),
-            placeHolder = { Text(text = "怒りをぶつけろ！") },
-            colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = Color.Transparent, // 背景を透明に設定
-                focusedContainerColor = Color.Transparent, // フォーカス時の背景を透明に設定
-                unfocusedIndicatorColor = Color.Transparent, // 未選択時の下線を透明に設定
-                focusedIndicatorColor = Color.Transparent // 選択時の下線を透明に設定
-            )
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp),
-        ){
-            Image(
-                painter = rememberAsyncImagePainter(imageUri),
-                contentDescription = "Selected Image",
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(16.dp)),
-                contentScale = ContentScale.FillWidth,
-            )
-            androidx.compose.material3.IconButton(
-                onClick = { onImageDelete() },
-                modifier = Modifier
-                    .size(32.dp)
-                    .align(Alignment.TopEnd)
-                    .offset(x = (-8).dp, y = (8).dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
-                        shape = CircleShape
-                    )
-
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.baseline_clear_24),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .size(32.dp),
-
-                    )
-            }
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            ElevatedButton(
-                onClick = onSendClick ,
-                modifier = Modifier
-                    .fillMaxWidth(0.8f)
-                    .height(48.dp)) {
-                Text(text = "送信する")
-            }
-        }
-    }
-
-}
-
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun debateTextFieldWithOutImage(
+fun debateTextField(
     imageUri: Uri?,
     onImageDelete: () -> Unit,
     isKeyboardVisible: Boolean,

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -33,6 +34,7 @@ import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.Message
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.UserType
+import kimsy.rr.vental.ui.AccountIcon
 import kimsy.rr.vental.ui.commonUi.ErrorView
 import kimsy.rr.vental.ui.showLoadingIndicator
 import kimsy.rr.vental.viewModel.DebateViewModel
@@ -43,9 +45,11 @@ import java.util.Date
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun MessageItem(
+fun MessageView(
     viewModel: DebateViewModel,
-    debate: Debate
+    debate: Debate,
+    posterIcon: String,
+    debaterIcon: String
 ) {
 
     val fetchMessageState by viewModel.fetchMessageState.collectAsState()
@@ -61,7 +65,11 @@ fun MessageItem(
         Status.SUCCESS -> {
             if (fetchMessageState.data != null) {
                 fetchMessageState.data?.let {
-                    MessageView(messages = it)
+                    MessageItems(
+                        messages = it,
+                        posterIcon = posterIcon,
+                        debaterIcon = debaterIcon
+                        )
                 }
             }
         }
@@ -78,12 +86,16 @@ fun MessageItem(
 }
 
 @Composable
-fun MessageView(messages: List<Message>) {
+fun MessageItems(
+    messages: List<Message>,
+    posterIcon: String,
+    debaterIcon: String
+) {
     var previousDate: Date? by remember { mutableStateOf(null) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+//            .padding(8.dp)
     ) {
 
         messages.forEachIndexed { index, message ->
@@ -96,70 +108,85 @@ fun MessageView(messages: List<Message>) {
                     DateDisplay(message.sentDatetime)
                 }
             }
-            if (message.imageURL != null) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
-                    horizontalArrangement = if (message.userType == UserType.DEBATER) Arrangement.Start else Arrangement.End,
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    Image(
-                        painter = rememberAsyncImagePainter(message.imageURL),
-                        contentDescription = "message Image",
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(16.dp))
-                            .widthIn(max = 250.dp),
-                        contentScale = ContentScale.FillWidth
-                    )
-                    Text(
-                        text = message.sentDatetime?.let {
-                            formatTime(it)
-                        } ?: "不明",
-                        modifier = Modifier.padding(bottom = 4.dp),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+            if (message.userType == UserType.POSTER) {
+                PosterMessage(message = message, userIcon = posterIcon)
+            } else {
+                DebaterMessage(message = message, userIcon = debaterIcon)
             }
-            if (message.text.isNotEmpty()) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
-                    horizontalArrangement = if (message.userType == UserType.DEBATER) Arrangement.Start else Arrangement.End,
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    Surface(
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .widthIn(max = 250.dp),
-                        shape = MaterialTheme.shapes.medium,
-                        color = MaterialTheme.colorScheme.surfaceVariant,
-                        tonalElevation = 4.dp
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(12.dp)
-                        ) {
-                            Text(
-                                text = message.text,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
 
-                            Spacer(modifier = Modifier.height(4.dp))
-                        }
-                    }
-                    Text(
-                        text = message.sentDatetime?.let {
-                            formatTime(it)
-                        } ?: "不明",
-                        modifier = Modifier.padding(bottom = 4.dp),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
+//            //TODO 右と左で時間とアイコンを表示する場所を左右変えなければならない
+//            if (message.imageURL != null) {
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(4.dp),
+//                    horizontalArrangement = if (message.userType == UserType.DEBATER) Arrangement.End else Arrangement.Start,
+//                    verticalAlignment = Alignment.Bottom
+//                ) {
+//
+//                    IconButton(onClick = { /*TODO*/ }) {
+//                        AccountIcon(imageUrl = if (message.userType == UserType.DEBATER) debaterIcon else posterIcon)
+//                    }
+//
+//                    Image(
+//                        painter = rememberAsyncImagePainter(message.imageURL),
+//                        contentDescription = "message Image",
+//                        modifier = Modifier
+//                            .clip(RoundedCornerShape(16.dp))
+//                            .widthIn(max = 250.dp),
+//                        contentScale = ContentScale.FillWidth
+//                    )
+//                    Text(
+//                        text = message.sentDatetime?.let {
+//                            formatTime(it)
+//                        } ?: "不明",
+//                        modifier = Modifier.padding(bottom = 4.dp),
+//                        style = MaterialTheme.typography.bodySmall,
+//                        color = MaterialTheme.colorScheme.onSurfaceVariant
+//                    )
+//                }
+//            }
+//            if (message.text.isNotEmpty()) {
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(4.dp),
+//                    horizontalArrangement = if (message.userType == UserType.DEBATER) Arrangement.End else Arrangement.Start,
+//                    verticalAlignment = Alignment.Bottom
+//                ) {
+//                    IconButton(onClick = { /*TODO*/ }) {
+//                        AccountIcon(imageUrl = if (message.userType == UserType.DEBATER) debaterIcon else posterIcon)
+//                    }
+//                    Surface(
+//                        modifier = Modifier
+//                            .padding(4.dp)
+//                            .widthIn(max = 250.dp),
+//                        shape = MaterialTheme.shapes.medium,
+//                        color = if (message.userType == UserType.DEBATER) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+//                        tonalElevation = 4.dp
+//                    ) {
+//                        Row(
+//                            modifier = Modifier.padding(12.dp)
+//                        ) {
+//                            Text(
+//                                text = message.text,
+//                                style = MaterialTheme.typography.bodyLarge,
+//                                color = if (message.userType == UserType.DEBATER) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+//                            )
+//
+//                            Spacer(modifier = Modifier.height(4.dp))
+//                        }
+//                    }
+//                    Text(
+//                        text = message.sentDatetime?.let {
+//                            formatTime(it)
+//                        } ?: "不明",
+//                        modifier = Modifier.padding(bottom = 4.dp),
+//                        style = MaterialTheme.typography.bodySmall,
+//                        color = MaterialTheme.colorScheme.onSurfaceVariant
+//                    )
+//                }
+//            }
 
 
 
@@ -167,6 +194,166 @@ fun MessageView(messages: List<Message>) {
         }
 
     }
+}
+
+
+@Composable
+fun PosterMessage(
+    message: Message,
+    userIcon: String
+){
+    //TODO 右と左で時間とアイコンを表示する場所を左右変えなければならない
+    if (message.imageURL != null) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.Bottom
+        ) {
+
+            IconButton(onClick = { /*TODO*/ }) {
+                AccountIcon(imageUrl = userIcon)
+            }
+
+            Image(
+                painter = rememberAsyncImagePainter(message.imageURL),
+                contentDescription = "message Image",
+                modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .widthIn(max = 200.dp),
+                contentScale = ContentScale.FillWidth
+            )
+            Text(
+                text = message.sentDatetime?.let {
+                    formatTime(it)
+                } ?: "不明",
+                modifier = Modifier.padding(bottom = 4.dp),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+    if (message.text.isNotEmpty()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.Bottom
+        ) {
+            IconButton(onClick = { /*TODO*/ }) {
+                AccountIcon(imageUrl = userIcon)
+            }
+            Surface(
+                modifier = Modifier
+                    .padding(4.dp)
+                    .widthIn(max = 250.dp),
+                shape = MaterialTheme.shapes.medium,
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                tonalElevation = 4.dp
+            ) {
+                Row(
+                    modifier = Modifier.padding(12.dp)
+                ) {
+                    Text(
+                        text = message.text,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+            }
+            Text(
+                text = message.sentDatetime?.let {
+                    formatTime(it)
+                } ?: "不明",
+                modifier = Modifier.padding(bottom = 4.dp),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+fun DebaterMessage(
+    message: Message,
+    userIcon: String
+){
+    //TODO 右と左で時間とアイコンを表示する場所を左右変えなければならない
+    if (message.imageURL != null) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.Bottom
+        ) {
+            Text(
+                text = message.sentDatetime?.let {
+                    formatTime(it)
+                } ?: "不明",
+                modifier = Modifier.padding(bottom = 4.dp),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Image(
+                painter = rememberAsyncImagePainter(message.imageURL),
+                contentDescription = "message Image",
+                modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .widthIn(max = 200.dp),
+                contentScale = ContentScale.FillWidth
+            )
+            IconButton(onClick = { /*TODO*/ }) {
+                AccountIcon(imageUrl = userIcon)
+            }
+        }
+    }
+    if (message.text.isNotEmpty()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.Bottom
+        ) {
+            Text(
+                text = message.sentDatetime?.let {
+                    formatTime(it)
+                } ?: "不明",
+                modifier = Modifier.padding(bottom = 4.dp),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Surface(
+                modifier = Modifier
+                    .padding(4.dp)
+                    .widthIn(max = 250.dp),
+                shape = MaterialTheme.shapes.medium,
+                color = MaterialTheme.colorScheme.primaryContainer,
+                tonalElevation = 4.dp
+            ) {
+                Row(
+                    modifier = Modifier.padding(12.dp)
+                ) {
+                    Text(
+                        text = message.text,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+            }
+            IconButton(onClick = { /*TODO*/ }) {
+                AccountIcon(imageUrl = userIcon)
+            }
+        }
+    }
+
 }
 
 fun isSameDay(date1: Date?, date2: Date?): Boolean {

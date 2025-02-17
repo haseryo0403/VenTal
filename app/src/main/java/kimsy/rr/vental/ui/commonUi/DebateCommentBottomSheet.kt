@@ -58,6 +58,7 @@ import kimsy.rr.vental.viewModel.DebateViewModel
 import kotlinx.coroutines.launch
 import java.util.Date
 
+//TODO これは将来使いたい。現在はキーボードを表示した際にテキストフィールドを移動させるのが技術的に難しいので保留。
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalLayoutApi::class)
 @Composable

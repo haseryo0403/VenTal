@@ -10,7 +10,7 @@ import javax.inject.Inject
 class CommentRepository @Inject constructor(
     private val db: FirebaseFirestore
 ){
-    val limitNum = 10L
+    private val limitNum = 10L
 
     suspend fun fetchComments(
         posterId: String,
@@ -47,30 +47,6 @@ class CommentRepository @Inject constructor(
 
         return Pair(comments, newLastVisible)
     }
-
-//    suspend fun fetchComments(
-//        posterId: String,
-//        swipeCardId: String,
-//        debateId: String
-//    ): List<Comment> {
-//        val docRef = db
-//            .collection("users")
-//            .document(posterId)
-//            .collection("swipeCards")
-//            .document(swipeCardId)
-//            .collection("debates")
-//            .document(debateId)
-//            .collection("comments")
-//            .orderBy("commentedDateTime", Query.Direction.DESCENDING)
-//
-//        val querySnapshot = docRef.get().await()
-//        val comments = querySnapshot.documents.mapNotNull { document ->
-//            val comment = document.toObject(Comment::class.java)
-//            val commentedTime = document.getTimestamp("commentedDateTime")?.toDate()
-//            comment?.copy(commentedDateTime = commentedTime)
-//        }
-//        return comments
-//    }
 
     suspend fun saveComment (
         posterId: String,
