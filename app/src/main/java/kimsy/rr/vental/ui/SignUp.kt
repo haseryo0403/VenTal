@@ -8,7 +8,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -57,7 +56,6 @@ import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.ui.CommonComposable.CustomCircularProgressIndicator
 import kimsy.rr.vental.viewModel.AuthViewModel
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
     var showDialog by remember { mutableStateOf(false)}
@@ -65,7 +63,6 @@ fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
     val privacyDialogOpen = remember { mutableStateOf(false)}
 
     val authState by authViewModel.authState.collectAsState()
-//    val isLoading = authViewModel.isLoading
     val (checkedState, onCheckedStateChange) = remember { mutableStateOf(false) }
     val (uncheckedState, onUncheckedStateChange) = remember { mutableStateOf(false) }
 
@@ -78,7 +75,6 @@ fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
             // ViewModelで結果を処理
             authViewModel.handleSignInResult(signInIntent)
         } else {
-//            authViewModel.updateLoading(false)
             showDialog = true
         }
     }
@@ -112,31 +108,31 @@ fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
         },
             confirmButton = { /*TODO*/ },
             title = { Text(text = "エラー")},
-            text = { Text(text = "エラーが発生しました。時間をおいて再度お試しください。")}
+            text = { Text(text = stringResource(id = R.string.error_occurred_try_again))}
             )
     }
     termsDialog(dialogOpen = termsDialogOpen)
     privacyDialog(dialogOpen = privacyDialogOpen)
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(24.dp)
-            .shadow(4.dp, RoundedCornerShape(10.dp))
-            .clip(RoundedCornerShape(16.dp))
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(32.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            when(authState.status) {
-                Status.LOADING -> {
-                    CustomCircularProgressIndicator()
-                }
-                else -> {
+    when(authState.status){
+        Status.LOADING -> {
+            CustomCircularProgressIndicator()
+        }
+        else -> {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(24.dp)
+                    .shadow(4.dp, RoundedCornerShape(10.dp))
+                    .clip(RoundedCornerShape(16.dp))
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(32.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Text(
                         text = stringResource(id = R.string.welcome_to_vental),
                         style = MaterialTheme.typography.titleLarge,
@@ -161,24 +157,16 @@ fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
                             onCheckedChange = null,
                             modifier = Modifier.padding(end = 8.dp)
                         )
-                        //TODO テキストボタンを組み合わせる
-//                        Text(
-//                            text = stringResource(id = R.string.check_to_agree_terms),
-//                            color = MaterialTheme.colorScheme.onSurfaceVariant
-//                        )
                         TermsAndPrivacyText(
                             onTermsClick = { termsDialogOpen.value = true },
                             onPrivacyClick = { privacyDialogOpen.value = true }
-                            )
+                        )
                     }
                     if (uncheckedState){
                         Text(text = stringResource(id = R.string.close_account_agreement_required),
                             color = MaterialTheme.colorScheme.secondary,
                             style = MaterialTheme.typography.titleMedium)
                     }
-
-//                    Text(text = "Googleでサインイン")
-//                    Spacer(modifier = Modifier.height(16.dp))
                     Spacer(modifier = Modifier.height(8.dp))
 
                     ElevatedButton(onClick = {
@@ -193,7 +181,7 @@ fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
                             .height(56.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
 
-                    ){
+                        ){
                         Image(
                             painter = painterResource(id = R.drawable.google_icon), // GoogleアイコンのリソースID
                             contentDescription = "Google Icon",
@@ -209,19 +197,8 @@ fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
                     Text(text = stringResource(id = R.string.agree_to_terms), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
                 }
             }
-//        if(isLoading){
-//            CircularProgressIndicator()
-//        } else {
-
-//        }
-
         }
     }
-
-
-
-
-
 }
 
 

@@ -1,8 +1,8 @@
 package kimsy.rr.vental.ui
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresExtension
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,13 +13,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Tab
@@ -30,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,7 +49,6 @@ import kimsy.rr.vental.viewModel.MyPageViewModel
 import kimsy.rr.vental.viewModel.MyVentCardViewModel
 import kimsy.rr.vental.viewModel.SharedDebateViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun MyPageView(
@@ -69,8 +65,6 @@ fun MyPageView(
 ){
     val currentUser by viewModel.currentUser.collectAsState()
 
-    val scrollState = rememberLazyListState()
-
     val debateCountsState by viewModel.debateCountsState.collectAsState()
 
     var selectedTabIndex by remember { mutableStateOf(0) }
@@ -80,21 +74,20 @@ fun MyPageView(
 
     LaunchedEffect(key1 = selectedTabIndex) {
         pagerState.animateScrollToPage(selectedTabIndex)
+        Log.d("MyPageView", "Selected tab index: $selectedTabIndex")
+
     }
 
     LaunchedEffect(pagerState.currentPage) {
         selectedTabIndex = pagerState.currentPage
+        Log.d("MyPageView", "Selected tab index: $selectedTabIndex")
     }
 
     LaunchedEffect(Unit) {
         viewModel.updateCurrentUser()
         viewModel.loadUserPageData()
+        Log.d("MyPageView", "Selected tab index: ${tabs.size}")
     }
-
-    // TODO 修正
-    val isScrolled = remember { derivedStateOf { scrollState.firstVisibleItemScrollOffset > 0 } }
-    val accountContentHeight by animateDpAsState(if (isScrolled.value) 0.dp else 140.dp)
-    val tabRowHeight by animateDpAsState(if (isScrolled.value) 0.dp else 48.dp)
 
     Column(
         modifier = Modifier

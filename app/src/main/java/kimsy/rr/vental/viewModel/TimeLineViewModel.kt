@@ -72,10 +72,19 @@ class TimeLineViewModel @Inject constructor(
         }
     }
 
-    fun onLikeSuccess(debateItem: DebateItem) {
+    fun onRecentDebateLikeSuccess(debateItem: DebateItem) {
         val index = _recentTimelineItems.value.indexOfFirst { it.debate.debateId == debateItem.debate.debateId }
         if (index != -1) {
             _recentTimelineItems.value = _recentTimelineItems.value.toMutableList().apply {
+                this[index] = debateItem
+            }
+        }
+    }
+
+    fun onPopularDebateLikeSuccess(debateItem: DebateItem) {
+        val index = _popularTimelineItems.value.indexOfFirst { it.debate.debateId == debateItem.debate.debateId }
+        if (index != -1) {
+            _popularTimelineItems.value = _popularTimelineItems.value.toMutableList().apply {
                 this[index] = debateItem
             }
         }

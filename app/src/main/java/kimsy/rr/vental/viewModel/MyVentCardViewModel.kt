@@ -92,7 +92,7 @@ class MyVentCardViewModel @Inject constructor(
     }
 
     fun  resetLoadVentCardState() {
-        _loadVentCardState.value = Resource.loading()
+        _loadVentCardState.value = Resource.idle()
     }
 
 }

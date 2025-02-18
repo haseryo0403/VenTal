@@ -174,7 +174,7 @@ fun TimeLineView(
                                             toDebateView,
                                             toAnotherUserPageView,
                                             onLikeStateSuccess = { debateItem ->
-                                                timeLineViewModel.onLikeSuccess(debateItem)
+                                                timeLineViewModel.onRecentDebateLikeSuccess(debateItem)
                                             },
                                             item
                                         )
@@ -185,6 +185,36 @@ fun TimeLineView(
                                     item { LoadingIndicator(timeLineViewModel) }
                                 }
                             }
+
+//
+//                            PullToRefreshBox(
+//                                isRefreshing = isRefreshing,
+//                                onRefresh = { timeLineViewModel.onRefreshRecentItem() }
+//                            ) {
+//                                LazyColumn(
+//                                    modifier = Modifier.background(color = MaterialTheme.colorScheme.background),
+//                                    state = recentItemScrollState
+//                                ) {
+//                                    itemsIndexed(recentTimeLineItems) {debateIndex, item ->
+//                                        DebateCard(
+//                                            sharedDebateViewModel,
+//                                            toDebateView,
+//                                            toAnotherUserPageView,
+//                                            onLikeStateSuccess = { debateItem ->
+//                                                timeLineViewModel.onRecentDebateLikeSuccess(debateItem)
+//                                            },
+//                                            item
+//                                        )
+//                                        if ((debateIndex +1) % 7 == 0) {
+//                                            LoadRecentDebateItems(timeLineViewModel)
+//                                        }
+//                                    }
+//                                    item { LoadingIndicator(timeLineViewModel) }
+//                                }
+//                            }
+//
+
+
                         }
 
                         1 -> {
@@ -199,7 +229,7 @@ fun TimeLineView(
                                             toDebateView,
                                             toAnotherUserPageView,
                                             onLikeStateSuccess = { debateItem ->
-                                                timeLineViewModel.onLikeSuccess(debateItem)
+                                                timeLineViewModel.onPopularDebateLikeSuccess(debateItem)
                                             },
                                             item
                                         )

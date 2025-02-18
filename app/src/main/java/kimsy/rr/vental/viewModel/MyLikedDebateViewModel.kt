@@ -1,5 +1,6 @@
 package kimsy.rr.vental.viewModel
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -24,6 +25,10 @@ class MyLikedDebateViewModel @Inject constructor(
     private val loadLikedDebateIdsUseCase: LoadLikedDebateIdsUseCase,
     private val loadLikedDebateItemsUseCase: LoadLikedDebateItemsUseCase
 ): ViewModel(){
+
+    init {
+        Log.d("MLDVM", "initialized")
+    }
 
     private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel()?: User())
     val currentUser: StateFlow<User> get() = _currentUser
@@ -75,22 +80,36 @@ class MyLikedDebateViewModel @Inject constructor(
 
     suspend fun loadLikedDebates() {
         viewModelScope.launch {
-            if (hasFinishedLoadingAllLikedDebateItems) {
-                _loadLikedDebateItemsState.value = Resource.failure("status not success")
-                return@launch
-            }
+            Log.d("MLDVM", "loadLikedDebates called")
+//            if (hasFinishedLoadingAllLikedDebateItems) {
+//                _loadLikedDebateItemsState.value = Resource.failure("status not success")
+//                return@launch
+//            }
             _loadLikedDebateItemsState.value = Resource.loading()
             val likedDebateIdsState = loadLikedDebateIdsUseCase.execute(_currentUser.value.uid)
             if (likedDebateIdsState.status == Status.SUCCESS) {
-                val likedDebateIds = likedDebateIdsState.data?: emptyList()
-                likedDebateIdsSplitBy10 = SplitList(likedDebateIds, 10)
+                if (likedDebateIdsState.data == null) {
+                    _loadLikedDebateItemsState.value = Resource.success(emptyList())
+                    return@launch
+                } else {
+                    likedDebateIdsSplitBy10 = SplitList(likedDebateIdsState.data, 10)
+                }
+//                val likedDebateIds = likedDebateIdsState.data?: emptyList()
+//                likedDebateIdsSplitBy10 = SplitList(likedDebateIds, 10)
             } else {
                 _loadLikedDebateItemsState.value = Resource.failure("status not success")
                 return@launch
             }
-
-            _loadLikedDebateItemsState.value =
+            if (likedDebateIdsSplitBy10.isNotEmpty()) {
+                _loadLikedDebateItemsState.value =
                     loadLikedDebateItemsUseCase.execute(likedDebateIdsSplitBy10[currentLikedDebateIdsIndex], _currentUser.value.uid)
+            } else {
+                _loadLikedDebateItemsState.value = Resource.success(emptyList())
+            }
+
+
+//            _loadLikedDebateItemsState.value =
+//                    loadLikedDebateItemsUseCase.execute(likedDebateIdsSplitBy10[currentLikedDebateIdsIndex], _currentUser.value.uid)
 
             when (_loadLikedDebateItemsState.value.status) {
                 Status.SUCCESS -> {
@@ -110,8 +129,8 @@ class MyLikedDebateViewModel @Inject constructor(
                         if (currentLikedDebateIdsIndex == likedDebateIdsSplitBy10.size) {
                             hasFinishedLoadingAllLikedDebateItems = true
                         }
-                        //TODO delete?
-                        _loadLikedDebateItemsState.value = Resource.idle()
+//                        //TODO delete?
+//                        _loadLikedDebateItemsState.value = Resource.idle()
                     }
                 }
                 Status.FAILURE -> {

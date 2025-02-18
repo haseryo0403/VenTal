@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,6 +39,7 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
@@ -237,6 +239,18 @@ fun MyVentCardView(
                                 )
                             })
                         }
+                        Status.SUCCESS -> {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(20.dp),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(text = stringResource(id = R.string.no_mycard_available))
+                                Text(text = stringResource(id = R.string.if_want_make_card))
+                                Image(painter = painterResource(id = R.drawable._vs1sns0xff9725290xff7f1d58__1_), contentDescription = "how to make card",modifier = Modifier.fillMaxWidth())
+                            }                        }
                         else -> viewModel.resetLoadVentCardState()
                     }
                 }

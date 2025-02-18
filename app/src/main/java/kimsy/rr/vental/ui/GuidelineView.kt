@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,11 +24,13 @@ fun GuidelineView() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(text = stringResource(id = R.string.guideline), style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(bottom = 8.dp))
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            Text(text = stringResource(id = R.string.guideline_content))
+            item {
+                Text(text = stringResource(id = R.string.guideline_content))
+            }
         }
     }
 }

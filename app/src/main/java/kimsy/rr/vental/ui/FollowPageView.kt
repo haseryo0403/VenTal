@@ -5,6 +5,7 @@ import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -88,7 +89,16 @@ fun FollowPageView(
             }
 
             followingUserState.data?.isEmpty() == true -> {
-                Text("フォローしてくださいお願い")
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(20.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+
+                ) {
+                    Text(text = stringResource(id = R.string.please_follow))
+                }
             }
             else -> {
                 FollowingUserView(
@@ -170,7 +180,16 @@ fun FollowingUserView(
                     })
                 }
                 Status.SUCCESS -> {
-                    Text(text = stringResource(id = R.string.please_follow_to_show_debates))
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(20.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+
+                    ) {
+                        Text(text = stringResource(id = R.string.please_follow))
+                    }
                 }
                 else -> {}
             }
@@ -236,7 +255,16 @@ fun FollowUserDebateView(
                         })
                     }
                     Status.SUCCESS -> {
-                        Text(text = stringResource(id = R.string.please_follow_to_show_debates) )
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(20.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+
+                        ) {
+                            Text(text = stringResource(id = R.string.please_follow))
+                        }
                     }
                     else -> viewModel.resetGetDebateItemState()
                 }
