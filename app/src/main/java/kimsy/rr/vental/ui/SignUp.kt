@@ -57,7 +57,11 @@ import kimsy.rr.vental.ui.CommonComposable.CustomCircularProgressIndicator
 import kimsy.rr.vental.viewModel.AuthViewModel
 
 @Composable
-fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
+fun SignInScreen(
+    authViewModel: AuthViewModel,
+    onNavigateToMainView:()->Unit,
+    toAppGuideView: () -> Unit
+) {
     var showDialog by remember { mutableStateOf(false)}
     val termsDialogOpen = remember { mutableStateOf(false)}
     val privacyDialogOpen = remember { mutableStateOf(false)}
@@ -65,6 +69,9 @@ fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
     val authState by authViewModel.authState.collectAsState()
     val (checkedState, onCheckedStateChange) = remember { mutableStateOf(false) }
     val (uncheckedState, onUncheckedStateChange) = remember { mutableStateOf(false) }
+
+    val currentUser by authViewModel.currentUser.collectAsState()
+
 
     // Googleサインインの結果を受け取るランチャー
     val launcher = rememberLauncherForActivityResult(
@@ -83,16 +90,52 @@ fun SignInScreen(authViewModel: AuthViewModel,onNavigateToMainView:()->Unit) {
     LaunchedEffect(authState) {
         if (authState.data == true) {
             Log.d("TAG", "Navigate to timeline")
-            onNavigateToMainView()  // 遷移先の処理を呼び出す
+            Log.e("TAG", currentUser.toString())
+//            if (currentUser.newUserFlag) {
+//                toAppGuideView()
+//            } else {
+                onNavigateToMainView()  // 遷移先の処理を呼び出す
+//            }
         }
     }
+
+//    LaunchedEffect(authState.data, currentUser) {
+//        if (authState.data == true && currentUser.uid.isNotEmpty()) {
+//            Log.d("TAG", "Navigate to timeline")
+//            Log.e("TAG", currentUser.toString())
+//
+//            if (currentUser.newUserFlag) {
+//                toAppGuideView()
+//            } else {
+//                onNavigateToMainView()
+//            }
+//        }
+//    }
 
     when(authState.status) {
         Status.SUCCESS -> {
             if (authState.data == true) {
-                onNavigateToMainView()
+                Log.e("TAG", currentUser.toString())
+//                if (currentUser.newUserFlag) {
+//                    toAppGuideView()
+//                } else {
+                    onNavigateToMainView()  // 遷移先の処理を呼び出す
+//                }
             }
+//            authViewModel.loadCurrentUser()
+//
+//            if (authState.data == true && currentUser.uid.isNotEmpty()) {
+//                Log.d("TAG", "Navigate to timeline")
+//                Log.e("TAG", currentUser.toString())
+//
+//                if (currentUser.newUserFlag) {
+//                    toAppGuideView()
+//                } else {
+//                    onNavigateToMainView()
+//                }
+//            }
             authViewModel.resetState()
+
         }
         Status.FAILURE -> {
             showDialog = true

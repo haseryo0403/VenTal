@@ -7,7 +7,8 @@ data class User(
     val photoURL: String = "",
     val selfIntroduction: String? = "",
     val followerCount: Int = 0,
-    val accountClosingFlag: Boolean = false
+    val accountClosingFlag: Boolean = false,
+    val newUserFlag: Boolean = true
     ){
     companion object {
         fun createUser(

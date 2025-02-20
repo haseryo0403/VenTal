@@ -101,7 +101,8 @@ fun AnotherUserPageView(
                             toProfileEditView = null,
                             followUser = {viewModel.followUser(it1.uid)},
                             unFollowUser = {viewModel.unFollowUser(it1.uid)},
-                            isFollowing = followingUserIds?.contains(it1.uid)
+                            isFollowing = followingUserIds?.contains(it1.uid),
+                            returnHeight = {}
                         )
                     }
                 }

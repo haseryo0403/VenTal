@@ -8,6 +8,7 @@ users:
     user_name: "山田太郎"
     user_imageURL: "https://example.com/image123.jpg"
     self_introduction: "はじめまして！スポーツが好きです。"
+    new_user_flag: "true"
     following:
       # collection
       - followingUserId: "user456"

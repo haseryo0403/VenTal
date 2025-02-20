@@ -34,6 +34,7 @@ import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import kimsy.rr.vental.data.repository.UserRepository
+import kimsy.rr.vental.ui.AppGuideView
 import kimsy.rr.vental.ui.SignInScreen
 import kimsy.rr.vental.ui.commonUi.MainView
 import kimsy.rr.vental.ui.theme.VentalTheme
@@ -94,7 +95,11 @@ class MainActivity : ComponentActivity() {
                             Log.e("MA", "get user")
                             val user = userRepository.getCurrentUser()
                             startDestination = if (user != null) {
-                                Screen.TimeLineScreen.route
+//                                if (user.newUserFlag) {
+//                                    Screen.AppGuideScreen.route
+//                                } else {
+                                    Screen.TimeLineScreen.route
+//                                }
                             } else {
                                 Screen.SignupScreen.route
                             }
@@ -214,12 +219,23 @@ fun NavigationGraph(
                 onNavigateToMainView = {
                     authViewModel.loadCurrentUser()  // ユーザー情報をロード
                     navController.navigate(Screen.TimeLineScreen.route)
-                })
+                },
+                toAppGuideView = {
+                    navController.navigate(Screen.AppGuideScreen.route)
+                }
+            )
         }
         composable(Screen.TimeLineScreen.route){
             MainView(
                 authViewModel = authViewModel,
                 )
+        }
+        composable(Screen.AppGuideScreen.route) {
+            AppGuideView(
+                toMainView = {
+                    navController.navigate(Screen.TimeLineScreen.route)
+                }
+            )
         }
     }
 }

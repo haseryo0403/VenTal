@@ -1,7 +1,9 @@
 package kimsy.rr.vental.ui
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresExtension
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,15 +11,23 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -27,6 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,7 +46,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import kimsy.rr.vental.R
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.DebateCard
@@ -52,6 +68,8 @@ fun TimeLineView(
     toDebateView: () -> Unit,
     toAnotherUserPageView: (user: User) -> Unit
 ){
+    var showDialog = remember { mutableStateOf(false) }
+    val currentUser by timeLineViewModel.currentUser.collectAsState()
     val isRefreshing by timeLineViewModel.isRefreshing.collectAsState()
 
     val recentTimeLineItems by timeLineViewModel.recentTimelineItems.collectAsState()
@@ -59,6 +77,7 @@ fun TimeLineView(
     val popularTimeLineItems by timeLineViewModel.popularTimelineItems.collectAsState()
 
     val recentItemScrollState = rememberLazyListState()
+    val scrollState = rememberScrollState()
     val popularItemScrollState = rememberLazyListState()
 
     val hasFinishedLoadingAllRecentItems = timeLineViewModel.hasFinishedLoadingAllRecentItems
@@ -76,6 +95,9 @@ fun TimeLineView(
     }
 
     LaunchedEffect(Unit) {
+        if (currentUser.newUserFlag) {
+            showDialog.value = true
+        }
         timeLineViewModel.getRecentTimeLineItems()
         timeLineViewModel.getPopularTimeLineItems()
         recentItemScrollState.scrollToItem(
@@ -106,6 +128,8 @@ fun TimeLineView(
     LaunchedEffect(pagerState.currentPage) {
             selectedTabIndex = pagerState.currentPage
     }
+
+    TutorialDialog(dialogOpen = showDialog)
 
     Column(
         modifier = Modifier
@@ -160,6 +184,35 @@ fun TimeLineView(
                     when (index) {
                         0 -> {
 
+//                            PullToRefreshBox(
+//                                isRefreshing = isRefreshing,
+//                                onRefresh = { timeLineViewModel.onRefreshRecentItem() }
+//                            ) {
+//                                Column(
+//                                    modifier = Modifier
+//                                        .background(color = MaterialTheme.colorScheme.background)
+//                                        .verticalScroll(scrollState),
+//                                ) {
+//                                    recentTimeLineItems.forEachIndexed { debateIndex, item ->
+//                                        DebateCard(
+//                                            sharedDebateViewModel,
+//                                            toDebateView,
+//                                            toAnotherUserPageView,
+//                                            onLikeStateSuccess = { debateItem ->
+//                                                timeLineViewModel.onRecentDebateLikeSuccess(debateItem)
+//                                            },
+//                                            item
+//                                        )
+//                                        //TODO　多分これ機能しない
+//                                        if ((debateIndex +1) % 7 == 0) {
+//                                            LoadRecentDebateItems(timeLineViewModel)
+//                                        }
+//                                    }
+//                                    LoadingIndicator(timeLineViewModel)
+//                                }
+//                            }
+
+
                             PullToRefreshBox(
                                 isRefreshing = isRefreshing,
                                 onRefresh = { timeLineViewModel.onRefreshRecentItem() }
@@ -185,33 +238,6 @@ fun TimeLineView(
                                     item { LoadingIndicator(timeLineViewModel) }
                                 }
                             }
-
-//
-//                            PullToRefreshBox(
-//                                isRefreshing = isRefreshing,
-//                                onRefresh = { timeLineViewModel.onRefreshRecentItem() }
-//                            ) {
-//                                LazyColumn(
-//                                    modifier = Modifier.background(color = MaterialTheme.colorScheme.background),
-//                                    state = recentItemScrollState
-//                                ) {
-//                                    itemsIndexed(recentTimeLineItems) {debateIndex, item ->
-//                                        DebateCard(
-//                                            sharedDebateViewModel,
-//                                            toDebateView,
-//                                            toAnotherUserPageView,
-//                                            onLikeStateSuccess = { debateItem ->
-//                                                timeLineViewModel.onRecentDebateLikeSuccess(debateItem)
-//                                            },
-//                                            item
-//                                        )
-//                                        if ((debateIndex +1) % 7 == 0) {
-//                                            LoadRecentDebateItems(timeLineViewModel)
-//                                        }
-//                                    }
-//                                    item { LoadingIndicator(timeLineViewModel) }
-//                                }
-//                            }
 //
 
 
@@ -285,6 +311,7 @@ fun TimeLineView(
 fun LoadRecentDebateItems(timeLineViewModel: TimeLineViewModel) {
     val hasFinishedLoadingAllRecentItems = timeLineViewModel.hasFinishedLoadingAllRecentItems
     LaunchedEffect(Unit) {
+        Log.d("TLV", "LRDI called")
         // 要素の追加読み込み
         if (!hasFinishedLoadingAllRecentItems){
             timeLineViewModel.getRecentTimeLineItems()
@@ -329,6 +356,149 @@ fun LoadingIndicator(timeLineViewModel: TimeLineViewModel) {
 //        Log.d("CUDUC", "LE")
 //    }
 }
+
+//TODO ここでチュートリアル用の表示。新規登録時のみなので、サインアップで条件分岐かユーザードキュメントに新規フラグを作成するか。
+@Composable
+fun TutorialDialog(
+    dialogOpen: MutableState<Boolean>
+    ) {
+    var selectedTabIndex by remember { mutableStateOf(0) }
+    val tabs = listOf(
+        stringResource(id = R.string.guide0),
+        stringResource(id = R.string.guide1),
+        stringResource(id = R.string.guide2),
+        stringResource(id = R.string.guide3), 
+        stringResource(id = R.string.guide4)
+        )
+    val pagerState = rememberPagerState(pageCount = { tabs.size })
+
+    LaunchedEffect(key1 = selectedTabIndex) {
+        pagerState.animateScrollToPage(selectedTabIndex)
+        Log.d("MyPageView", "Selected tab index: $selectedTabIndex")
+
+    }
+
+    LaunchedEffect(pagerState.currentPage) {
+        selectedTabIndex = pagerState.currentPage
+        Log.d("MyPageView", "Selected tab index: $selectedTabIndex")
+    }
+    if (dialogOpen.value) {
+        AlertDialog(
+            onDismissRequest = { dialogOpen.value = false },
+            confirmButton = {
+                if (selectedTabIndex == tabs.size-1) {
+                    Button(onClick = { /*TODO*/ }) {
+                        Text(text = stringResource(id = R.string.start))
+                    }
+                }
+            },
+            modifier = Modifier
+                .fillMaxSize(),
+            title = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(text = "アプリ使い方",
+                            style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            text = tabs[selectedTabIndex]
+                        )
+                    }
+                    
+                    IconButton(onClick = {
+                        dialogOpen.value = false
+                        //TODO flagを変更
+                    }) {
+                        Icon(painter = painterResource(id = R.drawable.baseline_clear_24), contentDescription = "clear")
+                    }
+                }
+            },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxSize()
+                ){
+                    HorizontalPager(
+                        state = pagerState,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+
+                    ) { index ->
+                        when (index) {
+                            0 -> {
+                                Image(
+                                    painter = painterResource(id = R.drawable.this_app_is),
+                                    contentDescription = "guide1",
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                            1 -> {
+                                Image(
+                                    painter = painterResource(id = R.drawable.create_card), 
+                                    contentDescription = "guide1",
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                            2 -> {
+                                Image(
+                                    painter = painterResource(id = R.drawable.swipe_view),
+                                    contentDescription = "guide2",
+                                    modifier = Modifier.fillMaxWidth()
+                                )                           
+                            }
+                            3 -> {
+                                Image(
+                                    painter = painterResource(id = R.drawable.debate_start),
+                                    contentDescription = "guide3",
+                                    modifier = Modifier.fillMaxWidth()
+                                )                           
+                            }
+                            4 -> {
+                                Image(
+                                    painter = painterResource(id = R.drawable.timeline_view),
+                                    contentDescription = "guide4",
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                
+                            }
+                        }
+                    }
+                    Column(
+                        modifier = Modifier.fillMaxWidth()
+                    ){
+                        Row(
+                            Modifier
+                                .height(50.dp)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            repeat(tabs.size) { iteration ->
+                                val color = if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
+                                Box(
+                                    modifier = Modifier
+                                        .padding(6.dp)
+                                        .clip(CircleShape)
+                                        .background(color)
+                                        .size(12.dp)
+                                )
+                            }
+                        }
+                    }
+
+                }
+
+            }
+        )
+    }
+
+}
+
+
+
 //
 //@RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 //@Composable

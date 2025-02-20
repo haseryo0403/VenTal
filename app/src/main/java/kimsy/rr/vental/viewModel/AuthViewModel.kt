@@ -182,6 +182,10 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    fun updateCurrentUser() {
+        _currentUser.value = User.CurrentUserShareModel.getCurrentUserFromModel()?: User()
+    }
+
     fun resetState() {
         _authState.value = Resource.idle()
     }

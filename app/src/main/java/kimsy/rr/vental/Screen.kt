@@ -38,6 +38,7 @@ sealed class Screen(val title: String, val route: String) {
     object TermsOfServiceScreen: Screen("利用規約", "terms of service")
     object GuidelineScreen: Screen("ガイドライン", "guideline")
     object PrivacyPolicyScreen: Screen("個人情報保護方針", "privacy policy")
+    object AppGuideScreen: Screen("アプリガイド", "app guide")
 }
 
 val screensInBottom = listOf(
@@ -70,5 +71,6 @@ val otherScreen = listOf(
     Screen.AppInfoScreen,
     Screen.TermsOfServiceScreen,
     Screen.GuidelineScreen,
-    Screen.PrivacyPolicyScreen
+    Screen.PrivacyPolicyScreen,
+    Screen.AppGuideScreen
 )

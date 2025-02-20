@@ -57,6 +57,14 @@
     <string name="to_do_report_debate">討論を通報</string>
     <string name="to_do_report_ventCard">カードを通報</string>
 
+<!--    使い方関連-->
+    <string name="guide0">どんなアプリ？</string>
+    <string name="guide1">悪口や愚痴を投稿</string>
+    <string name="guide2">他の人の投稿を見る</string>
+    <string name="guide3">反論する</string>
+    <string name="guide4">VSスタート</string>
+    <string name="start">スタート</string>
+
 <!--    マイページ関連-->
     <string name="no_mydebate_available">参加している討論は現在ありません。とても綺麗な心です。<br />討論に参加するとここに表示されますが、無理しないでください。</string>
     <string name="no_mycard_available">作成したベントカードはありません。つらいことは吐き出しても大丈夫です。ただ、あなたとは違う考えの人も必ずいることでしょう。</string>
@@ -143,7 +151,7 @@
     <string name="follower">フォロワー</string>
     <string name="debate">討論</string>
 
-    <string name="app_name" translatable="false">Vental</string>
+    <string name="app_name" translatable="false">VenTal</string>
     <string name="like_fail">いいねに失敗しました。しばらく時間を置いて、再度お試しください。</string>
     <string name="default_web_client_id">480895274589-sca3ln83hfnh4odgegup9s7c7llms32o.apps.googleusercontent.com</string>
     
