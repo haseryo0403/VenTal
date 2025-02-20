@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.annotation.RequiresExtension
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollable
@@ -152,6 +153,7 @@ fun MyPageView(
         modifier = Modifier
             .fillMaxSize()
             .nestedScroll(nestedScrollConnection)
+            .background(color = MaterialTheme.colorScheme.background)
     ) {
         Box(
             modifier = Modifier
@@ -235,7 +237,8 @@ fun MyPageView(
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(1f)
-
+                    .background(color = MaterialTheme.colorScheme.background),
+                verticalAlignment = Alignment.Top
             ) { index ->
                 when (index) {
                     0 -> {

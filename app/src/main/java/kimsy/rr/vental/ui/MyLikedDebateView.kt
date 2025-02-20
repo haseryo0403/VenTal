@@ -76,6 +76,7 @@ fun MyLikedDebateView(
     ) {
         LazyColumn(
             state = scrollState,
+            verticalArrangement = Arrangement.Top,
             modifier = Modifier.fillMaxWidth()
         ) {
             // LazyColumn Content

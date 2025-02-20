@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,6 +29,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.FirebaseApp
 import com.google.firebase.appcheck.FirebaseAppCheck
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
@@ -56,8 +58,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        FirebaseFirestore.setLoggingEnabled(true)
-
         if (intent.hasExtra("debateId")) {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
@@ -73,14 +73,19 @@ class MainActivity : ComponentActivity() {
 
         askNotificationPermission()
 
-//        updateFCMToken()
-
-//        subscribeTopics()
-
         setContent {
             val navController = rememberNavController()
             var startDestination by remember { mutableStateOf<String?>(null) }
+
+            val systemUiController = rememberSystemUiController()
+
             VentalTheme {
+                val systemBarColor = MaterialTheme.colorScheme.background
+
+                SideEffect {
+                    systemUiController.setSystemBarsColor(systemBarColor)
+                }
+
                 Surface(
                     modifier = Modifier
                         .fillMaxSize()
@@ -95,11 +100,7 @@ class MainActivity : ComponentActivity() {
                             Log.e("MA", "get user")
                             val user = userRepository.getCurrentUser()
                             startDestination = if (user != null) {
-//                                if (user.newUserFlag) {
-//                                    Screen.AppGuideScreen.route
-//                                } else {
-                                    Screen.TimeLineScreen.route
-//                                }
+                                Screen.TimeLineScreen.route
                             } else {
                                 Screen.SignupScreen.route
                             }
@@ -139,20 +140,6 @@ class MainActivity : ComponentActivity() {
 
     }
 
-//    fun subscribeTopics() {
-//        // [START subscribe_topics]
-//        Firebase.messaging.subscribeToTopic("weather")
-//            .addOnCompleteListener { task ->
-//                var msg = "Subscribed"
-//                if (!task.isSuccessful) {
-//                    msg = "Subscribe failed"
-//                }
-//                Log.d(TAG, msg)
-//                Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-//            }
-//        // [END subscribe_topics]
-//    }
-
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),
     ) { isGranted: Boolean ->
@@ -182,23 +169,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
-//    private fun updateFCMToken() {
-//        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
-//            if (!task.isSuccessful) {
-//                Log.w("FIREBASE", "getInstanceId failed", task.exception)
-//                return@OnCompleteListener
-//            }
-//            val token = task.result
-//
-//            // 以下通知テスト用にFCMトークンを表示、コピーする為の記述
-//            Log.d("MA", token)
-//            Toast.makeText(baseContext,token,Toast.LENGTH_LONG).show()
-//            val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-//            val clipData = ClipData.newPlainText("text", token)
-//            clipboardManager.setPrimaryClip(clipData)
-//        })
-//    }
 }
 
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)

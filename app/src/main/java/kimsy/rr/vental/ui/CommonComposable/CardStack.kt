@@ -117,7 +117,7 @@ fun CardStack(modifier : Modifier = Modifier,
             ){
                 FloatingActionButton(
                     onClick = { if (i >= 0) cardStackController.swipeLeft() },
-                    backgroundColor = Color.White,
+//                    backgroundColor = Color.White,
                     elevation = FloatingActionButtonDefaults.elevation(5.dp)
                 ) {
                     Icon(painter = painterResource(id = R.drawable.swords_24dp), contentDescription = "", tint = Color.Black
@@ -126,7 +126,7 @@ fun CardStack(modifier : Modifier = Modifier,
                 Spacer( modifier = Modifier.width(70.dp))
                 FloatingActionButton(
                     onClick = { if (i >= 0) cardStackController.swipeRight() },
-                    backgroundColor = Color.White,
+//                    backgroundColor = Color.White,
                     elevation = FloatingActionButtonDefaults.elevation(5.dp)
                 ) {
                     Icon(painter = painterResource(id = R.drawable.thumb_up_24dp),contentDescription = "", tint = Color.Black)
@@ -157,7 +157,8 @@ fun CardStack(modifier : Modifier = Modifier,
                         scaleX = if (index < i) cardStackController.scale.value else 1f,
                         scaleY = if (index < i) cardStackController.scale.value else 1f
                     )
-                    .shadow(4.dp, RoundedCornerShape(10.dp)),
+                    .shadow(4.dp, RoundedCornerShape(10.dp))
+                    ,
                     item,
                     toAnotherUserPageView = toAnotherUserPageView,
                     toReportVentCardView = toReportVentCardView,
@@ -186,13 +187,15 @@ fun Card(
 
     Surface(
         modifier
+            .background(color = MaterialTheme.colorScheme.surface)
 //            .fillMaxWidth()
 //            .padding(12.dp)
 //            .shadow(4.dp, RoundedCornerShape(10.dp))
 //            .clip(RoundedCornerShape(16.dp))
     ) {
         LazyColumn(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize()            .background(color = MaterialTheme.colorScheme.surface)
+
         ) {
             //スワイプカードのコンテント以外の要素
             item {
@@ -258,7 +261,7 @@ fun Card(
                         )
                         Column {
                             val textColor = if (ventCard.swipeCardImageURL.isEmpty()) {
-                                MaterialTheme.colorScheme.onBackground// 画像がない場合のテキスト色（例: グレー）
+                                MaterialTheme.colorScheme.onSurface// 画像がない場合のテキスト色（例: グレー）
                             } else {
                                 Color.White // 画像がある場合のテキスト色（白）
                             }
@@ -304,7 +307,7 @@ fun Card(
                         .fillMaxWidth()
                         .padding(16.dp)
                 ) {
-                    Text(text = ventCard.swipeCardContent)
+                    Text(text = ventCard.swipeCardContent, color = MaterialTheme.colorScheme.onSurface)
                 }
             }
         }

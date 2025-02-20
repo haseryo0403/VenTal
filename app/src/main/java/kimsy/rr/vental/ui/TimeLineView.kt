@@ -95,7 +95,9 @@ fun TimeLineView(
     }
 
     LaunchedEffect(Unit) {
+        Log.d("TLV", currentUser.toString())
         if (currentUser.newUserFlag) {
+            Log.d("TLV", "new true")
             showDialog.value = true
         }
         timeLineViewModel.getRecentTimeLineItems()
@@ -129,7 +131,8 @@ fun TimeLineView(
             selectedTabIndex = pagerState.currentPage
     }
 
-    TutorialDialog(dialogOpen = showDialog)
+    TutorialDialog(dialogOpen = showDialog,
+        viewModel = timeLineViewModel)
 
     Column(
         modifier = Modifier
@@ -360,7 +363,8 @@ fun LoadingIndicator(timeLineViewModel: TimeLineViewModel) {
 //TODO ここでチュートリアル用の表示。新規登録時のみなので、サインアップで条件分岐かユーザードキュメントに新規フラグを作成するか。
 @Composable
 fun TutorialDialog(
-    dialogOpen: MutableState<Boolean>
+    dialogOpen: MutableState<Boolean>,
+    viewModel: TimeLineViewModel
     ) {
     var selectedTabIndex by remember { mutableStateOf(0) }
     val tabs = listOf(
@@ -384,10 +388,14 @@ fun TutorialDialog(
     }
     if (dialogOpen.value) {
         AlertDialog(
-            onDismissRequest = { dialogOpen.value = false },
+            onDismissRequest = {},
             confirmButton = {
                 if (selectedTabIndex == tabs.size-1) {
-                    Button(onClick = { /*TODO*/ }) {
+                    Button(onClick = {
+                        viewModel.markUserNotNew()
+                        Log.e("TLV", User.CurrentUserShareModel.getCurrentUserFromModel().toString())
+                        dialogOpen.value = false
+                    }) {
                         Text(text = stringResource(id = R.string.start))
                     }
                 }
@@ -411,8 +419,8 @@ fun TutorialDialog(
                     }
                     
                     IconButton(onClick = {
+                        viewModel.markUserNotNew()
                         dialogOpen.value = false
-                        //TODO flagを変更
                     }) {
                         Icon(painter = painterResource(id = R.drawable.baseline_clear_24), contentDescription = "clear")
                     }

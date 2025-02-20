@@ -67,6 +67,16 @@ class UserRepository @Inject constructor(
             return newUser
     }
 
+    suspend fun updateNewUserFlag(userId: String) {
+        val query = db
+            .collection("users")
+            .document(userId)
+
+        query.update("newUserFlag", false).await()
+
+
+    }
+
     fun signOutFromFirebaseAuth() {
         auth.signOut()
     }

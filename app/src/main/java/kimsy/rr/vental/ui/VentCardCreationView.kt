@@ -90,6 +90,7 @@ fun VentCardCreationView(
     LazyColumn(
     modifier = Modifier
         .fillMaxSize()
+        .background(color = MaterialTheme.colorScheme.background)
         .padding(8.dp)
     ) {
         item {

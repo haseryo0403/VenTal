@@ -9,6 +9,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kimsy.rr.vental.UseCase.GetPopularTimeLineItemsUseCase
 import kimsy.rr.vental.UseCase.GetRecentTimeLineItemsUseCase
+import kimsy.rr.vental.UseCase.MarkUserNotNewUseCase
 import kimsy.rr.vental.data.DebateItem
 import kimsy.rr.vental.data.Resource
 import kimsy.rr.vental.data.Status
@@ -22,7 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TimeLineViewModel @Inject constructor(
     private val getRecentTimeLineItemsUseCase: GetRecentTimeLineItemsUseCase,
-    private val getPopularTimeLineItemsUseCase: GetPopularTimeLineItemsUseCase
+    private val getPopularTimeLineItemsUseCase: GetPopularTimeLineItemsUseCase,
+    private val markUserNotNewUseCase: MarkUserNotNewUseCase
 ): ViewModel() {
     private val _currentUser = MutableStateFlow(User.CurrentUserShareModel.getCurrentUserFromModel()?: User())
     val currentUser: StateFlow<User> get() = _currentUser
@@ -150,6 +152,21 @@ class TimeLineViewModel @Inject constructor(
         }
     }
 
+    fun markUserNotNew() {
+        viewModelScope.launch {
+            val result = markUserNotNewUseCase.execute(_currentUser.value.uid)
+            if (result.status == Status.SUCCESS) {
+                val user = _currentUser.value.copy(
+                    newUserFlag = false
+                )
+                User.CurrentUserShareModel.setCurrentUserToModel(
+                    user
+                )
+                _currentUser.value = user
+            }
+        }
+    }
+
     fun setRecentItemScrollState(index: Int, offset: Int) {
         recentItemSavedScrollIndex = index
         recentItemSavedScrollOffset = offset
@@ -162,6 +179,10 @@ class TimeLineViewModel @Inject constructor(
 
     fun resetGetDebateItemState() {
         _getDebateItemsState.value = Resource.idle()
+    }
+
+    fun updateCurrentUser() {
+        _currentUser.value = User.CurrentUserShareModel.getCurrentUserFromModel()?: User()
     }
 
 }

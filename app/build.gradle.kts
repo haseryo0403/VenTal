@@ -56,6 +56,11 @@ android {
 
 dependencies {
 
+    // UI Controller
+
+    implementation ("com.google.accompanist:accompanist-systemuicontroller:0.20.3")
+
+
     //glide
     implementation ("com.github.bumptech.glide:glide:4.11.0")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.11.0")
