@@ -22,7 +22,6 @@ import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -55,75 +55,6 @@ fun TabContent(selectedTabIndex: Int, scrollState: LazyListState) {
     ) {
         items(contentLists[selectedTabIndex]) { item ->
             Text(text = item, modifier = Modifier.padding(16.dp))
-        }
-    }
-}
-
-
-@Composable
-fun ProfileScreens(
-    scrollState: ConnectionSampleScrollState
-) {
-    var selectedTabIndex by remember { mutableStateOf(0) }
-    val scrollStates = remember { List(3) { LazyListState() } }
-    val pagerState = rememberPagerState { 3 } // 3つのタブ
-    val coroutineScope = rememberCoroutineScope()
-
-    // ProfileSectionsのスクロール状態管理
-    val profileSectionScrollState = rememberScrollableState { delta ->
-        // ProfileSectionsのスクロール変化を反映させる
-        scrollState.nestedScrollConnection.onPreScroll(Offset(0f, delta), NestedScrollSource.Drag).y
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .nestedScroll(scrollState.nestedScrollConnection)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(scrollState.offset)
-                .background(Color.Gray)
-                .scrollable(
-                    orientation = Orientation.Vertical,
-                    state = profileSectionScrollState
-                )
-
-        ){
-            ProfileSections()
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .offset(y = scrollState.offset)
-        ) {
-            // タブバー
-            TabRow(selectedTabIndex = selectedTabIndex) {
-                listOf("Tab 1", "Tab 2", "Tab 3").forEachIndexed { index, title ->
-                    Tab(
-                        selected = selectedTabIndex == index,
-                        onClick = {
-                            selectedTabIndex = index
-                            coroutineScope.launch {
-                                pagerState.animateScrollToPage(index)
-                            }
-                        },
-                        text = { Text(title) }
-                    )
-                }
-            }
-
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier.fillMaxSize()
-            ) { page ->
-                TabContent(
-                    selectedTabIndex = page,
-                    scrollState = scrollStates[page]
-                )
-            }
         }
     }
 }
@@ -205,6 +136,108 @@ fun ProfileScreen(
     }
 }
 
+@Composable
+fun ProfileScreen2() {
+    var selectedTabIndex by remember { mutableStateOf(0) }
+    val scrollStates = remember { List(3) { LazyListState() } }
+    val pagerState = rememberPagerState { 3 } // 3つのタブ
+    val coroutineScope = rememberCoroutineScope()
+    var profileHeight by remember { mutableStateOf(0.dp) }
+
+    val density = LocalDensity.current
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        // ProfileSectionsの高さを取得するBox
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .onGloballyPositioned { coordinates ->
+                    // ProfileSectionsの高さを取得
+                    profileHeight = with(density) { coordinates.size.height.toDp() }
+                }
+        ) {
+            // ProfileSections のスクロール状態
+            val profileSectionScrollState = rememberScrollableState { delta ->
+                // Offsetを更新してスクロール連携
+                delta // 直接deltaを返す
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(profileHeight) // 高さをProfileSectionsの高さに設定
+                    .background(Color.Gray)
+                    .scrollable(
+                        orientation = Orientation.Vertical,
+                        state = profileSectionScrollState
+                    ) // スクロール可能にする
+            ) {
+                ProfileSections()
+            }
+        }
+
+        // NestedScrollConnection の作成
+        val nestedScrollConnection = remember {
+            object : NestedScrollConnection {
+                override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                    // スクロールイベントのハンドリング
+                    return Offset(0f, available.y) // y軸のスクロールのみを反映
+                }
+            }
+        }
+
+        val offset = remember { mutableStateOf(0.dp) }
+
+        // 下部のタブとコンテンツ
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .offset(y = offset.value) // スクロールによる位置調整
+                .nestedScroll(nestedScrollConnection) // nestedScroll を使用
+        ) {
+            // タブバー
+            TabRow(
+                selectedTabIndex = selectedTabIndex,
+                modifier = Modifier
+                    .scrollable(
+                        orientation = Orientation.Vertical,
+                        state = rememberScrollableState { delta ->
+                            delta // deltaをそのまま返す
+                        }
+                    ) // スクロール可能にする
+            ) {
+                listOf("Tab 1", "Tab 2", "Tab 3").forEachIndexed { index, title ->
+                    Tab(
+                        selected = selectedTabIndex == index,
+                        onClick = {
+                            selectedTabIndex = index
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(index)
+                            }
+                        },
+                        text = { Text(title) }
+                    )
+                }
+            }
+
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize()
+            ) { page ->
+                TabContent(
+                    selectedTabIndex = page,
+                    scrollState = scrollStates[page]
+                )
+            }
+        }
+    }
+}
+
+
+
 
 @Composable
 fun ProfileSections() {
@@ -220,75 +253,18 @@ fun ProfileSections() {
     }
 }
 
-@Composable
-fun TabContents(selectedTabIndex: Int) {
-    val contentLists = listOf(
-        List(50) { "Tab 1 - Item $it" },
-        List(50) { "Tab 2 - Item $it" },
-        List(50) { "Tab 3 - Item $it" }
-    )
-
-    Column(modifier = Modifier.fillMaxSize()) {
-        contentLists[selectedTabIndex].forEach { item ->
-            Text(text = item, modifier = Modifier.padding(16.dp))
-        }
-    }
-}
-
-interface ConnectionSampleScrollState {
-    val nestedScrollConnection: androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-    val offset: Dp
-}
-
-@Stable
-class ConnectionSampleScrollStateImpl1(
-    maxOffset: Dp,
-    initialOffset: Dp,
-    private val density: androidx.compose.ui.unit.Density,
-) : ConnectionSampleScrollState {
-    private val maxOffsetPx = with(density) { maxOffset.toPx() }
-    private val initialOffsetPx = with(density) { initialOffset.toPx() }
-    private var _offsetPx by mutableStateOf(initialOffsetPx)
-    override val offset: Dp
-        get() = with(density) { _offsetPx.toDp() }
-
-    override val nestedScrollConnection = object : androidx.compose.ui.input.nestedscroll.NestedScrollConnection {
-        override fun onPreScroll(available: Offset, source: androidx.compose.ui.input.nestedscroll.NestedScrollSource): Offset {
-            if ((available.y >= 0f) or (_offsetPx <= 0f)) return Offset.Zero
-            val consumedY = doScroll(available.y)
-            return Offset(0f, consumedY)
-        }
-
-        override fun onPostScroll(
-            consumed: Offset,
-            available: Offset,
-            source: androidx.compose.ui.input.nestedscroll.NestedScrollSource
-        ): Offset {
-            if ((available.y <= 0f) or (_offsetPx >= maxOffsetPx)) return Offset.Zero
-            val consumedY = doScroll(available.y)
-            return Offset(0f, consumedY)
-        }
-    }
-
-    private fun doScroll(delta: Float): Float {
-        val oldOffset = _offsetPx
-        _offsetPx = (_offsetPx + delta).coerceIn(0f, maxOffsetPx)
-        return _offsetPx - oldOffset
-    }
-}
-
-@Composable
-fun ConnectionSample1() {
-    val density = LocalDensity.current
-    val scrollState = remember {
-        ConnectionSampleScrollStateImpl1(
-            maxOffset = 200.dp,
-            initialOffset = 200.dp,
-            density = density,
-        )
-    }
-    ProfileScreens(scrollState = scrollState)
-}
+//@Composable
+//fun ConnectionSample1() {
+//    val density = LocalDensity.current
+//    val scrollState = remember {
+//        ConnectionSampleScrollStateImpl1(
+//            maxOffset = 200.dp,
+//            initialOffset = 200.dp,
+//            density = density,
+//        )
+//    }
+//    ProfileScreens(scrollState = scrollState)
+//}
 
 @Composable
 fun ConnectionSample2() {
@@ -301,10 +277,24 @@ fun ConnectionSample2() {
     ProfileScreen(nestedScrollConnection = nestedScrollConnection, offset = offset)
 }
 
+@Composable
+fun ConnectionSample3() {
+    var profileHeight by remember { mutableStateOf(0.dp) }
+    val density = LocalDensity.current
+
+    // ProfileScreenの高さを取得するためのBox
+
+        // ProfileScreen に高さを渡す
+        ProfileScreen2()
+}
+
+
+
 
 @Preview(showBackground = true)
 @Composable
 fun PreviewConnectionSample() {
 //    ConnectionSample1()
-    ConnectionSample2()
+//    ConnectionSample2()
+    ConnectionSample3()
 }

@@ -80,11 +80,6 @@ class MyLikedDebateViewModel @Inject constructor(
 
     suspend fun loadLikedDebates() {
         viewModelScope.launch {
-            Log.d("MLDVM", "loadLikedDebates called")
-//            if (hasFinishedLoadingAllLikedDebateItems) {
-//                _loadLikedDebateItemsState.value = Resource.failure("status not success")
-//                return@launch
-//            }
             _loadLikedDebateItemsState.value = Resource.loading()
             val likedDebateIdsState = loadLikedDebateIdsUseCase.execute(_currentUser.value.uid)
             if (likedDebateIdsState.status == Status.SUCCESS) {
@@ -94,22 +89,17 @@ class MyLikedDebateViewModel @Inject constructor(
                 } else {
                     likedDebateIdsSplitBy10 = SplitList(likedDebateIdsState.data, 10)
                 }
-//                val likedDebateIds = likedDebateIdsState.data?: emptyList()
-//                likedDebateIdsSplitBy10 = SplitList(likedDebateIds, 10)
+
             } else {
                 _loadLikedDebateItemsState.value = Resource.failure("status not success")
                 return@launch
             }
-            if (likedDebateIdsSplitBy10.isNotEmpty()) {
+            if (likedDebateIdsSplitBy10.isNotEmpty() && currentLikedDebateIdsIndex < likedDebateIdsSplitBy10.size) {
                 _loadLikedDebateItemsState.value =
                     loadLikedDebateItemsUseCase.execute(likedDebateIdsSplitBy10[currentLikedDebateIdsIndex], _currentUser.value.uid)
             } else {
                 _loadLikedDebateItemsState.value = Resource.success(emptyList())
             }
-
-
-//            _loadLikedDebateItemsState.value =
-//                    loadLikedDebateItemsUseCase.execute(likedDebateIdsSplitBy10[currentLikedDebateIdsIndex], _currentUser.value.uid)
 
             when (_loadLikedDebateItemsState.value.status) {
                 Status.SUCCESS -> {
@@ -126,11 +116,9 @@ class MyLikedDebateViewModel @Inject constructor(
                             _likedDebateItems.value = _likedDebateItems.value + likedDebateItems
                         }
                         currentLikedDebateIdsIndex++
-                        if (currentLikedDebateIdsIndex == likedDebateIdsSplitBy10.size) {
+                        if (currentLikedDebateIdsIndex >= likedDebateIdsSplitBy10.size) {
                             hasFinishedLoadingAllLikedDebateItems = true
                         }
-//                        //TODO delete?
-//                        _loadLikedDebateItemsState.value = Resource.idle()
                     }
                 }
                 Status.FAILURE -> {

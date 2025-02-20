@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -67,10 +66,10 @@ fun MyDebateView(
             }
     }
 
-    PullToRefreshBox(
-        isRefreshing = isRefreshing,
-        onRefresh = { viewModel.onRefresh() }
-    ) {
+//    PullToRefreshBox(
+//        isRefreshing = isRefreshing,
+//        onRefresh = { viewModel.onRefresh() }
+//    ) {
         LazyColumn(
             state = scrollState,
             modifier = Modifier.fillMaxWidth()
@@ -133,7 +132,7 @@ fun MyDebateView(
                 }
             }
         }
-    }
+//    }
 }
 
 @Composable

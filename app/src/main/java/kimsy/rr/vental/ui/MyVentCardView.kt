@@ -25,7 +25,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -91,10 +90,10 @@ fun MyVentCardView(
             }
     }
 
-    PullToRefreshBox(
-        isRefreshing = isRefreshing,
-        onRefresh = { viewModel.onRefresh() }
-    ) {
+//    PullToRefreshBox(
+//        isRefreshing = isRefreshing,
+//        onRefresh = { viewModel.onRefresh() }
+//    ) {
         LazyColumn(
             state = scrollState,
             modifier = Modifier.fillMaxWidth()
@@ -265,8 +264,7 @@ fun MyVentCardView(
                 }
             }
         }
-    }
-
+//    }
 
 }
 

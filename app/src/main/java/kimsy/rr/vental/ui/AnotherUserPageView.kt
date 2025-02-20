@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,6 +37,7 @@ import kimsy.rr.vental.ui.commonUi.ErrorView
 import kimsy.rr.vental.viewModel.AnotherUserPageViewModel
 import kimsy.rr.vental.viewModel.SharedDebateViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @Composable
 fun AnotherUserPageView(
@@ -52,6 +52,7 @@ fun AnotherUserPageView(
     val followState by viewModel.followState.collectAsState()
 
     var followingUserIds by remember { mutableStateOf(emptyList<String>()) }
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.loadUserPageData()
@@ -63,68 +64,92 @@ fun AnotherUserPageView(
         viewModel.resetState()
     }
 
-
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = MaterialTheme.colorScheme.background)
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = { viewModel.onRefresh() }
     ) {
-        when (followingUserIdsState.status) {
-            Status.LOADING -> {}
-            Status.SUCCESS -> {
-                followingUserIdsState.data?.let {
-                    followingUserIds = it
-                }
-            }
-            else -> {
-                ErrorView(retry = {
-                    viewModel.loadUserPageData()
-                    viewModel.observeFollowingUserIds()
-                    viewModel.getAnotherUserPageDebateItems()
-                })
-            }
-        }
-
-        when (debateCountsState.status) {
-            Status.LOADING -> {
-                Log.d("MPV", "upds loading")
-                CustomCircularProgressIndicator()
-            }
-            Status.SUCCESS -> {
-                Log.d("MPV", "upds sccess")
-                debateCountsState.data?.let {
-                    anotherUser?.let { it1 ->
-                        AccountContent(
-                            debateCounts = it,
-                            user = it1,
-                            toProfileEditView = null,
-                            followUser = {viewModel.followUser(it1.uid)},
-                            unFollowUser = {viewModel.unFollowUser(it1.uid)},
-                            isFollowing = followingUserIds?.contains(it1.uid),
-                            returnHeight = {}
-                        )
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = MaterialTheme.colorScheme.background)
+        ) {
+            when (followingUserIdsState.status) {
+                Status.LOADING -> {}
+                Status.SUCCESS -> {
+                    followingUserIdsState.data?.let {
+                        followingUserIds = it
                     }
                 }
-                Divider()
-            }
-            Status.FAILURE -> {
-                ErrorView(retry = {
-                    viewModel.loadUserPageData()
-                    viewModel.observeFollowingUserIds()
-                    viewModel.getAnotherUserPageDebateItems()
-                })
-            }
-            else -> {}
-        }
+                else -> {
+                    item {
+                        ErrorView(retry = {
+                            viewModel.loadUserPageData()
+                            viewModel.observeFollowingUserIds()
+                            viewModel.getAnotherUserPageDebateItems()
+                        })
+                    }
 
-        AnotherUserDebateView(
-            viewModel = viewModel,
-            sharedDebateViewModel = sharedDebateViewModel,
-            toDebateView = toDebateView,
-            toAnotherUserPageView = toAnotherUserPageView
-        )
+                }
+            }
+
+            when (debateCountsState.status) {
+                Status.LOADING -> {
+                    Log.d("MPV", "upds loading")
+                    item {
+                        CustomCircularProgressIndicator()
+                    }
+
+                }
+                Status.SUCCESS -> {
+                    Log.d("MPV", "upds sccess")
+                    debateCountsState.data?.let {
+                        anotherUser?.let { it1 ->
+                            item {
+                                AccountContent(
+                                    debateCounts = it,
+                                    user = it1,
+                                    toProfileEditView = null,
+                                    followUser = {viewModel.followUser(it1.uid)},
+                                    unFollowUser = {viewModel.unFollowUser(it1.uid)},
+                                    isFollowing = followingUserIds?.contains(it1.uid)
+                                )
+                            }
+
+                        }
+                    }
+                    item {
+                        Divider()
+                    }
+
+                }
+                Status.FAILURE -> {
+                    item {
+                        ErrorView(retry = {
+                            viewModel.loadUserPageData()
+                            viewModel.observeFollowingUserIds()
+                            viewModel.getAnotherUserPageDebateItems()
+                        })
+                    }
+
+                }
+                else -> {}
+            }
+            item {
+                AnotherUserDebateView(
+                    viewModel = viewModel,
+                    sharedDebateViewModel = sharedDebateViewModel,
+                    toDebateView = toDebateView,
+                    toAnotherUserPageView = toAnotherUserPageView
+                )
+            }
+
+
+        }
     }
+
+
+
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -136,7 +161,6 @@ fun AnotherUserDebateView(
     toDebateView: () -> Unit,
     toAnotherUserPageView: (user: User) -> Unit
 ){
-    val isRefreshing by viewModel.isRefreshing.collectAsState()
 
     val debateItems by viewModel.debateItems.collectAsState()
 
@@ -149,16 +173,16 @@ fun AnotherUserDebateView(
         viewModel.getAnotherUserPageDebateItems()
     }
 
-    PullToRefreshBox(
-        isRefreshing = isRefreshing,
-        onRefresh = { viewModel.onRefresh() }
-    ) {
-        LazyColumn(
+//    PullToRefreshBox(
+//        isRefreshing = isRefreshing,
+//        onRefresh = { viewModel.onRefresh() }
+//    ) {
+        Column(
             modifier = Modifier.fillMaxWidth()
         ) {
             when {
                 debateItems.isNotEmpty() -> {
-                    items(debateItems) { item->
+                    debateItems.forEach { item ->
                         DebateCard(
                             sharedDebateViewModel,
                             toDebateView,
@@ -167,13 +191,27 @@ fun AnotherUserDebateView(
                                     debateItem ->
                                 viewModel.onLikeSuccess(debateItem)
                             },
-                            item)                        }
+                            item)
+                    }
+//                    items(debateItems) { item->
+//                        DebateCard(
+//                            sharedDebateViewModel,
+//                            toDebateView,
+//                            toAnotherUserPageView,
+//                            onLikeStateSuccess = {
+//                                    debateItem ->
+//                                viewModel.onLikeSuccess(debateItem)
+//                            },
+//                            item)
+//                    }
                     if (!hasFinishedLoadingAllItems) {
-                        item { AnotherUserPageLoadingIndicator(viewModel) }
+//                        item {
+                            AnotherUserPageLoadingIndicator(viewModel)
+//                        }
                     }
                 }
                 else -> {
-                    item {
+//                    item {
                         when (getDebateItemState.status) {
                             Status.LOADING -> {
 //                                Box(
@@ -194,11 +232,11 @@ fun AnotherUserDebateView(
                             }
                             else -> viewModel.resetGetDebateItemState()
                         }
-                    }
+//                    }
                 }
             }
         }
-    }
+//    }
 
 }
 
