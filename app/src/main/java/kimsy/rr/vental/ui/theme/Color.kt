@@ -1,5 +1,47 @@
 package kimsy.rr.vental.ui.theme
 import androidx.compose.ui.graphics.Color
+//val primaryDark = Color(0xFF972529) // 背景色、深い赤系
+//val onPrimaryDark = Color(0xFFFFFFFF) // 文字色、白
+//val primaryContainerDark = Color(0xFF972529) // 背景色、深い赤系
+//val onPrimaryContainerDark = Color(0xFFFFFFFF) // 文字色、白
+//val secondaryDark = Color(0xFFFF4242) // 文字色、赤系
+//val onSecondaryDark = Color(0xFF68000F) // 文字色、深い赤系
+//val secondaryContainerDark = Color(0xFFFF6B6B) // ボーダー色、薄い赤系
+//val onSecondaryContainerDark = Color(0xFFFFFFFF) // 文字色、白
+//val tertiaryDark = Color(0xFF972529) // 背景色、深い赤系
+//val onTertiaryDark = Color(0xFF4E2600) // 文字色、深い赤系
+//val tertiaryContainerDark = Color(0xFF972529) // 背景色、深い赤系
+//val onTertiaryContainerDark = Color(0xFF0D0300) // 文字色、白
+//val errorDark = Color(0xFFFF6B6B) // ボーダー色、薄い赤系
+//val onErrorDark = Color(0xFF66002A) // 文字色、深い赤系
+//val errorContainerDark = Color(0xFFFF4242) // 背景色、赤系
+//val onErrorContainerDark = Color(0xFFFFFFFF) // 文字色、白
+//val backgroundDark = Color(0xFF2A0F0F) // 背景色、暗い赤系
+//val onBackgroundDark = Color(0xFFFFFFFF) // 文字色、白
+//val surfaceDark = Color(0xFF3A1F1F) // 背景色、暗い茶色系
+//val onSurfaceDark = Color(0xFFBEBEBE) // 文字色、薄いグレー
+//val surfaceVariantDark = Color(0xFF4A2F2F) // 背景色、やや暗い茶色系
+//val onSurfaceVariantDark = Color(0xFFD1D1D1) // 文字色、薄いグレー
+//val outlineDark = Color(0xFFA68A88) // 枠線色、やや明るい灰色
+//val outlineVariantDark = Color(0xFF584140) // 背景色、暗い茶色系
+//val scrimDark = Color(0x80000000) // グラデーション、半透明の黒
+//val inverseSurfaceDark = Color(0xFFE5E1E3) // 反転背景色
+//val inverseOnSurfaceDark = Color(0xFF313031) // 反転文字色
+//val inversePrimaryDark = Color(0xFFAA3336) // 反転時の主色
+//val surfaceDimDark = Color(0xFF141314) // 背景色、暗い色
+//val surfaceBrightDark = Color(0xFF3A393A) // 背景色、やや明るい色
+//val surfaceContainerLowestDark = Color(0xFF0E0E0F) // 低い背景色
+//val surfaceContainerLowDark = Color(0xFF1C1B1C) // やや低い背景色
+//val surfaceContainerDark = Color(0xFF201F20) // 通常背景色
+//val surfaceContainerHighDark = Color(0xFF2B2A2B) // 高い背景色
+//val surfaceContainerHighestDark = Color(0xFF353436) // 最も高い背景色
+
+
+
+
+
+
+
 
 val primaryLight = Color(0xFF972529)
 val onPrimaryLight = Color(0xFFFFFFFF)
@@ -127,7 +169,7 @@ val errorContainerDark = Color(0xFFDD2269)
 val onErrorContainerDark = Color(0xFFFFFFFF)
 val backgroundDark = Color(0xFF1C1010)
 val onBackgroundDark = Color(0xFFF4DDDC)
-val surfaceDark = Color(0xFF141314)
+val surfaceDark = Color(0xFF232223)
 val onSurfaceDark = Color(0xFFE5E1E3)
 val surfaceVariantDark = Color(0xFF584140)
 val onSurfaceVariantDark = Color(0xFFDFBFBD)
@@ -216,10 +258,161 @@ val surfaceContainerLowDarkHighContrast = Color(0xFF1C1B1C)
 val surfaceContainerDarkHighContrast = Color(0xFF201F20)
 val surfaceContainerHighDarkHighContrast = Color(0xFF2B2A2B)
 val surfaceContainerHighestDarkHighContrast = Color(0xFF353436)
+//
+//
+//
+//
+//
+//
+//
 
-
-
-
+//
+//function MainComponent() {
+//    const [discussions, setDiscussions] = useState([]);
+//    const [loading, setLoading] = useState(true);
+//    const [activeTab, setActiveTab] = useState(0);
+//
+//    useEffect(() => {
+//        setLoading(false);
+//    }, []);
+//
+//    const tabs = ["新着", "人気"];
+//
+//    return (
+//    <div className="min-h-screen bg-[#FFF8F7]">
+//    <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm">
+//    <div className="max-w-5xl mx-auto">
+//    <div className="flex items-center px-4 h-16">
+//    <h1 className="text-lg font-bold text-[#972529] mr-8">VENTAL</h1>
+//    <div className="flex">
+//    {tabs.map((tab, index) => (
+//        <button
+//        key={index}
+//        onClick={() => setActiveTab(index)}
+//        className={`h-16 px-6 font-medium text-sm relative ${
+//            activeTab === index
+//            ? "text-[#972529] bg-[#FFF8F7]"
+//            : "text-[#584140] hover:bg-[#FFF8F7] transition-colors"
+//        }`}
+//        >
+//        {tab}
+//        </button>
+//        ))}
+//    </div>
+//    </div>
+//    </div>
+//    </header>
+//    <main className="max-w-5xl mx-auto px-4 py-20">
+//    {loading ? (
+//        <div className="flex justify-center items-center h-64">
+//        <i className="fas fa-spinner fa-spin text-3xl text-[#972529]"></i>
+//        </div>
+//        ) : (
+//        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+//        {[...Array.from({ length: 5 })].map((_, index) => (
+//            <div
+//            key={index}
+//            className="relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow overflow-hidden"
+//            >
+//            <div className="flex items-center justify-between p-4 border-b border-gray-100">
+//            <div className="flex items-center gap-3">
+//            <div className="w-10 h-10 rounded-full bg-white overflow-hidden border-2 border-[#972529]">
+//            <img
+//            src="/default-avatar.png"
+//            alt="投稿者のプロフィール画像"
+//            className="w-full h-full object-cover"
+//            />
+//            </div>
+//            <div>
+//            <div className="font-medium text-[#251918] text-sm">
+//            投稿者名
+//            </div>
+//            <div className="text-xs text-[#584140]">2時間前</div>
+//            </div>
+//            </div>
+//            <div className="flex gap-2">
+//            <span className="bg-[#7F1D58] text-white px-3 py-1 rounded-full text-xs">
+//            #タグ1
+//            </span>
+//            </div>
+//            </div>
+//            {index % 2 === 0 && (
+//                <div className="aspect-[4/3] relative">
+//                <img
+//                src="/example-image.jpg"
+//                alt="投稿画像"
+//                className="w-full h-full object-cover"
+//                />
+//                </div>
+//                )}
+//            <div className="p-4">
+//            <p className="text-[#251918] text-sm leading-relaxed">
+//            スワイプカードの内容がここに表示されます。
+//            </p>
+//            </div>
+//            <div className="border-t border-gray-100">
+//            <div className="p-4">
+//            <div className="flex items-center justify-between mb-4">
+//            <div className="flex items-center gap-3">
+//            <div className="w-10 h-10 rounded-full bg-white overflow-hidden border-2 border-[#7F1D58]">
+//            <img
+//            src="/default-avatar.png"
+//            alt="反論者のプロフィール画像"
+//            className="w-full h-full object-cover"
+//            />
+//            </div>
+//            <div>
+//            <div className="font-medium text-[#251918] text-sm">
+//            反論者名
+//            </div>
+//            <button className="bg-[#972529] text-white text-xs px-3 py-1 rounded-full hover:bg-[#C8494A] transition-colors mt-1">
+//            反論を見る
+//            </button>
+//            </div>
+//            </div>
+//            <div className="flex items-center gap-3">
+//            <button className="flex items-center gap-1 text-[#972529]">
+//            <i className="fas fa-comment"></i>
+//            <span className="text-sm">123</span>
+//            </button>
+//            <button className="flex items-center gap-1 text-[#972529]">
+//            <i className="fas fa-heart"></i>
+//            <span className="text-sm">45</span>
+//            </button>
+//            </div>
+//            </div>
+//            </div>
+//            </div>
+//            </div>
+//            ))}
+//        </div>
+//        )}
+//    </main>
+//    <nav className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-white rounded-full shadow-lg px-2">
+//    <div className="flex items-center h-14">
+//    <button className="px-6 text-[#972529]">
+//    <i className="fas fa-home text-xl"></i>
+//    </button>
+//    <button className="px-6 text-[#584140] hover:text-[#972529] transition-colors">
+//    <i className="fas fa-compass text-xl"></i>
+//    </button>
+//    <button className="px-6 text-[#584140] hover:text-[#972529] transition-colors">
+//    <i className="fas fa-bell text-xl"></i>
+//    </button>
+//    <button className="px-6 text-[#584140] hover:text-[#972529] transition-colors">
+//    <i className="fas fa-user text-xl"></i>
+//    </button>
+//    </div>
+//    </nav>
+//    <style jsx global>{`
+//        @keyframes float {
+//            0%, 100% { transform: translateY(0px); }
+//            50% { transform: translateY(-10px); }
+//        }
+//        `}</style>
+//    </div>
+//    );
+//}
 
 
 

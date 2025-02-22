@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="get_debate_fail">討論の取得に失敗しました。</string>
+    <string name="message_creation_fail">メッセージの送信に失敗しました。</string>
+    <string name="no_user_found">ユーザーが見つかりませんでした。</string>
+    <string name="account">アカウント</string>
+    <string name="account_settings_description">アカウント情報をここで確認できます</string>
+    <string name="notification_settings">通知設定</string>
+    <string name="notification_settings_description">ここで通知の設定をできます</string>
+    <string name="about_app">このアプリについて</string>
+    <string name="logout">ログアウト</string>
+    <string name="logout_comfirmation">アカウントからログアウトしますか？</string>
+    <string name="user_name">ユーザーネーム</string>
+    <string name="please_write_userName">ユーザーネームを入力してください</string>
+    <string name="self_introduce">自己紹介</string>
+    <string name="please_write_self_introduce">自己紹介を入力してください</string>
+    <string name="change">変更</string>
+    <string name="unknown_error">不明なエラーが発生しました</string>
+    <string name="debate_started">　さんが討論を始めました。</string>
+    <string name="recieved_message">　さんが新しい反論を送信しました。</string>
+    <string name="recieved_comment">　さんがこの討論にコメントしました。</string>
+    <string name="load_notification_failed">通知の取得に失敗しました。</string>
+    <string name="no_notifications">現在通知はありません。</string>
+    <string name="notification_settings_debate_start">討論開始</string>
+    <string name="notification_settings_debate_message">討論メッセージ</string>
+    <string name="notification_settings_debate_comment">討論へのコメント</string>
+    <string name="please_check_internet">インターネットの接続を確認してください</string>
+    <string name="follow_fail">フォロー、解除に失敗しました。時間をおいて再度お試しください。</string>
+    <string name="report_reason_title_0">ヘイト</string>
+    <string name="report_reason_description_0">誹謗中傷、差別、非人間的な扱い、ヘイト行為等</string>
+    <string name="report_reason_title_1">自殺や自傷行為</string>
+    <string name="report_reason_description_1">自殺、自傷行為を助長、推奨、指示、策略を共有</string>
+    <string name="report_reason_title_2">詐欺や犯罪行為</string>
+    <string name="report_reason_description_2">詐欺や犯罪行為を行ったり、助長、推奨、指示、策略を共有</string>
+    <string name="report_reason_title_3">なりすまし</string>
+    <string name="report_reason_description_3">他の人になりすましている</string>
+    <string name="report_reason_title_4">暴力行為やヘイト行為の主体</string>
+    <string name="report_reason_description_4">暴力的過激主義とテロ行為、ヘイトグループ/ネットワーク</string>
+    <string name="request_reason_title_0">ミス</string>
+    <string name="request_reason_description_0">単純な操作ミスの削除依頼</string>
+    <string name="request_reason_title_1">後悔</string>
+    <string name="request_reason_description_1">自分の発言に後悔をした。取り消したい</string>
+    <string name="request_reason_title_2">納得</string>
+    <string name="request_reason_description_2">他のユーザーの発言に感銘を受けた。意見を変えたい</string>
+    <string name="request_reason_title_3">個人情報漏洩</string>
+    <string name="request_reason_description_3">個人情報の漏洩、意図せず重要な情報を記載、許可されていない情報を誤って記載等</string>
+    <string name="request_reason_title_4">詐欺や犯罪行為</string>
+    <string name="request_reason_description_4">詐欺や犯罪行為を行ったり、助長、推奨、指示、策略を共有</string>
+
+
+    <string name="report_button">通報する</string>
+    <string name="request_button">依頼する</string>
+    <string name="report_success">通報が完了しました。順次対応いたします。今しばらくお待ちください。</string>
+    <string name="report_failure">通報に失敗しました。時間をあけて再度お試しください。</string>
+    <string name="request_success">依頼が完了しました。順次対応いたします。今しばらくお待ちください。</string>
+    <string name="request_failure">依頼に失敗しました。時間をあけて再度お試しください。</string>
+    <string name="to_do_request_debate_deletion">討論の削除を依頼</string>
+    <string name="to_do_request_ventCard_deletion">カードの削除を依頼</string>
+    <string name="to_do_report_debate">討論を通報</string>
+    <string name="to_do_report_ventCard">カードを通報</string>
+
+    <!--    使い方関連-->
+    <string name="guide0">どんなアプリ？</string>
+    <string name="guide1">悪口や愚痴を投稿</string>
+    <string name="guide2">他の人の投稿を見る</string>
+    <string name="guide3">反論する</string>
+    <string name="guide4">VSスタート</string>
+    <string name="start">はじめる</string>
+
+    <!--    マイページ関連-->
+    <string name="no_mydebate_available">参加している討論は現在ありません。とても綺麗な心です。討論に参加するとここに表示されますが、無理しないでください。</string>
+    <string name="no_mycard_available">作成したベントカードはありません。つらいことは吐き出しても大丈夫です。ただ、あなたとは違う考えの人も必ずいることでしょう。</string>
+    <string name="if_want_make_card">もし言いたい悪口、愚痴をこぼしたいこと、イライラすることがあったら下のバーから投稿してみよう</string>
+    <string name="no_likeddebate_available">いいねした討論はありません。いいねしている時間があったら楽しいことしてください。</string>
+
+    <!--    討論関連全般-->
+    <string name="get_extra_debate_failure">討論の追加の取得に失敗しまいた。</string>
+    <string name="comment">コメント</string>
+    <string name="add_comment">コメントを追加</string>
+    <string name="unit_of_comment">件</string>
+    <string name="add_message">反論する</string>
+
+
+    <!--    ventcard作成関連-->
+    <string name="select_file">ファイルを選択</string>
+    <string name="add_tag">タグを追加</string>
+    <string name="tag_amount_limit">タグは5つまでしか追加できません。</string>
+    <string name="card_content">投稿内容</string>
+    <string name="asterisk">*</string>
+    <string name="image_optional">画像（任意）</string>
+    <string name="tag_optional">タグ（任意）</string>
+
+    <!--    ventcardView関連-->
+    <string name="no_ventCard_available">現在表示できるカードはありません。平和です。</string>
+
+    <!--    profileEditView-->
+    <string name="update_user_fail">プロフィールの更新に失敗しました。時間をあけて再度お試しください。</string>
+
+<!--    フォロー関連-->
+    <string name="follow_failure">フォロー/フォロー解除に失敗しました。時間をあけて再度お試しください。</string>
+    <string name="all">全て</string>
+    <string name="follow">フォローする</string>
+    <string name="unfollow">フォロー解除</string>
+    <string name="please_follow">フォローした人が参加している討論がここで見れます。まずはフォローしましょう。</string>
+
+
+    <!--    エラー関連-->
+    <string name="fail_loading_try_again">読み込みに失敗しました。通信環境の良いところで再度お試しください。</string>
+    <string name="error_occurred_try_again">エラーが発生しました。時間をおいて再度お試しください。</string>
+
+
+    <!--    退会関連-->
+    <string name="close_account">退会する</string>
+    <string name="close_account_comfirmation">アカウントを削除しますか？</string>
+    <string name="close_account_success">アカウント削除が完了しました。</string>
+    <string name="close_account_failure">アカウント削除に失敗しました。時間をあけて再度お試しください。</string>
+    <string name="close_account_warning">注意事項</string>
+    <string name="choose_close_account_reason">退会理由を選択してください。</string>
+    <string name="close_account_reason_title_0">雰囲気が悪すぎた</string>
+    <string name="close_account_reason_description_0">利用してみたものの、攻撃的なコメントが多く、精神的に疲れてしまった。ストレス発散のつもりが逆にストレスを感じるようになったため、退会することにした。</string>
+    <string name="close_account_reason_title_1">予想以上に攻撃された</string>
+    <string name="close_account_reason_description_1">最初は面白がって参加していたが、ある日自分がターゲットになり、思った以上に攻撃を受けた。耐えられなくなり、このSNSを続けるのは無理だと判断した。</string>
+    <string name="close_account_reason_title_2">私生活に影響が出た</string>
+    <string name="close_account_reason_description_2">SNS上の発言がリアルな生活にも影響し、対人関係がギクシャクしてしまった。また、攻撃的な発言を繰り返すうちに、自分の性格まで変わってしまった気がして、距離を置くことにした。</string>
+    <string name="close_account_reason_title_3">飽きた／疲れた</string>
+    <string name="close_account_reason_description_3">最初は楽しんでいたが、同じような内容の投稿が多く、だんだん飽きてしまった。また、ネガティブな内容ばかりで疲れてしまい、もっとポジティブなSNSに移行することにした。</string>
+    <string name="close_account_reason_title_4">時間を無駄にしたくない</string>
+    <string name="close_account_reason_description_4">悪口の応酬に時間を費やしているうちに、「こんなことをしていても何の得にもならない」と気づいた。もっと生産的なことに時間を使うために退会することにした。</string>
+    <string name="close_account_reason_title_5">炎上して面倒になった</string>
+    <string name="close_account_reason_description_5">軽い気持ちで投稿した内容が思わぬ形で炎上し、対応が面倒になった。個人的に粘着してくるユーザーも出てきたため、関わるのをやめることにした。</string>
+    <string name="close_account_reason_title_6">身バレのリスクを感じた</string>
+    <string name="close_account_reason_description_6">気軽に発言していたが、投稿内容から個人が特定される可能性があると気づいた。トラブルを避けるために早めに退会することにした</string>
+    <string name="close_account_takes_30days">30日以内にログインしていただくと、アカウントはそのままでログインいただけます。30日を過ぎると自動でアカウント情報は削除されるため、現在のアカウントはご使用になれません。</string>
+    <string name="close_account_agreement">他のアプリでなるべく人の悪口を言わないことを同意する。</string>
+    <string name="close_account_agreement_required">上記事項に同意してください。</string>
+
+    <string name="space"> </string>
+
+    <!--    サインイン関連-->
+    <string name="welcome_to_vental">VENTALへようこそ</string>
+    <string name="vental_subheading">傷つく人を減らすためのプラットフォーム</string>
+    <string name="sign_in_with_google">Googleでサインイン</string>
+    <string name="I">私は</string>
+    <string name="and">及び</string>
+    <string name="agree_to">に同意します</string>
+    <string name="check_to_agree_terms">私は利用規約およびプライバシーポリシーに同意します</string>
+    <string name="agree_to_terms">サインインすることで、あなたは当社の利用規約とプライバシーポリシーに同意したことになります。</string>
+
+
+    <!--    コメント関連-->
+    <string name="send_comment_failure">コメントの送信に失敗しました。時間をあけて再度お試しください。</string>
+    <string name="no_comment_available">コメントはまだありません。</string>
+
+<!--    アカウント画面関連-->
+    <string name="follower">フォロワー</string>
+    <string name="debate">討論</string>
+
+
+    <string name="like_fail">いいねに失敗しました。しばらく時間を置いて、再度お試しください。</string>
+
+    <!--    アプリ情報関連-->
+    <string name="terms_of_service">利用規約</string>
+    <string name="terms_of_service_content">
+        この利用規約（以下、「本規約」といいます。）は、本アプリ（以下、「本サービス」といいます。）の利用に関する条件を定めるものです。ユーザーは、本規約に同意した上で本サービスを利用するものとします。
+
+        第1条（適用）
+        本規約は、ユーザーと本サービスの運営者（以下、「運営者」といいます。）との間の本サービスの利用に関わる一切の関係に適用されます。運営者は、本規約の内容を変更することができます。変更後の規約は、本サービスを利用する上での公開時点から効力を生じるものとします。
+
+        第2条（利用登録）
+        ユーザーは、本規約に同意した上で、会員登録を行うことで本サービスを利用することができます。本サービスは、Firebase認証を使用したアカウント登録を行う必要があります。
+        利用登録にあたり、虚偽の情報を提供することは禁止します。
+
+        第3条（禁止事項）
+        ユーザーは、本サービスの利用に際して、以下の行為をしてはなりません。
+        * 法令または律や公序良俗に違反する行為
+        * 他者になりすます行為
+        * スパム行為や広告目的の利用、誹謗中傷、名誉毀損、嫌がらせ、脅迫行為
+        * 差別的な発言、ヘイトスピーチ
+        * 個人情報の不正取得や第三者への公開
+        * 著作権、商標権などその他の知的財産権を侵害する行為
+        * 本サービスの運営を妨害する行為
+        * その他、運営者が不適切と判断する行為
+
+        第4条（投稿と反論）
+        ユーザーは、本サービス上で自由に投稿および反論を行うことができます。反論がついた投稿は、タイムラインに表示され、全ユーザーが閲覧可能となります。反論のない投稿も閲覧可能な状態で保持され、上に表示されます。反論がつかない投稿は公開されません。
+        運営は、違法または不適切と判断した投稿を削除する権利を有します。
+
+        第5条（いいねと評価）
+        いいねの数によって、投稿または反論の支持度が可視化されます。いいねの数が多い投稿や反論がより支持されているものと判断されます。
+
+        第6条（アカウントの停止・削除）
+        運営は、以下の場合にユーザーのアカウントを停止または削除することができます。
+        * 本規約に違反した場合
+        * 不適切な投稿を繰り返した場合
+        * その他、運営がアカウント停止・削除が必要と判断した場合
+
+        第7条（免責事項）
+        1. 当社は、アプリ及びアプリを通じて提供されるサービスについて、正確性、完全性、有効性、信頼性、安全性、適法性、特定の目的への適合性を含む、事実上又は法律上の一切の不具合がないことにつき、明示的にも黙示的にも保証は行いません。なお、セキュリティ等への欠陥・エラー・バグがないことについても保証しません。
+        2. 当社は、アプリについて次の事項について保証を行いません：
+            * すべての情報端末に対応して正常に動作すること
+            * OS又はバージョンアップ等が行われた場合において正常に動作すること
+            * アプリストア等を含むプラットフォーマーの運用方針、規約等の変更が行われた場合において正常に動作すること
+        3. 当社はユーザーに対し、前2項にかかる一切の不具合について、当社の責任と負担で当該不具合の解消を行うことを保証しません。
+        4. 当アプリは、ユーザー間のトラブルに関与せず、一切の責任を負いません。
+        5. システムの不具合や通信障害によるデータ損失について、当アプリは責任を負いません。
+        6. 当アプリの利用によって発生した損害について、当アプリは一切の責任を負いません。
+
+        第8条（利用資格）
+        1. 13歳未満はアプリを利用することができません。
+        2. 日本国外にてアプリを利用することはできません。
+        3. ユーザーは、アプリを利用するに際し、情報端末（デバイス）、通信機器・手段、電力等をユーザー自らの責任と負担で準備・用意し、アプリ利用中は維持しなければならないものとします。
+        4. ユーザーは、当社が定める仕様基準（対応するOS、性能、機能等を含みますが、これらに限られません）に従わない限り、アプリを利用できない場合があることを予め了承します。
+        5. ユーザーが未成年の場合、親権者の同意を得た上で利用してください。
+
+        第9条（投稿内容の監視および削除義務の免除）
+        1. 当社は、本サービス上での投稿内容について、24時間365日の監視を行う義務を負いません。
+        2. 当社は、ユーザーが投稿した内容について、事前にその適法性、妥当性等を確認する義務を負いません。ユーザーは、自己の責任において本サービスを利用し、投稿するものとします。
+        3. 当社は、当該投稿が違法である、もしくは本規約に違反していると認識した場合、または当社の判断で不適切な内容であると認めた場合においても、直ちに投稿を削除する義務を負うものではありません。ただし、当社は、適切な判断の下、必要に応じて投稿を削除する権利を有します。
+        4. ユーザーは、当社が投稿内容に対して削除等の措置を講じないことに対して、いかなる責任を問わないことを理解し、同意するものとします。
+
+        第10条（譲渡禁止）
+        当社は、ユーザーがユーザーたる地位、ユーザーたる地位に基づきアプリを利用する権利及びユーザーの権利又は義務を第三者に譲渡、販売、貸与、承継、使用許諾、担保としての提供その他一切の処分をすることを禁止します。
+
+        第11条（規約の有効性）
+        利用規約のいずれかの条項又はその一部が、消費者契約法その他の法令等により、無効又は執行不能と判断された場合であっても、利用規約の残りの規定は、完全に有効なものとして、引き続き効力を有するものとします。
+
+        第12条（準拠法）
+        1. 利用規約の成立、効力、解釈及び履行は日本法に準拠して解釈されるものとします。
+        2. 利用規約が日本語と日本語以外の言語にて作成された場合、当該利用規約の言語間での矛盾又は相違が生じた場合は、全ての点において日本語を優先するものとします。
+    </string>
+    <string name="guideline">ガイドライン</string>
+    <string name="guideline_content">作成中です。今しばらくお待ちください。</string>
+    <string name="privacy_policy">プライバシーポリシー</string>
+    <string name="privacy_policy_content">
+        本プライバシーポリシー（以下「本ポリシー」）は、本アプリ（以下「当アプリ」）におけるユーザーの個人情報の取り扱いについて定めるものです。
+
+        1. 取得する情報
+        当アプリでは、以下の情報を取得する場合があります。
+
+        ユーザーが提供する情報: アカウント情報（メールアドレス、プロフィール画像、位置情報等）
+        自動取得する情報: 利用履歴、デバイス情報、IPアドレス
+        2. 利用目的
+        取得した情報は、以下の目的で利用します。
+
+        アカウント管理およびサービス提供
+        利便性向上のためのデータ分析
+        違反行為の防止・対応
+        法令遵守
+        3. 情報の共有・提供
+        当アプリでは、以下の場合を除き、第三者に個人情報を提供することはありません。
+
+        ユーザーの同意がある場合
+        法令に基づく場合
+        業務委託のために必要な場合（例：クラウドサービス提供者へのデータ保存）
+        4. データの保存期間
+        ユーザーがアカウントを削除した場合、関連するデータは一定期間後に削除されます。ただし、法令遵守のために必要な情報は保持する場合があります。
+
+        5. 利用者の権利
+        ユーザーは、当アプリに保存された自身の個人情報について、確認・訂正・削除を求めることができます。対応を希望する場合は、下記の連絡先までお問い合わせください。
+
+        6. 変更について
+        本ポリシーは、必要に応じて変更することがあります。重要な変更がある場合は、アプリ内で通知します。
+    </string>
+</resources>

@@ -1,10 +1,53 @@
 package kimsy.rr.vental.data
 
-import android.net.Uri
-import java.net.URL
-
 data class User(
     val uid: String = "",
     val name: String = "",
-    val email: String = "",
-)
+//    val email: String = "",
+    val photoURL: String = "",
+    val selfIntroduction: String? = "",
+    val followerCount: Int = 0,
+    val accountClosingFlag: Boolean = false,
+    val newUserFlag: Boolean = true
+    ){
+    companion object {
+        fun createUser(
+            userId: String,
+            name: String,
+            photoURL: String
+        ): User {
+            return User(
+                uid = userId,
+                name = name,
+                photoURL = photoURL
+            )
+        }
+    } object CurrentUserShareModel {
+        private var currentUser: User? = null
+
+        fun setCurrentUserToModel(user: User) {
+            currentUser = user
+        }
+
+        fun getCurrentUserFromModel():User? {
+            return currentUser
+        }
+
+        fun resetCurrentUserOnModel() {
+            currentUser = null
+        }
+
+    } object AnotherUserShareModel {
+        private var anotherUser: User? = null
+
+        fun setAnotherUser(user: User) {
+            anotherUser = user
+        }
+
+        fun getAnotherUser(): User? {
+            return anotherUser
+        }
+    }
+}
+
+
