@@ -43,19 +43,6 @@ class MessageRepository @Inject constructor(
                 return@addSnapshotListener
             }
 
-//            if (querySnapshot != null && !querySnapshot.isEmpty) {
-//                val messages = querySnapshot.documentChanges.mapNotNull {documentChange->
-//                    val message = documentChange.document.toObject(Message::class.java)
-//                    val sentDatetime = documentChange.document.getTimestamp("sentDatetime")?.toDate()
-//
-//                    if (sentDatetime != null) {
-//                        message.copy(sentDatetime = sentDatetime)
-//                    } else {
-//                        null
-//                    }
-//                }
-//                trySend(messages)
-//            }
             if (querySnapshot != null && !querySnapshot.isEmpty) {
                 val messages = querySnapshot.documents.mapNotNull {document->
                     val message = document.toObject(Message::class.java)

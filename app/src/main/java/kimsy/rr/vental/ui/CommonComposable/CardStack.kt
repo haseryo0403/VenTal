@@ -2,13 +2,33 @@ package kimsy.rr.vental.ui.CommonComposable
 
 
 import android.app.Activity
-import android.util.Log
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.FloatingActionButtonDefaults
+import androidx.compose.material.FractionalThreshold
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.ThresholdConfig
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,7 +37,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
@@ -30,6 +51,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.R
@@ -38,21 +60,6 @@ import kimsy.rr.vental.data.VentCard
 import kimsy.rr.vental.data.VentCardItem
 import kimsy.rr.vental.ui.commonUi.VentCardBottomSheet
 import kotlin.math.roundToInt
-
-/**
- * A stack of cards that can be dragged.
- * If they are dragged after a [thresholdConfig] or exceed the [velocityThreshold] the card is swiped.
- *
- * @param ventCardItems Cards to show in the stack.
- * @param thresholdConfig Specifies where the threshold between the predefined Anchors is. This is represented as a lambda
- * that takes two float and returns the threshold between them in the form of a [ThresholdConfig].
- * @param velocityThreshold The threshold (in dp per second) that the end velocity has to exceed
- * in order to swipe, even if the positional [thresholds] have not been reached.
- * @param enableButtons Show or not the buttons to swipe or not
- * @param onSwipeLeft Lambda that executes when the animation of swiping left is finished
- * @param onSwipeRight Lambda that executes when the animation of swiping right is finished
- * @param onEmptyRight Lambda that executes when the cards are all swiped
- */
 
 @ExperimentalMaterialApi
 @Composable
@@ -73,10 +80,8 @@ fun CardStack(modifier : Modifier = Modifier,
     val i by remember { derivedStateOf{ventCardItems.size-1-j} }
 
     var hasOnLessStackCalled by remember { mutableStateOf(false) }
-    Log.e("CS", "index: $i")
 
     LaunchedEffect(ventCardItems.size){
-        Log.d("CS", "i size changed")
         hasOnLessStackCalled = false
     }
 
@@ -96,7 +101,6 @@ fun CardStack(modifier : Modifier = Modifier,
     cardStackController.onSwipeRight = {
         onSwipeRight(ventCardItems[j].ventCard)
         j++
-        Log.e("CS", "index: $i")
     }
 
     ConstraintLayout(modifier = modifier
@@ -117,19 +121,23 @@ fun CardStack(modifier : Modifier = Modifier,
             ){
                 FloatingActionButton(
                     onClick = { if (i >= 0) cardStackController.swipeLeft() },
-//                    backgroundColor = Color.White,
+                    backgroundColor = MaterialTheme.colorScheme.surface,
                     elevation = FloatingActionButtonDefaults.elevation(5.dp)
                 ) {
-                    Icon(painter = painterResource(id = R.drawable.swords_24dp), contentDescription = "", tint = Color.Black
+                    Icon(
+                        painter = painterResource(id = R.drawable._removebg_preview),
+                        contentDescription = "",
+                        tint = Color.Black,
+                        modifier = Modifier.size(24.dp)
                     )
                 }
                 Spacer( modifier = Modifier.width(70.dp))
                 FloatingActionButton(
                     onClick = { if (i >= 0) cardStackController.swipeRight() },
-//                    backgroundColor = Color.White,
+                    backgroundColor = MaterialTheme.colorScheme.surface,
                     elevation = FloatingActionButtonDefaults.elevation(5.dp)
                 ) {
-                    Icon(painter = painterResource(id = R.drawable.thumb_up_24dp),contentDescription = "", tint = Color.Black)
+                    Icon(painter = painterResource(id = R.drawable.round_favorite_border_24),contentDescription = "", tint = Color.Black)
                 }
             }
         }
@@ -188,10 +196,6 @@ fun Card(
     Surface(
         modifier
             .background(color = MaterialTheme.colorScheme.surface)
-//            .fillMaxWidth()
-//            .padding(12.dp)
-//            .shadow(4.dp, RoundedCornerShape(10.dp))
-//            .clip(RoundedCornerShape(16.dp))
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize()            .background(color = MaterialTheme.colorScheme.surface)

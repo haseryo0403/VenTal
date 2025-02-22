@@ -38,6 +38,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.primarySurface
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -79,6 +80,7 @@ import kimsy.rr.vental.data.DebateShareModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.data.User
 import kimsy.rr.vental.ui.CommonComposable.CustomLinearProgressIndicator
+import kimsy.rr.vental.ui.CommonComposable.ExpandableTagRow
 import kimsy.rr.vental.ui.CommonComposable.ImagePermissionAndSelection
 import kimsy.rr.vental.ui.CommonComposable.MaxLengthOutlinedTextField
 import kimsy.rr.vental.ui.CommonComposable.VSSurface
@@ -222,7 +224,6 @@ fun DebateView(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(24.dp)
-                        .clickable { /* Handle Click Action */ }
                         .shadow(4.dp, RoundedCornerShape(10.dp))
                         .clip(RoundedCornerShape(16.dp))
                 ) {
@@ -452,14 +453,18 @@ fun DebateContent(
                 .weight(5f)
                 .fillMaxWidth()
         ) {
-            Row(modifier = Modifier.fillMaxWidth(),
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    AccountIcon(imageUrl = poster.photoURL)
+                    IconButton(onClick = { toAnotherUserPageView(poster) }) {
+                        AccountIcon(imageUrl = poster.photoURL)
+                    }
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -478,11 +483,11 @@ fun DebateContent(
                                             Text(text = stringResource(id = R.string.follow))
                                         }
                                     } else {
-                                        OutlinedButton(
+                                        Button(
                                             onClick = {
                                                 debateViewModel.unFollowUser(poster.uid)
                                             },
-                                            modifier = Modifier.height(32.dp)
+                                            modifier = Modifier.height(32.dp),
                                         ) {
                                             Text(text = stringResource(id = R.string.unfollow))
                                         }
@@ -519,19 +524,32 @@ fun DebateContent(
                     }
                 }
             }
-            Image(
-                painter = rememberAsyncImagePainter(ventCard.swipeCardImageURL),
-                contentDescription = "ventCardImage",
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp)),
-                contentScale = ContentScale.FillWidth
-            )
-            Text(text = ventCard.swipeCardContent)
-            ventCard.tags.forEach { tag->
-                Text(text = tag, color = MaterialTheme.colorScheme.onSurfaceVariant)
-
+            ) {
+                Image(
+                    painter = rememberAsyncImagePainter(ventCard.swipeCardImageURL),
+                    contentDescription = "ventCardImage",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp)),
+                    contentScale = ContentScale.FillWidth
+                )
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(end = 8.dp)
+                ){
+                    ExpandableTagRow(tags = ventCard.tags)
+                }
             }
+
+            Text(text = ventCard.swipeCardContent)
+//            ventCard.tags.forEach { tag->
+//                Text(text = tag, color = MaterialTheme.colorScheme.onSurfaceVariant)
+//
+//            }
         }
     }
     VSSurface(

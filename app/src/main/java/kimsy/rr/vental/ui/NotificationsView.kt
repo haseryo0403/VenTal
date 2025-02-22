@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -148,6 +149,7 @@ fun notificationRow(
     toDebateView: () -> Unit,
     toAnotherUserPageView: (user: User) -> Unit
     ) {
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -156,20 +158,23 @@ fun notificationRow(
                 toDebateView()
             },
     ) {
-        Image(
-            painter = rememberAsyncImagePainter(notificationItem.user.photoURL),
-            contentDescription = "AccountIcon",
-            modifier = Modifier
-                .padding(end = 8.dp)
-                .size(40.dp)
-                .clip(CircleShape)
-                .clickable {
-                    toAnotherUserPageView(notificationItem.user)
-                },
-            contentScale = ContentScale.Crop
-        )
+        Column {
+            Image(
+                painter = rememberAsyncImagePainter(notificationItem.user.photoURL),
+                contentDescription = "AccountIcon",
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .clickable {
+                        toAnotherUserPageView(notificationItem.user)
+                    },
+                contentScale = ContentScale.Crop
+            )
+        }
+
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.Start,
             modifier = Modifier.weight(5f)
         ) {
             val action = when(notificationItem.notification.type) {
@@ -178,6 +183,18 @@ fun notificationRow(
                 NotificationType.DEBATECOMMENT -> stringResource(id = R.string.recieved_comment)
             }
             Text(text = notificationItem.user.name + action)
+            val textBody = notificationItem.notification.body.trim()
+            if (textBody.isNotEmpty()) {
+                Text(
+                    text = textBody,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+//            Text(
+//                text = notificationItem.notification.body,
+//                color = MaterialTheme.colorScheme.onSurfaceVariant
+//            )
         }
     }
     Divider()

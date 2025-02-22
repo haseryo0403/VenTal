@@ -1,6 +1,5 @@
 package kimsy.rr.vental.data.repository
 
-import android.util.Log
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -96,8 +95,6 @@ suspend fun getVentCardItems(
 
         val newLastVisible = querySnapshot.documents.lastOrNull()
 
-        Log.d("TAG", "ventCards: $querySnapshot size: ${querySnapshot.size()}")
-
         val likedVentCardIds = likedVentCard.map { it.ventCardId }
         val debatingVentCardIds = debatingVentCard.map { it.swipeCardId }
 
@@ -130,9 +127,6 @@ suspend fun getVentCardItems(
         if (ventCardItems.isEmpty() && newLastVisible != null) {
             return getVentCardItems(userId, likedVentCard, debatingVentCard, newLastVisible)
         }
-
-        val endTime = System.currentTimeMillis()
-        Log.d("Performance", "Firestore クエリ時間: ${endTime - startTime}ms")
 
         return Pair(ventCardItems, newLastVisible)
 }

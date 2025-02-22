@@ -38,7 +38,6 @@ class FollowRepository @Inject constructor(
 
     fun addUserIdToFollowingUserId(
         fromUserId:String,
-        //TODO use data class??
         toUserId: String,
         transaction: Transaction
     ) {

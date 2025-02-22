@@ -1,7 +1,6 @@
 package kimsy.rr.vental.data.repository
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresExtension
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.AggregateSource
@@ -186,43 +185,6 @@ class DebateRepository @Inject constructor(
         }
         return Pair(debates, newLastVisible)
     }
-//
-//    //スクロールにて取得タイミングを管理。調べないと？
-//    suspend fun fetchRecentDebates(
-//        lastVisible: DocumentSnapshot? = null
-//    ): Resource<Pair<List<Debate>, DocumentSnapshot?>> {
-//        return try {
-//            val query = db
-//                .collectionGroup("debates")
-//                .orderBy("debateCreatedDatetime", Query.Direction.DESCENDING)
-//
-//            val querySnapshot = if (lastVisible == null) {
-//                query.limit(100).get().await()
-//            } else {
-//                query.startAfter(lastVisible).limit(100).get().await()
-//            }
-//
-//            if (querySnapshot.isEmpty) {
-//                // データがない場合、空リストとnullを返す
-//                return Resource.success(Pair(emptyList(), null))
-//            }
-//
-//            val newLastVisible = querySnapshot.documents.lastOrNull()
-//
-//            Log.d("TAG", "ventCards: $querySnapshot size: ${querySnapshot.size()}")
-//
-//            val debates = querySnapshot.documents.mapNotNull { document->
-//                document.toObject(Debate::class.java)!!.copy(
-//                    debateId = document.id,
-//                    debateCreatedDatetime = document.getTimestamp("debateCreatedDatetime")?.toDate()
-//                )
-//            }
-//            Resource.success(Pair(debates, newLastVisible))
-//        } catch (e: Exception) {
-//            Log.e("DR" , "error : ${e.message}")
-//            Resource.failure(e.message)
-//        }
-//    }
 
 
     suspend fun fetchPopularDebates(
@@ -234,7 +196,6 @@ class DebateRepository @Inject constructor(
         calendar.add(Calendar.MONTH, -2) // 2ヶ月前
         val twoMonthsAgo = Timestamp(calendar.time)
 
-        Log.d("DR", "fetchD was called")
         val query = db
             .collectionGroup("debates")
             .whereGreaterThanOrEqualTo("debateCreatedDatetime", twoMonthsAgo)
@@ -268,9 +229,6 @@ class DebateRepository @Inject constructor(
         endAtDate: Timestamp
     ): List<Debate> {
 
-        Log.d("DR", startAfterDate.toString())
-        Log.d("DR", endAtDate.toString())
-
         val debates = mutableListOf<Debate>()
 
         val debaterQuery = db
@@ -291,11 +249,6 @@ class DebateRepository @Inject constructor(
         val debaterSnapshot = debaterQuery.get().await()
         val posterSnapshot = posterQuery.get().await()
 
-        Log.d("Firestore", "Snapshot size: ${debaterSnapshot.size()}")
-        Log.d("Firestore", "Snapshot size: ${posterSnapshot.size()}")
-        Log.d("DR", debaterSnapshot.toString())
-        Log.d("DR", posterSnapshot.toString())
-
         debates.addAll(
             debaterSnapshot.documents.mapNotNull {document->
                 document.toObject(Debate::class.java)!!.copy(
@@ -313,7 +266,6 @@ class DebateRepository @Inject constructor(
     }
 
     suspend fun createDebate(debate: Debate): Resource<Debate> {
-        Log.d("DR", "createDebate called")
         return try {
             withTimeout(10000L) {
                 val docRefOnSwipeCard = db

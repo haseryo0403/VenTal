@@ -211,17 +211,18 @@ fun AppTopBarView(
             }
         TopAppBar(
             title = {
-                if(title != "VCC"){
-//                    Text(
-//                        title,
-//                    )
+                if(title == "VCC"){
+                    null
+                } else if(title == "タイムライン") {
                     Text(text = appTitle,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleLarge
-                        )
+                    )
                 } else {
-                    null
+                    Text(
+                        title,
+                    )
                 }
             },
             navigationIcon = {navigationIcon?.invoke()},

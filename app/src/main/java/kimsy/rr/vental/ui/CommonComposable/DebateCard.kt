@@ -67,7 +67,6 @@ fun DebateCard(
 
     when (likeState[debateItem]?.status) {
         Status.SUCCESS -> {
-            //TODO もし必要なUIの処理があれば。
             onLikeStateSuccess(likeState[debateItem]?.data!!)
             sharedDebateViewModel.resetLikeState(debateItem)
         }
@@ -309,73 +308,6 @@ fun DebateCard(
     }
 }
 
-//@OptIn(ExperimentalLayoutApi::class)
-//@Composable
-//fun ExpandableTagRow(tags: List<String>) {
-//    var expanded by remember { mutableStateOf(false) }
-//    // 1つ目のタグのみ表示
-//    if (tags.isNotEmpty()) {
-//        Row(
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            if (tags.size > 1) {
-//                Row {
-//                    IconButton(onClick = { expanded = !expanded }) {
-//                        if (expanded) {
-//                            Icon(
-//                                painter = painterResource(id = R.drawable.baseline_chevron_right_24),
-//                                contentDescription = "close"
-//                            )
-//                        } else {
-//                            Icon(
-//                                painter = painterResource(id = R.drawable.baseline_chevron_left_24),
-//                                contentDescription = "open"
-//                            )
-//                        }
-//                    }
-//                }
-//            }
-//
-//            FlowRow {
-//                Surface(
-//                    color = MaterialTheme.colorScheme.secondary,
-//                    modifier = Modifier
-//                        .padding(4.dp)
-//                        .shadow(4.dp, RoundedCornerShape(16.dp))
-//                        .clip(RoundedCornerShape(16.dp))
-//                ) {
-//                    Text(
-//                        text = "#${tags.first().take(10)}${if (tags.first().length > 10) "..." else ""}", // 修正: ifの式を正しく記述
-//                        color = MaterialTheme.colorScheme.onSecondary,
-//                        modifier = Modifier.padding(horizontal = 8.dp)
-//                    )
-//                }
-//
-//
-//                // 開いたときに残りのタグを表示
-//                if (expanded) {
-//                    tags.drop(1).forEach { tag ->
-//                        Surface(
-//                            color = MaterialTheme.colorScheme.secondary,
-//                            modifier = Modifier
-//                                .padding(4.dp)
-//                                .shadow(4.dp, RoundedCornerShape(16.dp))
-//                                .clip(RoundedCornerShape(16.dp))
-//                        ) {
-//                            Text(
-//                                text = "#$tag",
-//                                color = MaterialTheme.colorScheme.onSecondary,
-//                                modifier = Modifier.padding(horizontal = 8.dp)
-//                            )
-//                        }
-//                    }
-//                }
-//
-//            }
-//        }
-//    }
-//}
-
 @Composable
 fun DebateFirstMessage(debate: Debate) {
     Box(
@@ -393,12 +325,9 @@ fun DebateFirstMessage(debate: Debate) {
 
         Spacer(modifier = Modifier.width(8.dp))
 
-
-        // アウトライン枠とテキスト
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-//                .height(100.dp)
                 .border(2.dp, MaterialTheme.colorScheme.surfaceVariant, shape = RoundedCornerShape(8.dp))
                 .padding(16.dp)
         ) {
@@ -408,7 +337,6 @@ fun DebateFirstMessage(debate: Debate) {
                     text = debate.firstMessage,
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-//                    modifier = Modifier.align(Alignment.Center)
                 )
             }
             debate.firstMessageImageURL?.let {
@@ -425,7 +353,6 @@ fun DebateFirstMessage(debate: Debate) {
 
         }
 
-        // 左上にSurface（アウトライン枠の外側に配置）
         Surface(
             modifier = Modifier
                 .align(Alignment.TopStart)
