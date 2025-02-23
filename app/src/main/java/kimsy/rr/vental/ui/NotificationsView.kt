@@ -2,6 +2,7 @@ package kimsy.rr.vental.ui
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -70,7 +71,7 @@ fun NotificationsView(
 
 
     LazyColumn(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
     ){
         when {
             generateDebateItemState.status == Status.LOADING -> {

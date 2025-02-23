@@ -1,9 +1,11 @@
 package kimsy.rr.vental.ui
 
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,10 +17,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kimsy.rr.vental.R
-import kimsy.rr.vental.viewModel.NotificationSettingsViewModel
 import kimsy.rr.vental.data.Status
 import kimsy.rr.vental.ui.CommonComposable.CustomCircularProgressIndicator
 import kimsy.rr.vental.ui.commonUi.ErrorView
+import kimsy.rr.vental.viewModel.NotificationSettingsViewModel
 
 
 @Composable
@@ -33,7 +35,8 @@ fun NotificationSettingsView(
 
     LazyColumn(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
     ) {
         item {

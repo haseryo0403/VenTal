@@ -77,7 +77,7 @@ fun DebateCreationView(
     val isKeyboardVisible = WindowInsets.isImeVisible
 
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
     ){
         when {
 

@@ -127,7 +127,7 @@ fun CardStack(modifier : Modifier = Modifier,
                     Icon(
                         painter = painterResource(id = R.drawable._removebg_preview),
                         contentDescription = "",
-                        tint = Color.Black,
+                        tint = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -137,7 +137,11 @@ fun CardStack(modifier : Modifier = Modifier,
                     backgroundColor = MaterialTheme.colorScheme.surface,
                     elevation = FloatingActionButtonDefaults.elevation(5.dp)
                 ) {
-                    Icon(painter = painterResource(id = R.drawable.round_favorite_border_24),contentDescription = "", tint = Color.Black)
+                    Icon(
+                        painter = painterResource(id = R.drawable.round_favorite_border_24),
+                        contentDescription = "",
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
                 }
             }
         }
