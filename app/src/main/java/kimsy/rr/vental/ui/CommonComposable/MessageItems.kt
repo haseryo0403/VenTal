@@ -176,8 +176,8 @@ fun PosterMessage(
                 painter = rememberAsyncImagePainter(message.imageURL),
                 contentDescription = "message Image",
                 modifier = Modifier
-                    .clip(RoundedCornerShape(16.dp))
                     .padding(4.dp)
+                    .clip(RoundedCornerShape(16.dp))
                     .weight(1f),
                 contentScale = ContentScale.FillWidth
             )
@@ -262,8 +262,8 @@ fun DebaterMessage(
                 painter = rememberAsyncImagePainter(message.imageURL),
                 contentDescription = "message Image",
                 modifier = Modifier
-                    .clip(RoundedCornerShape(16.dp))
                     .padding(4.dp)
+                    .clip(RoundedCornerShape(16.dp))
                     .weight(1f),
                 contentScale = ContentScale.FillWidth
             )
