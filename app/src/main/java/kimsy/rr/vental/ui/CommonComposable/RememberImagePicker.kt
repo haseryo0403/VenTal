@@ -1,16 +1,15 @@
 package kimsy.rr.vental.ui.CommonComposable
 
+import android.Manifest
 import android.content.Context
 import android.net.Uri
 import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.annotation.RequiresApi
-import androidx.compose.runtime.Composable
-import android.Manifest
-import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
+import androidx.compose.runtime.Composable
 import androidx.core.app.ActivityCompat
 import kimsy.rr.vental.MainActivity
 import kimsy.rr.vental.data.hasImagePermission
@@ -42,10 +41,8 @@ fun RememberImagePicker(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
         if (uri != null) {
-            Log.d("PhotoPicker", "Selected URI: $uri")
             onImageSelected(uri) // 画像が選択されたときにコールバックを呼び出す
         } else {
-            Log.d("PhotoPicker", "No media selected")
         }
     }
 

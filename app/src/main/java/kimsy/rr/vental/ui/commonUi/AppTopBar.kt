@@ -106,7 +106,6 @@ fun AppTopBarView(
                     )
                 }
             }
-//            else if (title.contains("マイページ")) {
             else if(!title.contains("通知")){
 
                     BadgedBox(
@@ -131,13 +130,11 @@ fun AppTopBarView(
                     modifier = Modifier.padding(end = 8.dp)
                 ){
                     IconButton(onClick = {
-//                        navController.navigate(Screen.Notifications.route)
                         toNotificationView()
                     }) {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_notifications_24),
                             contentDescription = "notifications",
-//                            modifier = Modifier.size(28.dp)
                         )
                     }
                 }
@@ -149,47 +146,6 @@ fun AppTopBarView(
                     Icon(painter = painterResource(id = R.drawable.baseline_settings_24), contentDescription = "settings")
                 }
             }
-//            else if(!title.contains("通知")){
-//
-//                BadgedBox(
-//                    badge = {
-//                        if (notificationCountState.value.status == Status.SUCCESS) {
-//                            when(notificationCountState.value.data) {
-//                                0 -> {}
-//                                else -> {
-//                                    Badge(
-//                                        modifier = Modifier
-//                                            .size(24.dp)
-//                                            .offset(x = (-4).dp)
-//                                    ){
-//                                        Text(text = notificationCountState.value.data.toString())
-//                                    }
-//                                }
-//                            }
-//                        } else {
-//
-//                        }
-//                    },
-//                    modifier = Modifier.padding(end = 8.dp)
-//                ){
-//                    IconButton(
-//                        onClick = {
-//                            toNotificationView()
-////                        navController.navigate(Screen.Notifications.route)
-//                        },
-//                        modifier = Modifier.size(32.dp)
-//                    ) {
-//                        Icon(
-//                            painter = painterResource(id = R.drawable.baseline_notifications_24),
-//                            contentDescription = "notifications",
-//                            modifier = Modifier.size(32.dp)
-//                        )
-//                    }
-//
-//                }
-//
-//
-//            }
             else {
                 null
             }
@@ -240,7 +196,6 @@ fun AppTopBarView(
 
         )
 
-
         when (saveState.value.status) {
             Status.LOADING -> {
                 LinearProgressIndicator(
@@ -259,9 +214,5 @@ fun AppTopBarView(
             }
             else -> {}
         }
-
-
     }
-
-
 }

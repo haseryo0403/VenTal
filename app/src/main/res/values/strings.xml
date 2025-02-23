@@ -106,6 +106,7 @@
     <!--    エラー関連-->
     <string name="fail_loading_try_again">読み込みに失敗しました。通信環境の良いところで再度お試しください。</string>
     <string name="error_occurred_try_again">エラーが発生しました。時間をおいて再度お試しください。</string>
+    <string name="reload">再読み込み</string>
 
 <!--    退会関連-->
     <string name="close_account">退会する</string>
