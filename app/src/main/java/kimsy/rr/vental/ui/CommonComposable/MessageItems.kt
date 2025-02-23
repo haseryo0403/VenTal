@@ -171,7 +171,8 @@ fun PosterMessage(
             Surface(
                 modifier = Modifier
                     .padding(4.dp)
-                    .widthIn(max = 250.dp),
+                    .widthIn(max = 250.dp)
+                    .weight(1f), // メッセージ部分を可変に                ,
                 shape = MaterialTheme.shapes.medium,
                 color = MaterialTheme.colorScheme.surfaceVariant,
                 tonalElevation = 4.dp
@@ -181,7 +182,7 @@ fun PosterMessage(
                 ) {
                     Text(
                         text = message.text,
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
@@ -254,7 +255,8 @@ fun DebaterMessage(
             Surface(
                 modifier = Modifier
                     .padding(4.dp)
-                    .widthIn(max = 250.dp),
+                    .widthIn(max = 250.dp)
+                    .weight(1f), // メッセージ部分を可変に
                 shape = MaterialTheme.shapes.medium,
                 color = MaterialTheme.colorScheme.primaryContainer,
                 tonalElevation = 4.dp
@@ -264,7 +266,7 @@ fun DebaterMessage(
                 ) {
                     Text(
                         text = message.text,
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
 

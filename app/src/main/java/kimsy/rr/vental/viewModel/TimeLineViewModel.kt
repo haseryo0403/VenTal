@@ -1,5 +1,6 @@
 package kimsy.rr.vental.viewModel
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -94,6 +95,7 @@ class TimeLineViewModel @Inject constructor(
 
     suspend fun getRecentTimeLineItems() {
         viewModelScope.launch {
+            Log.d("TLVM ", "getRTLI called lv: $recentItemLastVisible")
             _getDebateItemsState.value = Resource.loading()
             _getDebateItemsState.value = getRecentTimeLineItemsUseCase.execute(recentItemLastVisible, _currentUser.value.uid)
             when (_getDebateItemsState.value.status) {
