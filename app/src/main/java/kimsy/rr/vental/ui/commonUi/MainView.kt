@@ -6,12 +6,19 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresExtension
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -226,7 +233,21 @@ fun Navigation(
 
     NavHost(navController = navController as NavHostController,
         startDestination = Screen.BottomScreen.TimeLine.bottomRoute,
-        modifier = Modifier.padding(pd)){
+        modifier = Modifier.padding(pd).background(MaterialTheme.colorScheme.background)){
+
+        val noExitTransitionRoutes = setOf(
+            Screen.SettingsScreen.route,
+            Screen.AppInfoScreen.route,
+            Screen.Notifications.route,
+            Screen.BottomScreen.MyPage.bottomRoute,
+            Screen.DebateScreen.route,
+            Screen.AnotherUserPageScreen.route,
+            Screen.TermsOfServiceScreen.route,
+            Screen.GuidelineScreen.route,
+            Screen.PrivacyPolicyScreen.route,
+            Screen.ProfileEditScreen.route
+
+        )
 
 
         composable(Screen.BottomScreen.VentCards.bottomRoute) {
@@ -269,7 +290,19 @@ fun Navigation(
                 }
             )
         }
-        composable(Screen.Notifications.route) {
+        composable(
+            route = Screen.Notifications.route,
+            enterTransition = {
+                slideInVertically(animationSpec = tween(700)) { fullHeight -> -fullHeight }
+            },
+            exitTransition = {
+                if (this.targetState.destination.route in noExitTransitionRoutes) {
+                    null
+                } else {
+                    slideOutVertically(animationSpec = tween(350)) { fullHeight -> fullHeight }
+                }
+            }
+        ) {
             NotificationsView(
                 sharedDebateViewModel = sharedDebateViewModel,
                 notificationsViewModel = notificationsViewModel,
@@ -281,7 +314,21 @@ fun Navigation(
                 }
             )
         }
-        composable(Screen.BottomScreen.MyPage.bottomRoute) {
+
+
+        composable(
+            route = Screen.BottomScreen.MyPage.bottomRoute,
+            enterTransition = {
+                slideInHorizontally(animationSpec = tween(300)) { fullWidth -> fullWidth }
+            },
+            exitTransition = {
+                if (this.targetState.destination.route in noExitTransitionRoutes) {
+                    null
+                } else {
+                    slideOutHorizontally(animationSpec = tween(300)) { fullWidth -> fullWidth }
+                }
+            }
+        ) {
             MyPageView(
                 sharedDebateViewModel = sharedDebateViewModel,
                 viewModel = myPageViewModel,
@@ -318,7 +365,19 @@ fun Navigation(
                 }
             )
         }
-        composable(Screen.DebateScreen.route) {
+        composable(
+            route = Screen.DebateScreen.route,
+            enterTransition = {
+                slideInVertically(animationSpec = tween(700)) { fullHeight -> fullHeight }
+            },
+            exitTransition = {
+                if (this.targetState.destination.route in noExitTransitionRoutes) {
+                    null
+                } else {
+                    slideOutVertically(animationSpec = tween(350)) { fullHeight -> fullHeight }
+                }
+            }
+        ) {
             DebateView(
                 sharedDebateViewModel = sharedDebateViewModel,
                 toReportDebateView = {
@@ -332,7 +391,19 @@ fun Navigation(
                 }
             )
         }
-        composable(Screen.SettingsScreen.route) {
+        composable(
+            route = Screen.SettingsScreen.route,
+            enterTransition = {
+                slideInHorizontally(animationSpec = tween(300)) { fullWidth -> fullWidth }
+            },
+            exitTransition = {
+                if (this.targetState.destination.route in noExitTransitionRoutes) {
+                    null
+                } else {
+                    slideOutHorizontally(animationSpec = tween(300)) { fullWidth -> fullWidth }
+                }
+            }
+        ) {
             SettingsView(
                 authViewModel = authViewModel,
                 toNotificationSettingsView = {
@@ -346,14 +417,38 @@ fun Navigation(
                 }
             )
         }
-        composable(Screen.ProfileEditScreen.route) {
+        composable(
+            route = Screen.ProfileEditScreen.route,
+            enterTransition = {
+                slideInVertically(animationSpec = tween(700)) { fullHeight -> fullHeight }
+            },
+            exitTransition = {
+                if (this.targetState.destination.route in noExitTransitionRoutes) {
+                    null
+                } else {
+                    slideOutVertically(animationSpec = tween(350)) { fullHeight -> fullHeight }
+                }
+            }
+        ) {
             ProfileEditView(
                 toMyPageView = {
                     navController.navigate(Screen.BottomScreen.MyPage.route)
                 }
             )
         }
-        composable(Screen.AnotherUserPageScreen.route) {
+        composable(
+            route = Screen.AnotherUserPageScreen.route,
+            enterTransition = {
+                slideInHorizontally(animationSpec = tween(300)) { fullWidth -> fullWidth }
+            },
+            exitTransition = {
+                if (this.targetState.destination.route in noExitTransitionRoutes) {
+                    null
+                } else {
+                    slideOutHorizontally(animationSpec = tween(300)) { fullWidth -> fullWidth }
+                }
+            }
+        ) {
             AnotherUserPageView(
                 sharedDebateViewModel = sharedDebateViewModel,
                 toDebateView = {
@@ -365,7 +460,19 @@ fun Navigation(
             )
         }
 
-        composable(Screen.SettingsMenuScreen.NotificationSettingsScreen.route) {
+        composable(
+            route = Screen.SettingsMenuScreen.NotificationSettingsScreen.route,
+            enterTransition = {
+                slideInHorizontally(animationSpec = tween(300)) { fullWidth -> fullWidth }
+            },
+            exitTransition = {
+                if (this.targetState.destination.route in noExitTransitionRoutes) {
+                    null
+                } else {
+                    slideOutHorizontally(animationSpec = tween(300)) { fullWidth -> fullWidth }
+                }
+            }
+        ) {
             NotificationSettingsView()
         }
 
@@ -414,7 +521,19 @@ fun Navigation(
             AccountClosingView()
         }
 
-        composable(Screen.AppInfoScreen.route){
+        composable(
+            route = Screen.AppInfoScreen.route,
+            enterTransition = {
+                slideInHorizontally(animationSpec = tween(300)) { fullWidth -> fullWidth }
+            },
+            exitTransition = {
+                if (this.targetState.destination.route in noExitTransitionRoutes) {
+                    null
+                } else {
+                    slideOutHorizontally(animationSpec = tween(300)) { fullWidth -> fullWidth }
+                }
+            }
+        ){
             AppInfoView(
                 toTermsOfServiceView = {
                     navController.navigate(Screen.TermsOfServiceScreen.route)
@@ -428,15 +547,51 @@ fun Navigation(
             )
         }
 
-        composable(Screen.TermsOfServiceScreen.route) {
+        composable(
+            route = Screen.TermsOfServiceScreen.route,
+            enterTransition = {
+                slideInHorizontally(animationSpec = tween(300)) { fullWidth -> fullWidth }
+            },
+            exitTransition = {
+                if (this.targetState.destination.route in noExitTransitionRoutes) {
+                    null
+                } else {
+                    slideOutHorizontally(animationSpec = tween(300)) { fullWidth -> fullWidth }
+                }
+            }
+        ) {
             TermsOfServiceView()
         }
 
-        composable(Screen.GuidelineScreen.route) {
+        composable(
+            route = Screen.GuidelineScreen.route,
+            enterTransition = {
+                slideInHorizontally(animationSpec = tween(300)) { fullWidth -> fullWidth }
+            },
+            exitTransition = {
+                if (this.targetState.destination.route in noExitTransitionRoutes) {
+                    null
+                } else {
+                    slideOutHorizontally(animationSpec = tween(300)) { fullWidth -> fullWidth }
+                }
+            }
+        ) {
             GuidelineView()
         }
 
-        composable(Screen.PrivacyPolicyScreen.route) {
+        composable(
+            route = Screen.PrivacyPolicyScreen.route,
+            enterTransition = {
+                slideInHorizontally(animationSpec = tween(300)) { fullWidth -> fullWidth }
+            },
+            exitTransition = {
+                if (this.targetState.destination.route in noExitTransitionRoutes) {
+                    null
+                } else {
+                    slideOutHorizontally(animationSpec = tween(300)) { fullWidth -> fullWidth }
+                }
+            }
+        ) {
             PrivacyPolicyView()
         }
     }

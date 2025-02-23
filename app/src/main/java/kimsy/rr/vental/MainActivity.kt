@@ -12,6 +12,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresExtension
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.MaterialTheme
@@ -23,7 +26,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.IntSize
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -194,7 +199,27 @@ fun NavigationGraph(
                 }
             )
         }
-        composable(Screen.TimeLineScreen.route){
+        composable(
+            route = Screen.TimeLineScreen.route,
+            enterTransition = {
+                expandIn(
+                    animationSpec = tween(2000),
+                    expandFrom = Alignment.BottomEnd,
+                    clip = true,
+                ) { fullSize ->
+                    IntSize(100, 100)
+                }
+            },
+            exitTransition = {
+                shrinkOut(
+                    animationSpec = tween(500),
+                    shrinkTowards = Alignment.BottomEnd,
+                    clip = true,
+                ) { fullSize ->
+                    IntSize(0, 0)
+                }
+            }
+        ){
             MainView(
                 authViewModel = authViewModel,
                 )

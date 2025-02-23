@@ -211,7 +211,7 @@ fun DebateView(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
     ) {
         LazyColumn(
             state = listState,
@@ -265,7 +265,7 @@ fun DebateView(
                                         .width(200.dp)
                                 )
                             },
-                            containerColor = MaterialTheme.colorScheme.background
+                            containerColor = MaterialTheme.colorScheme.surface,
                         ) {
                             tabs.forEachIndexed { index, tab ->
                                 Tab(

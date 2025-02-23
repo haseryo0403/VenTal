@@ -8,7 +8,6 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -99,7 +98,6 @@ fun VentCardCreationView(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(12.dp)
-                    .clickable { /* Handle Click Action */ }
                     .shadow(4.dp, RoundedCornerShape(10.dp))
                     .clip(RoundedCornerShape(16.dp))
             ) {

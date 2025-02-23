@@ -251,7 +251,9 @@ fun TermsAndPrivacyText(
     onPrivacyClick: () -> Unit
 ) {
     val annotatedText = buildAnnotatedString {
-        append(stringResource(id = R.string.I) + " ")
+        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant)){
+            append(stringResource(id = R.string.I) + " ")
+        }
 
         pushStringAnnotation(tag = "terms", annotation = "利用規約")
         withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.secondary, textDecoration = TextDecoration.Underline)) {
@@ -259,15 +261,19 @@ fun TermsAndPrivacyText(
         }
         pop()
 
-        append(" " + stringResource(id = R.string.and) + " ")
+        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant)) {
+            append(" " + stringResource(id = R.string.and) + " ")
+        }
 
         pushStringAnnotation(tag = "privacy", annotation = "プライバシーポリシー")
         withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.secondary, textDecoration = TextDecoration.Underline)) {
             append(stringResource(id = R.string.privacy_policy))
         }
         pop()
+        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant)) {
+            append(" " + stringResource(id = R.string.agree_to))
+        }
 
-        append(" " + stringResource(id = R.string.agree_to))
     }
 
     ClickableText(
