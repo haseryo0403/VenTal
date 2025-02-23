@@ -48,7 +48,7 @@ open class BaseUseCase @Inject constructor(
             Resource.failure(e.message)
         } catch (e: Exception) {
             //TODO 開発中はあまり使いたくないのでコメントに
-//            saveErrorLog(e)
+            saveErrorLog(e)
             Log.e(this::class.simpleName, "Error occurred: ${e.message}", e)
             Resource.failure(e.message)
         }

@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kimsy.rr.vental.screensInBottom
 import kotlin.math.roundToInt
 
@@ -39,7 +38,6 @@ fun AppBottomBarView(
         BottomNavigation(
             Modifier
                 .fillMaxWidth()
-            //TODO FIX
                 .height(bottomBarHeight)
                 .offset { IntOffset(x = 0, y = -bottomBarOffsetHeightPx.value.roundToInt()) },
             backgroundColor = MaterialTheme.colorScheme.background,
@@ -59,17 +57,6 @@ fun AppBottomBarView(
                         tint = tint) },
                     selectedContentColor = MaterialTheme.colorScheme.primary,
                     unselectedContentColor = Color.Gray,
-//                    label = {
-//                        Text(
-//                            text = item.label,
-//                            maxLines = 1,
-//                            style = TextStyle(
-//                                fontWeight = FontWeight.Normal,
-//                                fontSize = 11.sp,
-//                                letterSpacing = 0.4.sp
-//                            )
-//                        )
-//                    },
                     )
 
             }

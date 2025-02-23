@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kimsy.rr.vental.R
 import kotlinx.coroutines.CoroutineScope
@@ -27,7 +28,7 @@ fun ErrorView(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = "これはエラー画面です")
+        Text(text = stringResource(id = R.string.error_occurred_try_again))
         Icon(painter = painterResource(id = R.drawable.baseline_back_hand_24), contentDescription = "")
         if (retry != null) {
             Button(onClick = {
@@ -37,7 +38,7 @@ fun ErrorView(
                 },
                 modifier = Modifier.width(240.dp)
             ) {
-                Text("再読み込み")
+                Text(stringResource(id = R.string.reload))
             }
         }
     }

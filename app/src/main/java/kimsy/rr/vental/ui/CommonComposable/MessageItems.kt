@@ -114,82 +114,6 @@ fun MessageItems(
                 DebaterMessage(message = message, userIcon = debaterIcon)
             }
 
-//            //TODO 右と左で時間とアイコンを表示する場所を左右変えなければならない
-//            if (message.imageURL != null) {
-//                Row(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(4.dp),
-//                    horizontalArrangement = if (message.userType == UserType.DEBATER) Arrangement.End else Arrangement.Start,
-//                    verticalAlignment = Alignment.Bottom
-//                ) {
-//
-//                    IconButton(onClick = { /*TODO*/ }) {
-//                        AccountIcon(imageUrl = if (message.userType == UserType.DEBATER) debaterIcon else posterIcon)
-//                    }
-//
-//                    Image(
-//                        painter = rememberAsyncImagePainter(message.imageURL),
-//                        contentDescription = "message Image",
-//                        modifier = Modifier
-//                            .clip(RoundedCornerShape(16.dp))
-//                            .widthIn(max = 250.dp),
-//                        contentScale = ContentScale.FillWidth
-//                    )
-//                    Text(
-//                        text = message.sentDatetime?.let {
-//                            formatTime(it)
-//                        } ?: "不明",
-//                        modifier = Modifier.padding(bottom = 4.dp),
-//                        style = MaterialTheme.typography.bodySmall,
-//                        color = MaterialTheme.colorScheme.onSurfaceVariant
-//                    )
-//                }
-//            }
-//            if (message.text.isNotEmpty()) {
-//                Row(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(4.dp),
-//                    horizontalArrangement = if (message.userType == UserType.DEBATER) Arrangement.End else Arrangement.Start,
-//                    verticalAlignment = Alignment.Bottom
-//                ) {
-//                    IconButton(onClick = { /*TODO*/ }) {
-//                        AccountIcon(imageUrl = if (message.userType == UserType.DEBATER) debaterIcon else posterIcon)
-//                    }
-//                    Surface(
-//                        modifier = Modifier
-//                            .padding(4.dp)
-//                            .widthIn(max = 250.dp),
-//                        shape = MaterialTheme.shapes.medium,
-//                        color = if (message.userType == UserType.DEBATER) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
-//                        tonalElevation = 4.dp
-//                    ) {
-//                        Row(
-//                            modifier = Modifier.padding(12.dp)
-//                        ) {
-//                            Text(
-//                                text = message.text,
-//                                style = MaterialTheme.typography.bodyLarge,
-//                                color = if (message.userType == UserType.DEBATER) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
-//                            )
-//
-//                            Spacer(modifier = Modifier.height(4.dp))
-//                        }
-//                    }
-//                    Text(
-//                        text = message.sentDatetime?.let {
-//                            formatTime(it)
-//                        } ?: "不明",
-//                        modifier = Modifier.padding(bottom = 4.dp),
-//                        style = MaterialTheme.typography.bodySmall,
-//                        color = MaterialTheme.colorScheme.onSurfaceVariant
-//                    )
-//                }
-//            }
-
-
-
             previousDate = message.sentDatetime
         }
 
@@ -202,7 +126,6 @@ fun PosterMessage(
     message: Message,
     userIcon: String
 ){
-    //TODO 右と左で時間とアイコンを表示する場所を左右変えなければならない
     if (message.imageURL != null) {
         Row(
             modifier = Modifier

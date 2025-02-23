@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.net.Uri
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -47,10 +46,8 @@ fun ImagePermissionAndSelection(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri: Uri? ->
         if (uri != null) {
-            Log.d("PhotoPicker", "Selected URI: $uri")
             onImageSelected(uri) // 画像が選択されたときにコールバックを呼び出す
         } else {
-            Log.d("PhotoPicker", "No media selected")
         }
     }
 
@@ -70,11 +67,6 @@ fun ImagePermissionAndSelection(
         },
         modifier = modifier
     ) {
-//        Icon(
-//            painter = painterResource(id = R.drawable.baseline_image_24),
-//            modifier = Modifier.size(40.dp),
-//            contentDescription = "add Image"
-//        )
         iconContent()
     }
 }
