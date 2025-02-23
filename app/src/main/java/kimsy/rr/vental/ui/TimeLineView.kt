@@ -404,7 +404,7 @@ fun TutorialDialog(
                 }
             },
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxWidth(),
             title = {
                 Row(
                     modifier = Modifier.fillMaxWidth(),

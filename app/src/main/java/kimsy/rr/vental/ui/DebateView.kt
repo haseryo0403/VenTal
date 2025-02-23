@@ -223,7 +223,7 @@ fun DebateView(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(24.dp)
+                        .padding(12.dp)
                         .shadow(4.dp, RoundedCornerShape(10.dp))
                         .clip(RoundedCornerShape(16.dp))
                 ) {
@@ -296,8 +296,9 @@ fun DebateView(
                                         MessageView(
                                             viewModel = debateViewModel,
                                             debate = it.debate,
-                                            posterIcon = it.poster.photoURL,
-                                            debaterIcon = it.debater.photoURL
+                                            poster = it.poster,
+                                            debater = it.debater,
+                                            toAnotherUserPageView = toAnotherUserPageView
                                         )
                                     }
                                 }
@@ -566,7 +567,7 @@ fun AccountIcon(imageUrl: String) {
         painter = rememberAsyncImagePainter(imageUrl),
         contentDescription = null,
         modifier = Modifier
-            .size(40.dp)
+            .size(36.dp)
             .clip(CircleShape),
         contentScale = ContentScale.Crop
     )

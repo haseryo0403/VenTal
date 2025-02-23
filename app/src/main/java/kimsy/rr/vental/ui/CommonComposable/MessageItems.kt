@@ -4,13 +4,13 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.IconButton
@@ -33,6 +33,7 @@ import coil3.compose.rememberAsyncImagePainter
 import kimsy.rr.vental.data.Debate
 import kimsy.rr.vental.data.Message
 import kimsy.rr.vental.data.Status
+import kimsy.rr.vental.data.User
 import kimsy.rr.vental.data.UserType
 import kimsy.rr.vental.ui.AccountIcon
 import kimsy.rr.vental.ui.commonUi.ErrorView
@@ -48,8 +49,9 @@ import java.util.Date
 fun MessageView(
     viewModel: DebateViewModel,
     debate: Debate,
-    posterIcon: String,
-    debaterIcon: String
+    poster: User,
+    debater: User,
+    toAnotherUserPageView: (user: User) -> Unit
 ) {
 
     val fetchMessageState by viewModel.fetchMessageState.collectAsState()
@@ -67,8 +69,9 @@ fun MessageView(
                 fetchMessageState.data?.let {
                     MessageItems(
                         messages = it,
-                        posterIcon = posterIcon,
-                        debaterIcon = debaterIcon
+                        poster = poster,
+                        debater = debater,
+                        toAnotherUserPageView = toAnotherUserPageView
                         )
                 }
             }
@@ -88,8 +91,9 @@ fun MessageView(
 @Composable
 fun MessageItems(
     messages: List<Message>,
-    posterIcon: String,
-    debaterIcon: String
+    poster: User,
+    debater: User,
+    toAnotherUserPageView: (user: User) -> Unit
 ) {
     var previousDate: Date? by remember { mutableStateOf(null) }
     Column(
@@ -109,9 +113,37 @@ fun MessageItems(
                 }
             }
             if (message.userType == UserType.POSTER) {
-                PosterMessage(message = message, userIcon = posterIcon)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start // 左寄せ
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(0.9f), // 80%の幅
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        PosterMessage(
+                            message = message,
+                            poster = poster,
+                            toAnotherUserPageView = toAnotherUserPageView
+                            )
+                    }
+                }
             } else {
-                DebaterMessage(message = message, userIcon = debaterIcon)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End // 右寄せ
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(0.9f), // 80%の幅
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        DebaterMessage(
+                            message = message,
+                            debater = debater,
+                            toAnotherUserPageView = toAnotherUserPageView
+                            )
+                    }
+                }
             }
 
             previousDate = message.sentDatetime
@@ -124,19 +156,20 @@ fun MessageItems(
 @Composable
 fun PosterMessage(
     message: Message,
-    userIcon: String
+    poster: User,
+    toAnotherUserPageView: (user: User) -> Unit
 ){
     if (message.imageURL != null) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(4.dp),
+                .padding(vertical = 4.dp),
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.Bottom
         ) {
 
-            IconButton(onClick = { /*TODO*/ }) {
-                AccountIcon(imageUrl = userIcon)
+            IconButton(onClick = { toAnotherUserPageView(poster) }) {
+                AccountIcon(imageUrl = poster.photoURL)
             }
 
             Image(
@@ -144,7 +177,8 @@ fun PosterMessage(
                 contentDescription = "message Image",
                 modifier = Modifier
                     .clip(RoundedCornerShape(16.dp))
-                    .widthIn(max = 200.dp),
+                    .padding(4.dp)
+                    .weight(1f),
                 contentScale = ContentScale.FillWidth
             )
             Text(
@@ -161,17 +195,17 @@ fun PosterMessage(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(4.dp),
+                .padding(vertical = 4.dp),
             horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.Bottom
         ) {
-            IconButton(onClick = { /*TODO*/ }) {
-                AccountIcon(imageUrl = userIcon)
+            IconButton(onClick = { toAnotherUserPageView(poster) }) {
+                AccountIcon(imageUrl = poster.photoURL)
             }
             Surface(
                 modifier = Modifier
                     .padding(4.dp)
-                    .widthIn(max = 250.dp)
+//                    .widthIn(max = 250.dp)
                     .weight(1f), // メッセージ部分を可変に                ,
                 shape = MaterialTheme.shapes.medium,
                 color = MaterialTheme.colorScheme.surfaceVariant,
@@ -204,14 +238,15 @@ fun PosterMessage(
 @Composable
 fun DebaterMessage(
     message: Message,
-    userIcon: String
+    debater: User,
+    toAnotherUserPageView: (user: User) -> Unit
 ){
     //TODO 右と左で時間とアイコンを表示する場所を左右変えなければならない
     if (message.imageURL != null) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(4.dp),
+                .padding(vertical = 4.dp),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.Bottom
         ) {
@@ -228,11 +263,12 @@ fun DebaterMessage(
                 contentDescription = "message Image",
                 modifier = Modifier
                     .clip(RoundedCornerShape(16.dp))
-                    .widthIn(max = 200.dp),
+                    .padding(4.dp)
+                    .weight(1f),
                 contentScale = ContentScale.FillWidth
             )
-            IconButton(onClick = { /*TODO*/ }) {
-                AccountIcon(imageUrl = userIcon)
+            IconButton(onClick = { toAnotherUserPageView(debater) }) {
+                AccountIcon(imageUrl = debater.photoURL)
             }
         }
     }
@@ -240,7 +276,7 @@ fun DebaterMessage(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(4.dp),
+                .padding(vertical = 4.dp),
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.Bottom
         ) {
@@ -255,7 +291,7 @@ fun DebaterMessage(
             Surface(
                 modifier = Modifier
                     .padding(4.dp)
-                    .widthIn(max = 250.dp)
+//                    .widthIn(max = 250.dp)
                     .weight(1f), // メッセージ部分を可変に
                 shape = MaterialTheme.shapes.medium,
                 color = MaterialTheme.colorScheme.primaryContainer,
@@ -273,8 +309,8 @@ fun DebaterMessage(
                     Spacer(modifier = Modifier.height(4.dp))
                 }
             }
-            IconButton(onClick = { /*TODO*/ }) {
-                AccountIcon(imageUrl = userIcon)
+            IconButton(onClick = { toAnotherUserPageView(debater) }) {
+                AccountIcon(imageUrl = debater.photoURL)
             }
         }
     }
