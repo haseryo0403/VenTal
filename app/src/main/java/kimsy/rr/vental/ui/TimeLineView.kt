@@ -100,8 +100,11 @@ fun TimeLineView(
             Log.d("TLV", "new true")
             showDialog.value = true
         }
-        timeLineViewModel.getRecentTimeLineItems()
-        timeLineViewModel.getPopularTimeLineItems()
+        if (recentTimeLineItems.isEmpty() || popularTimeLineItems.isEmpty()) {
+            timeLineViewModel.getRecentTimeLineItems()
+            timeLineViewModel.getPopularTimeLineItems()
+        }
+
         recentItemScrollState.scrollToItem(
             timeLineViewModel.recentItemSavedScrollIndex,
             timeLineViewModel.recentItemSavedScrollOffset
@@ -428,7 +431,7 @@ fun TutorialDialog(
             },
             text = {
                 Column(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxWidth()
                 ){
                     HorizontalPager(
                         state = pagerState,

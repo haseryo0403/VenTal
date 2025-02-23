@@ -76,7 +76,9 @@ fun MyVentCardView(
 
     LaunchedEffect(Unit) {
         viewModel.updateCurrentUser()
-        viewModel.loadMyVentCards()
+        if (myVentCards.isNotEmpty()) {
+            viewModel.loadMyVentCards()
+        }
         scrollState.scrollToItem(
             viewModel.ventCardSavedScrollIndex,
             viewModel.ventCardSavedScrollOffset

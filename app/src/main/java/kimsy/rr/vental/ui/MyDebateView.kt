@@ -52,7 +52,9 @@ fun MyDebateView(
 
     LaunchedEffect(Unit) {
         viewModel.updateCurrentUser()
-        viewModel.getMyPageDebateItems()
+        if (myPageItems.isEmpty()) {
+            viewModel.getMyPageDebateItems()
+        }
         scrollState.scrollToItem(
             viewModel.debateItemSavedScrollIndex,
             viewModel.debateItemSavedScrollOffset

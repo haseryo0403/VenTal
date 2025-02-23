@@ -54,7 +54,9 @@ fun MyLikedDebateView(
 
     LaunchedEffect(Unit) {
         viewModel.updateCurrentUser()
-        viewModel.loadLikedDebates()
+        if (myLikedDebateItems.isEmpty()) {
+            viewModel.loadLikedDebates()
+        }
         scrollState.scrollToItem(
             viewModel.likedDebateItemSavedScrollIndex,
             viewModel.likedDebateItemSavedScrollOffset
