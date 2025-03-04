@@ -34,12 +34,10 @@ ryo.hasegawa.work@gmail.com
 
 | 悪口を投稿する                                                                                                                                                              | 悪口に反論する                                                                                                                                                                   | 討論を閲覧、コメントする                                                                                                                                                            |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| <img width="300" alt="VenTal GIF 2025年2月26日.gif" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3913183/60d31b91-3a44-4aab-8c19-8d2481845844.gif"> | <img width="300" alt="VenTal GIF Feb 26 2025 (3).gif" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3913183/8ed0c0bf-5c05-47a9-a9c3-64d122a76a57.gif"> | <img width="300" alt="VenTal Video Feb 27 2025.gif" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3913183/2e6b095a-a08f-4854-bf2d-90e848f93d62.gif"> |
+| <img width="300" alt="VenTal GIF 2025年2月26日.gif" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3913183/60d31b91-3a44-4aab-8c19-8d2481845844.gif"> | <img width="300" alt="VenTal GIF 2025年3月05日.gif" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3913183/115b361c-51bb-44ed-91c9-626bb2aac3ad.gif"> | <img width="300" alt="VenTal Video Feb 27 2025.gif" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3913183/2e6b095a-a08f-4854-bf2d-90e848f93d62.gif"> |
 | まず下の＋ボタンを押して、作成画面へ。ストレスが溜まっていることや普通に悪口を記入して送信ボタンを押す                                                                                                                  | 他人の悪口はボトムバーの左から2つ目の画面で閲覧可能。右にスライドでいいね。左にスライドで反論作成画面へ。記入して送信すればVSがスタート                                                                                                     | VSはタイムラインに流れます。いいねは2人のうちどちらしかいいねできません。VSにメッセージを送れるのは参加者の2人のみ。コメントは全員できます。                                                                                               |
 
 ![]()
-
-![VenTal GIF Feb 26 2025 (3).gif](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3913183/8ed0c0bf-5c05-47a9-a9c3-64d122a76a57.gif)
 
 
 
