@@ -116,6 +116,7 @@ withdrawals:
 tags:
   # collection
   #IDはいらないかも
+  #まだ実装できてない
   - tagId: "tag001"
     tagContent: "スポーツ"
     usedCount: 100
