@@ -245,7 +245,8 @@ fun Navigation(
             Screen.TermsOfServiceScreen.route,
             Screen.GuidelineScreen.route,
             Screen.PrivacyPolicyScreen.route,
-            Screen.ProfileEditScreen.route
+            Screen.ProfileEditScreen.route,
+            Screen.FollowListScreen.route
 
         )
 
@@ -476,7 +477,19 @@ fun Navigation(
             NotificationSettingsView()
         }
 
-        composable(Screen.FollowListScreen.route) {
+        composable(
+            route = Screen.FollowListScreen.route,
+            enterTransition = {
+                slideInHorizontally(animationSpec = tween(300)) { fullWidth -> fullWidth }
+            },
+            exitTransition = {
+                if (this.targetState.destination.route in noExitTransitionRoutes) {
+                    null
+                } else {
+                    slideOutHorizontally(animationSpec = tween(300)) { fullWidth -> fullWidth }
+                }
+            }
+        ) {
             FollowListView(
                 viewModel = followPageViewModel,
                 toAnotherUserPageView =   { user ->
